@@ -43,7 +43,6 @@ export default class MyPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const id = uuidv4();
-				console.log(selection);
 				editor.replaceSelection(`<span class="ob-reading-comment" id="comment-${id}" data-tags="[comment,]"><span class="ob-reading-comment-body">CommentPlaceholder</span>${selection}</span>`);
 			}
 		});
