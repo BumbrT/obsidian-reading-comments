@@ -1,5 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
-
+import { v4 as uuidv4 } from 'uuid';
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
@@ -19,7 +19,7 @@ export default class MyPlugin extends Plugin {
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+			new Notice('This is a FIXED twice notice!');
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
@@ -41,8 +41,10 @@ export default class MyPlugin extends Plugin {
 			id: 'sample-editor-command',
 			name: 'Sample editor command',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection('Sample Editor Command');
+				const selection = editor.getSelection();
+				const id = uuidv4();
+				console.log(selection);
+				editor.replaceSelection(`<span class="ob-reading-comment" id="comment-${id}" data-tags="[comment,]"><span class="ob-reading-comment-body">CommentPlaceholder</span>${selection}</span>`);
 			}
 		});
 		// This adds a complex command that can check whether the current state of the app allows execution of the command
