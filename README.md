@@ -2,6 +2,7 @@
 ## Todo features
 - delete comment
 - search in comments
+- rename project to HTML comments
 
 
 # Obsidian Sample Plugin
