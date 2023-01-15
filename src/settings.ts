@@ -3,11 +3,11 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 import { HtmlComments } from "./plugin";
 
 export interface HtmlCommentsSettings {
-    mySetting: string;
+    autoExpand: boolean;
 }
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
-    mySetting: 'default'
+    autoExpand: false,
 }
 
 export class HtmlCommentsSettingTab extends PluginSettingTab {

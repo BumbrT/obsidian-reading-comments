@@ -3,7 +3,7 @@
 - delete comment
 - search in comments
 - rename project to HTML comments
-
+- add to settings tags placeholder: "comment," - by default
 
 # Obsidian Sample Plugin
 

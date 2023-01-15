@@ -1,7 +1,7 @@
 <template>
     <div id="container">
         <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
-            <div class="function-bar" v-if="store.searchSupport">
+            <div class="function-bar" v-if="state.searchSupport">
                 <NButton size="small" circle @click="reset">
                     <template #icon>
                         <Icon>
@@ -11,14 +11,14 @@
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <NSlider v-if="store.levelSwitch" v-model:value="level" :marks="marks" step="mark" :min="0" :max="5"
+            <NSlider v-if="state.levelSwitch" v-model:value="level" :marks="marks" step="mark" :min="0" :max="5"
                 style="margin:4px 0;" :format-tooltip="formatTooltip" />
             <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree block-line :pattern="pattern" :data="data2" :on-update:selected-keys="jump"
+            <NTree block-line :pattern="pattern" :data="data2" :on-update:value="jump"
                 :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
-                :show-irrelevant-nodes="!store.hideUnsearched" :class="{ 'ellipsis': store.ellipsis }"
-                :draggable="store.dragModify" @drop="onDrop" />
+                :show-irrelevant-nodes="!state.hideUnsearched" :class="{ 'ellipsis': state.ellipsis }"
+                :draggable="state.dragModify" @drop="onDrop" />
         </NConfigProvider>
     </div>
 </template>
@@ -26,14 +26,14 @@
 <script setup lang="ts">
 import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
-import { NTree, TreeOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
+import { NTree, TreeOption, TreeSelectOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
 import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound } from '@vicons/material';
 import { marked } from 'marked';
 
 import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
-import { store } from './store';
-import { QuietOutline } from "./plugin";
+import { state } from './state';
+import { HtmlComments } from "./plugin";
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -47,6 +47,7 @@ const lightThemeConfig = reactive<GlobalThemeOverrides>({
         dotBorderActive: ""
     },
 });
+if (!lightThemeConfig) throw Error("TODO investigate vue undefined")
 
 const darkThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -60,16 +61,18 @@ const darkThemeConfig = reactive<GlobalThemeOverrides>({
         dotBorderActive: ""
     }
 });
+if (!darkThemeConfig) throw Error("TODO investigate vue undefined")
+
 
 // toggle light/dark theme
 let theme: any = computed(() => {
-    if (store.dark) {
+    if (state.dark) {
         return darkTheme;
     }
     return null;
 });
 let iconColor = computed(() => {
-    if (store.dark) {
+    if (state.dark) {
         return { color: "#a3a3a3" };
     }
     return { color: "#727272" };
@@ -81,42 +84,6 @@ function getDefaultColor() {
     button.remove();
     return color;
 }
-
-watchEffect(() => {
-    if (store.patchColor) {
-        lightThemeConfig.common.primaryColor
-            = lightThemeConfig.common.primaryColorHover
-            = lightThemeConfig.Slider.fillColor
-            = lightThemeConfig.Slider.fillColorHover
-            = store.primaryColorLight;
-        lightThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorLight}`;
-
-        darkThemeConfig.common.primaryColor
-            = darkThemeConfig.common.primaryColorHover
-            = darkThemeConfig.Slider.fillColor
-            = darkThemeConfig.Slider.fillColorHover
-            = store.primaryColorDark;
-        darkThemeConfig.Slider.dotBorderActive = `2px solid ${store.primaryColorDark}`;
-        return;
-    }
-    // when css changed, recompute
-    if (store.cssChange === store.cssChange) {
-        let color = getDefaultColor();
-        lightThemeConfig.common.primaryColor
-            = lightThemeConfig.common.primaryColorHover
-            = lightThemeConfig.Slider.fillColor
-            = lightThemeConfig.Slider.fillColorHover
-            = darkThemeConfig.common.primaryColor
-            = darkThemeConfig.common.primaryColorHover
-            = darkThemeConfig.Slider.fillColor
-            = darkThemeConfig.Slider.fillColorHover
-            = color;
-        lightThemeConfig.Slider.dotBorderActive
-            = darkThemeConfig.Slider.dotBorderActive
-            = `2px solid ${color}`;
-
-    }
-});
 
 let rainbowColor1 = ref("");
 let rainbowColor2 = ref("");
@@ -131,15 +98,15 @@ function hexToRGB(hex: string) {
 }
 
 watchEffect(() => {
-    if (store.rainbowLine) {
-        rainbowColor1.value = `rgba(${hexToRGB(store.rainbowColor1)}, 0.6)`;
-        rainbowColor2.value = `rgba(${hexToRGB(store.rainbowColor2)}, 0.6)`;
-        rainbowColor3.value = `rgba(${hexToRGB(store.rainbowColor3)}, 0.6)`;
-        rainbowColor4.value = `rgba(${hexToRGB(store.rainbowColor4)}, 0.6)`;
-        rainbowColor5.value = `rgba(${hexToRGB(store.rainbowColor5)}, 0.6)`;
+    if (state.rainbowLine) {
+        rainbowColor1.value = `rgba(${hexToRGB(state.rainbowColor1)}, 0.6)`;
+        rainbowColor2.value = `rgba(${hexToRGB(state.rainbowColor2)}, 0.6)`;
+        rainbowColor3.value = `rgba(${hexToRGB(state.rainbowColor3)}, 0.6)`;
+        rainbowColor4.value = `rgba(${hexToRGB(state.rainbowColor4)}, 0.6)`;
+        rainbowColor5.value = `rgba(${hexToRGB(state.rainbowColor5)}, 0.6)`;
         return;
     }
-    if (store.cssChange === store.cssChange) {
+    if (state.cssChange === state.cssChange) {
         rainbowColor1.value
             = rainbowColor2.value
             = rainbowColor3.value
@@ -157,7 +124,8 @@ onUnmounted(() => {
 });
 
 let compomentSelf = getCurrentInstance();
-let plugin = compomentSelf.appContext.config.globalProperties.plugin as QuietOutline;
+if (!compomentSelf) throw Error("vue not found");
+let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlComments;
 let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
 
 // register scroll event
@@ -184,12 +152,12 @@ function _handleScroll(evt: Event) {
     if (!view) return;
 
     let current_line = view.currentMode.getScroll() + 8;
-    let current_heading = null;
+    let current_heading  = null as unknown as HeadingCache;
 
-    let i = store.headers.length;
+    let i = state.headers.length;
     while (--i >= 0) {
-        if (store.headers[i].position.start.line <= current_line) {
-            current_heading = store.headers[i];
+        if (state.headers[i].position.start.line <= current_line) {
+            current_heading = state.headers[i];
             break;
         }
     }
@@ -199,16 +167,16 @@ function _handleScroll(evt: Event) {
 
     let index = i;
 
-    if (plugin.settings.auto_expand) {
-        let should_expand = index < store.headers.length - 1 && store.headers[index].level < store.headers[index + 1].level
+    if (plugin.settings.autoExpand) {
+        let should_expand = index < state.headers.length - 1 && state.headers[index].level < state.headers[index + 1].level
             ? [toKey(current_heading, index)]
             : [];
 
         let level = current_heading.level;
         while (i-- > 0) {
-            if (store.headers[i].level < level) {
-                should_expand.push(toKey(store.headers[i], i));
-                level = store.headers[i].level;
+            if (state.headers[i].level < level) {
+                should_expand.push(toKey(state.headers[i], i));
+                level = state.headers[i].level;
             }
             if (level === 1) {
                 break;
@@ -249,15 +217,15 @@ const setAttrs = computed(() => {
         return {
             class: `level-${lev}`,
             id: `no-${no}`,
-            "aria-label": store.ellipsis ? info.option.label : "",
-            "aria-label-position": store.labelDirection,
+            "aria-label": state.ellipsis ? info.option.label : "",
+            "aria-label-position": state.labelDirection,
         };
     };
 });
 
 
 // switch heading expand levels
-let level = ref(parseInt(plugin.settings.expand_level));
+let level = ref(parseInt("3"));
 let expanded = ref<string[]>([]);
 switchLevel(level.value);
 
@@ -266,7 +234,7 @@ function expand(keys: string[], option: TreeOption[]) {
 }
 
 function switchLevel(lev: number) {
-    expanded.value = store.headers
+    expanded.value = state.headers
         .map((h, i) => {
             return "item-" + h.level + "-" + i;
         })
@@ -289,13 +257,13 @@ watch(
 let update_tree = ref(0);
 
 watch(
-    () => store.leafChange,
+    () => state.leafChange,
     () => {
         const old_level = level.value;
         const old_pattern = pattern.value;
 
         pattern.value = "";
-        level.value = parseInt(plugin.settings.expand_level);
+        level.value = parseInt("3");
         if (old_level === level.value) {
             switchLevel(level.value);
         }
@@ -317,7 +285,7 @@ const marks = {
 };
 
 function formatTooltip(value: number): string {
-    let num = store.headers.filter((h) => h.level === value).length;
+    let num = state.headers.filter((h) => h.level === value).length;
 
     if (value > 0) {
         return `H${value}: ${num}`;
@@ -328,7 +296,7 @@ function formatTooltip(value: number): string {
 
 // load settings
 let renderMethod = computed(() => {
-    if (store.markdown) {
+    if (state.markdown) {
         return renderLabel;
     }
     return null;
@@ -353,11 +321,11 @@ function simpleFilter(pattern: string, option: TreeOption): boolean {
 }
 
 let filter = computed(() => {
-    return store.regexSearch ? regexFilter : simpleFilter;
+    return state.regexSearch ? regexFilter : simpleFilter;
 });
 
 let matchCount = computed(() => {
-    return store.headers.filter((h) => {
+    return state.headers.filter((h) => {
         let node = { label: h.heading } as TreeOption;
         return filter.value(pattern.value, node);
     }).length;
@@ -365,16 +333,16 @@ let matchCount = computed(() => {
 
 
 // click and jump
-async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
+async function jump(_selected: any, nodes: TreeSelectOption[]) {
     if (nodes[0] === undefined) {
         return;
     }
 
     const key_value = (nodes[0].key as string).split("-");
     const key = parseInt(key_value[2]);
-    let line: number = store.headers[key].position.start.line;
+    let line: number = state.headers[key].position.start.line;
 
-    // const view = store.plugin.app.workspace.getActiveViewOfType(MarkdownView)
+    // const view = state.plugin.app.workspace.getActiveViewOfType(MarkdownView)
     const view = plugin.current_note;
     if (view) {
         view.setEphemeralState({ line });
@@ -384,7 +352,7 @@ async function jump(_selected: any, nodes: TreeOption[]): Promise<number> {
 
 // prepare data for tree component
 let data2 = computed(() => {
-    return makeTree(store.headers);
+    return makeTree(state.headers);
 });
 
 function makeTree(headers: HeadingCache[]): TreeOption[] {
@@ -500,8 +468,8 @@ async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
 
 function getLine(headNo: number) {
     return [
-        store.headers[headNo].position.start.line,
-        store.headers[headNo + 1]?.position.start.line - 1
+        state.headers[headNo].position.start.line,
+        state.headers[headNo + 1]?.position.start.line - 1
     ];
 }
 

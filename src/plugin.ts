@@ -4,6 +4,8 @@ import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "
 
 export class HtmlComments extends Plugin {
 	settings: HtmlCommentsSettings;
+	current_note: MarkdownView;
+	current_file: string;
 
 	async onload() {
 		await this.loadSettings();
