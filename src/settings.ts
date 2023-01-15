@@ -10,7 +10,7 @@ export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     mySetting: 'default'
 }
 
-export class SampleSettingTab extends PluginSettingTab {
+export class HtmlCommentsSettingTab extends PluginSettingTab {
     plugin: HtmlComments;
 
     constructor(app: App, plugin: HtmlComments) {
