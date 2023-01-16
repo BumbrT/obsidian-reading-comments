@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
-import { NTree, TreeOption, TreeSelectOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo } from 'naive-ui';
+import { NTree, TreeSelectOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo, TreeOption } from 'naive-ui';
 import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound } from '@vicons/material';
 import { marked } from 'marked';
@@ -34,6 +34,7 @@ import { marked } from 'marked';
 import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
 import { state } from './state';
 import { HtmlComments } from "./plugin";
+import { createTreeMateOptions } from 'naive-ui/es/tree/src/Tree';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -312,12 +313,12 @@ function regexFilter(pattern: string, option: TreeOption): boolean {
     } catch (e) {
 
     } finally {
-        return rule.test(option.label);
+        return rule.test(option.label ?? "");
     }
 }
 
 function simpleFilter(pattern: string, option: TreeOption): boolean {
-    return option.label.toLowerCase().contains(pattern.toLowerCase());
+    return (option.label ?? "").toLowerCase().contains(pattern.toLowerCase());
 }
 
 let filter = computed(() => {
@@ -372,19 +373,22 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
             line: h.position.start.line,
         };
 
-        while (h.level <= stack.last().level) {
+        while (h.level <= (stack.last()?.level ?? -1)) {
             stack.pop();
         }
 
-        let parent = stack.last().node;
-        if (parent.children === undefined) {
+        let parent = stack.last()?.node;
+        if (!parent) {
+            parent = root
+        }
+        if (!parent.children) {
             parent.children = [];
         }
         parent.children.push(node);
         stack.push({ node, level: h.level });
     });
 
-    return root.children;
+    return root.children ?? [];
 }
 
 
@@ -394,11 +398,11 @@ marked.use({ walkTokens: remove_href });
 marked.use({ renderer });
 
 function renderLabel({ option }: { option: TreeOption; }) {
-    let result = marked.parse(option.label).trim();
+    let result = marked.parse(option.label ?? "").trim();
 
     // save mjx elements
     let i = 0;
-    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g);
+    let mjxes = result.match(/<mjx-container.*?>.*?<\/mjx-container>/g) ?? [];
 
     result = sanitizeHTMLToDom(`<div>${result}</div>`).children[0].innerHTML;
 
@@ -413,7 +417,7 @@ function renderLabel({ option }: { option: TreeOption; }) {
 // reset button
 function reset() {
     pattern.value = "";
-    level.value = parseInt(plugin.settings.expand_level);
+    level.value = parseInt("0");
     switchLevel(level.value);
 }
 
@@ -421,6 +425,9 @@ function reset() {
 async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
     // return;
     const file = plugin.app.workspace.getActiveFile();
+    if (!file) {
+        throw Error("File not found");
+    }
     let lines = (await plugin.app.vault.read(file)).split("\n");
     let rawExpand = toRaw(expanded.value);
 
@@ -429,7 +436,11 @@ async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
     let moveStart = 0, moveEnd = 0;
     switch (dropPosition) {
         case "inside": {
-            node = node.children.last();
+            const lastNode = node.children?.last()
+            if (!lastNode) {
+                throw new Error("Last node not found")
+            }
+            node = lastNode;
         }
         case "after": {
             if (dragStart > getNo(node) + countTree(node)) {
