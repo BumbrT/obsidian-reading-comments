@@ -11,10 +11,8 @@
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <NSlider v-if="state.levelSwitch" v-model:value="level" :marks="marks" step="mark" :min="0" :max="5"
-                style="margin:4px 0;" :format-tooltip="formatTooltip" />
             <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree block-line :pattern="pattern" :data="data2" :on-update:value="jump"
+            <NTree block-line :pattern="pattern" :data="treeData" :on-update:value="jump"
                 :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!state.hideUnsearched" :class="{ 'ellipsis': state.ellipsis }"
@@ -97,25 +95,6 @@ function hexToRGB(hex: string) {
         + `${parseInt(hex.slice(3, 5), 16)},`
         + `${parseInt(hex.slice(5, 7), 16)}`;
 }
-
-watchEffect(() => {
-    if (state.rainbowLine) {
-        rainbowColor1.value = `rgba(${hexToRGB(state.rainbowColor1)}, 0.6)`;
-        rainbowColor2.value = `rgba(${hexToRGB(state.rainbowColor2)}, 0.6)`;
-        rainbowColor3.value = `rgba(${hexToRGB(state.rainbowColor3)}, 0.6)`;
-        rainbowColor4.value = `rgba(${hexToRGB(state.rainbowColor4)}, 0.6)`;
-        rainbowColor5.value = `rgba(${hexToRGB(state.rainbowColor5)}, 0.6)`;
-        return;
-    }
-    if (state.cssChange === state.cssChange) {
-        rainbowColor1.value
-            = rainbowColor2.value
-            = rainbowColor3.value
-            = rainbowColor4.value
-            = rainbowColor5.value
-            = "var(--nav-indentation-guide-color)";
-    }
-});
 
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset);
@@ -206,29 +185,29 @@ function _handleScroll(evt: Event) {
 
 
 // add html attributes to nodes
+// TODO understand why
 interface HTMLAttr extends HTMLAttributes {
     "aria-label-position": "top" | "bottom" | "left" | "right";
 }
 
 const setAttrs = computed(() => {
-    return (info: { option: TreeOption; }): HTMLAttr => {
+    return (info: { option: TreeSelectOption; }): HTMLAttributes => {
         let lev = parseInt((info.option.key as string).split('-')[1]);
         let no = parseInt((info.option.key as string).split('-')[2]);
-
+        const ellipsis = false
+        const labelDirection = "left" as "top" | "bottom" | "left" | "right"
         return {
             class: `level-${lev}`,
             id: `no-${no}`,
-            "aria-label": state.ellipsis ? info.option.label : "",
-            "aria-label-position": state.labelDirection,
+            "aria-label": ellipsis ? info.option.label : "",
+            // "aria-label-position": labelDirection,
         };
     };
 });
 
 
 // switch heading expand levels
-let level = ref(parseInt("3"));
 let expanded = ref<string[]>([]);
-switchLevel(level.value);
 
 function expand(keys: string[], option: TreeOption[]) {
     expanded.value = keys;
@@ -247,12 +226,13 @@ function switchLevel(lev: number) {
         });
 }
 
-watch(
-    level,
-    (cur, prev) => {
-        switchLevel(cur);
-    }
-);
+// TODO - watching for variable
+// watch(
+//     level,
+//     (cur, prev) => {
+//         switchLevel(cur);
+//     }
+// );
 
 // force remake tree
 let update_tree = ref(0);
@@ -260,30 +240,14 @@ let update_tree = ref(0);
 watch(
     () => state.leafChange,
     () => {
-        const old_level = level.value;
         const old_pattern = pattern.value;
-
         pattern.value = "";
-        level.value = parseInt("3");
-        if (old_level === level.value) {
-            switchLevel(level.value);
-        }
-
         nextTick(() => {
             pattern.value = old_pattern;
         });
 
     }
 );
-
-const marks = {
-    0: "",
-    1: "",
-    2: "",
-    3: "",
-    4: "",
-    5: "",
-};
 
 function formatTooltip(value: number): string {
     let num = state.headers.filter((h) => h.level === value).length;
@@ -297,10 +261,10 @@ function formatTooltip(value: number): string {
 
 // load settings
 let renderMethod = computed(() => {
-    if (state.markdown) {
+    if (state.rederMarkdown) {
         return renderLabel;
     }
-    return null;
+    return undefined
 });
 
 // search
@@ -352,7 +316,7 @@ async function jump(_selected: any, nodes: TreeSelectOption[]) {
 }
 
 // prepare data for tree component
-let data2 = computed(() => {
+let treeData = computed(() => {
     return makeTree(state.headers);
 });
 
@@ -397,7 +361,7 @@ marked.use({ extensions: [formula, internal_link, highlight, tag] });
 marked.use({ walkTokens: remove_href });
 marked.use({ renderer });
 
-function renderLabel({ option }: { option: TreeOption; }) {
+function renderLabel({ option, checked, selected }: { option: TreeOption; checked: boolean; selected: boolean; }) {
     let result = marked.parse(option.label ?? "").trim();
 
     // save mjx elements
@@ -417,8 +381,6 @@ function renderLabel({ option }: { option: TreeOption; }) {
 // reset button
 function reset() {
     pattern.value = "";
-    level.value = parseInt("0");
-    switchLevel(level.value);
 }
 
 // drag and drop
