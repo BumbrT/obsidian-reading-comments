@@ -13,7 +13,7 @@
             </div>
             <code v-if="pattern">{{ matchCount }} result(s): </code>
             <NTree block-line :pattern="pattern" :data="treeData" :on-update:value="jump"
-                :render-label="renderMethod" :node-props="setAttrs" :expanded-keys="expanded"
+                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="expanded"
                 :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!state.hideUnsearched" :class="{ 'ellipsis': state.ellipsis }"
                 :draggable="state.dragModify" @drop="onDrop" />
@@ -185,13 +185,9 @@ function _handleScroll(evt: Event) {
 
 
 // add html attributes to nodes
-// TODO understand why
-interface HTMLAttr extends HTMLAttributes {
-    "aria-label-position": "top" | "bottom" | "left" | "right";
-}
 
-const setAttrs = computed(() => {
-    return (info: { option: TreeSelectOption; }): HTMLAttributes => {
+const setNodeProps = computed(() => {
+    return (info: { option: TreeSelectOption; }): HTMLAttributes & Record<string, unknown> => {
         let lev = parseInt((info.option.key as string).split('-')[1]);
         let no = parseInt((info.option.key as string).split('-')[2]);
         const ellipsis = false
@@ -200,7 +196,7 @@ const setAttrs = computed(() => {
             class: `level-${lev}`,
             id: `no-${no}`,
             "aria-label": ellipsis ? info.option.label : "",
-            // "aria-label-position": labelDirection,
+            "aria-label-position": labelDirection,
         };
     };
 });
