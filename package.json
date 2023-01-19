@@ -12,6 +12,7 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
+		"@the_tree/esbuild-plugin-vue3": "^0.3.1",
 		"@types/marked": "^4.0.8",
 		"@types/node": "^16.11.6",
 		"@types/uuid": "^9.0.0",

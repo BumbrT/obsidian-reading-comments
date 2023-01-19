@@ -2,15 +2,19 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
 import { v4 as uuidv4 } from 'uuid';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./settings";
 import { state } from "./state";
+import { HtmlCommentsView, VIEW_TYPE } from './view';
 
-export class HtmlComments extends Plugin {
+export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
 	current_note: MarkdownView;
 	current_file: string;
 
 	async onload() {
 		await this.loadSettings();
-
+		this.registerView(
+			VIEW_TYPE,
+			(leaf) => new HtmlCommentsView(leaf, this)
+		);
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
@@ -39,6 +43,7 @@ export class HtmlComments extends Plugin {
 		this.addSettingTab(new HtmlCommentsSettingTab(this.app, this));
 
 		this.initState();
+		this.registerCommand();
 	}
 
 	onunload() {
@@ -58,6 +63,28 @@ export class HtmlComments extends Plugin {
 		state.dark = document.body.hasClass("theme-dark");
 		state.autoExpand = this.settings.autoExpand;
 		state.leafChange = false;
+	}
+
+	registerCommand() {
+		this.addCommand({
+			id: "html-comments",
+			name: "Html Comments",
+			callback: () => {
+				this.activateView();
+			}
+		});
+	}
+
+	async activateView() {
+		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0) {
+			await this.app.workspace.getRightLeaf(false).setViewState({
+				type: VIEW_TYPE,
+				active: true,
+			});
+		}
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
+		);
 	}
 }
 

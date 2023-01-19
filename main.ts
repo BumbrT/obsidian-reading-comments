@@ -1,3 +1,3 @@
-import { HtmlComments } from "./src/plugin"
+import { HtmlCommentsPlugin } from "./src/plugin"
 
-export default HtmlComments
+export default HtmlCommentsPlugin

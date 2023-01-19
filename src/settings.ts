@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
-import { HtmlComments } from "./plugin";
+import { HtmlCommentsPlugin } from "./plugin";
 
 export interface HtmlCommentsSettings {
     autoExpand: boolean;
@@ -11,9 +11,9 @@ export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
 }
 
 export class HtmlCommentsSettingTab extends PluginSettingTab {
-    plugin: HtmlComments;
+    plugin: HtmlCommentsPlugin;
 
-    constructor(app: App, plugin: HtmlComments) {
+    constructor(app: App, plugin: HtmlCommentsPlugin) {
         super(app, plugin);
         this.plugin = plugin;
     }

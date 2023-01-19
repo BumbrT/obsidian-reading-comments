@@ -12,11 +12,9 @@
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree block-line :pattern="pattern" :data="treeData" :on-update:value="jump"
-                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="expanded"
-                :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
-                :show-irrelevant-nodes="!state.hideUnsearched" :class="{ 'ellipsis': state.ellipsis }"
-                :draggable="state.dragModify" @drop="onDrop" />
+            <NTree block-line :pattern="pattern" :data="treeDataTest" :on-update:value="jump" :render-label="renderMethod"
+                :node-props="setNodeProps" :expanded-keys="expanded" :key="update_tree" :filter="filter"
+                :show-irrelevant-nodes="!state.hideUnsearched" :draggable="state.dragModify" @drop="onDrop" />
         </NConfigProvider>
     </div>
 </template>
@@ -132,7 +130,7 @@ function _handleScroll(evt: Event) {
     if (!view) return;
 
     let current_line = view.currentMode.getScroll() + 8;
-    let current_heading  = null as unknown as HeadingCache;
+    let current_heading = null as unknown as HeadingCache;
 
     let i = state.headers.length;
     while (--i >= 0) {
@@ -310,7 +308,13 @@ async function jump(_selected: any, nodes: TreeSelectOption[]) {
         setTimeout(() => { view.setEphemeralState({ line }); }, 100);
     }
 }
-
+let treeDataTest = [
+    {
+        label: "test",
+        key: "item-0",
+        line: 0,
+    }
+];
 // prepare data for tree component
 let treeData = computed(() => {
     return makeTree(state.headers);
