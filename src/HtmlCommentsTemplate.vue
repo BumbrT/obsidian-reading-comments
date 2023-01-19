@@ -12,9 +12,10 @@
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree block-line :pattern="pattern" :data="treeDataTest" :on-update:value="jump" :render-label="renderMethod"
-                :node-props="setNodeProps" :expanded-keys="expanded" :key="update_tree" :filter="filter"
-                :show-irrelevant-nodes="!state.hideUnsearched" :draggable="state.dragModify" @drop="onDrop" />
+            <NTree block-line :pattern="pattern" :data="treeDataTest" :on-update:value="jump"
+                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="expandedTest" :key="update_tree"
+                :filter="filter" :show-irrelevant-nodes="!state.hideUnsearched" :draggable="state.dragModify"
+                @drop="onDrop" />
         </NConfigProvider>
     </div>
 </template>
@@ -29,7 +30,7 @@ import { marked } from 'marked';
 
 import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
 import { state } from './state';
-import { HtmlComments } from "./plugin";
+import { HtmlCommentsPlugin } from "./plugin";
 import { createTreeMateOptions } from 'naive-ui/es/tree/src/Tree';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
@@ -48,13 +49,13 @@ if (!lightThemeConfig) throw Error("TODO investigate vue undefined")
 
 const darkThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
-        primaryColor: "",
-        primaryColorHover: "",
+        primaryColor: "#a3a3a3",
+        primaryColorHover: "#a3a3a3",
     },
     Slider: {
         handleSize: "10px",
-        fillColor: "",
-        fillColorHover: "",
+        fillColor: "#a3a3a3",
+        fillColorHover: "#a3a3a3",
         dotBorderActive: ""
     }
 });
@@ -103,7 +104,7 @@ onUnmounted(() => {
 
 let compomentSelf = getCurrentInstance();
 if (!compomentSelf) throw Error("vue not found");
-let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlComments;
+let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlCommentsPlugin
 let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
 
 // register scroll event
@@ -198,7 +199,6 @@ const setNodeProps = computed(() => {
         };
     };
 });
-
 
 // switch heading expand levels
 let expanded = ref<string[]>([]);
@@ -313,8 +313,17 @@ let treeDataTest = [
         label: "test",
         key: "item-0",
         line: 0,
+        children: [
+            {
+                label: "test1",
+                key: "item-1",
+                line: 0,
+            }
+        ]
     }
 ];
+let expandedTest = ["item-0"]
+
 // prepare data for tree component
 let treeData = computed(() => {
     return makeTree(state.headers);

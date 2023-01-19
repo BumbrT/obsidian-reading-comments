@@ -13,7 +13,7 @@ const state = reactive({
     regexSearch: false,
     rederMarkdown: false,
     searchSupport: true,
-    hideUnsearched: false,
+    hideUnsearched: true,
     dragModify: false,
     refreshTree() {
         this.leafChange = !this.leafChange;
