@@ -1,3 +1,4 @@
+import { stat } from 'fs';
 import { App, Editor, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
 import { v4 as uuidv4 } from 'uuid';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./settings";

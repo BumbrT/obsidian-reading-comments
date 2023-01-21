@@ -28,7 +28,6 @@ import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound } from '@vicons/material';
 import { marked } from 'marked';
 
-import { formula, internal_link, highlight, tag, remove_href, renderer } from './parser';
 import { state } from './state';
 import { HtmlCommentsPlugin } from "./plugin";
 import { createTreeMateOptions } from 'naive-ui/es/tree/src/Tree';
@@ -375,14 +374,27 @@ function testFunc() {
     // lexer.rules["myrule"] = /^\[\[([^\[\]]+?)\]\]/;
     // lexer.rules.myrule = /^\[\[([^\[\]]+?)\]\]/;
     // const regEx = /<span> class="ob-html-comment" id="comment-([0-9a-fA-F]+)/gm
-    const regExSpan = /\<span/gm
+    // const regExSpan = /\<span\> class\=\"ob-html-comment\" id\=\"comment/gm
+    const regExSpan = /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"/gm
     // const matches = text.match(regEx)  // regEx.exec(text)
     let arrayMatch;
+    let lastCommentLine;
+    const lines = text.split("\n");
+    const foundComments = new Map<string, string | Map<string, object>>()
+    lines.forEach(
+        (line, i) => {
+            while ((arrayMatch = regExSpan.exec(line)) !== null) {
+                console.log(`Found ${arrayMatch[0]}. Line ${i} Comment id ${arrayMatch[1]} Tags ${arrayMatch[2]}`);
+                lastCommentLine = i;
+                // Expected output: "Found foo. Next starts at 9."
+                // Expected output: "Found foo. Next starts at 19."
+            }
+        }
+    )
 
-    while ((arrayMatch = regExSpan.exec(text)) !== null) {
-        console.log(`Found ${arrayMatch[0]}. Next starts at ${regExSpan.lastIndex}.`);
-        // Expected output: "Found foo. Next starts at 9."
-        // Expected output: "Found foo. Next starts at 19."
+    console.log(`Finished matching`);
+    if (lastCommentLine) {
+        plugin.getActiveView()?.editor.setCursor(lastCommentLine, 1);
     }
     // const filteredMatches = matches.filter(
     //     matched => true
