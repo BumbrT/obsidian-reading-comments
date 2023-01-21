@@ -18,7 +18,7 @@ const state = reactive({
     refreshTree() {
         this.leafChange = !this.leafChange;
     },
-    currentNote: null as unknown as MarkdownView
+    currentNote: null as MarkdownView | null
 });
 
 export { state };

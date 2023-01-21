@@ -2,7 +2,7 @@
     <div id="container">
         <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
             <div class="function-bar" v-if="state.searchSupport">
-                <NButton size="small" circle @click="reset">
+                <NButton size="small" circle @click="testFunc">
                     <template #icon>
                         <Icon>
                             <SettingsBackupRestoreRound :style="iconColor" />
@@ -366,9 +366,33 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
 
 
 // render markdown
-marked.use({ extensions: [formula, internal_link, highlight, tag] });
-marked.use({ walkTokens: remove_href });
-marked.use({ renderer });
+// `<span class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${selection}</span>`
+function testFunc() {
+    const text = plugin.getActiveView().getViewData();
+    // const options = { extensions: [internal_link, tag] };
+    // const tokens = marked.lexer(text, options );
+    // const lexer = new marked.Lexer();
+    // lexer.rules["myrule"] = /^\[\[([^\[\]]+?)\]\]/;
+    // lexer.rules.myrule = /^\[\[([^\[\]]+?)\]\]/;
+    // const regEx = /<span> class="ob-html-comment" id="comment-([0-9a-fA-F]+)/gm
+    const regExSpan = /\<span/gm
+    // const matches = text.match(regEx)  // regEx.exec(text)
+    let arrayMatch;
+
+    while ((arrayMatch = regExSpan.exec(text)) !== null) {
+        console.log(`Found ${arrayMatch[0]}. Next starts at ${regExSpan.lastIndex}.`);
+        // Expected output: "Found foo. Next starts at 9."
+        // Expected output: "Found foo. Next starts at 19."
+    }
+    // const filteredMatches = matches.filter(
+    //     matched => true
+    // )
+    // console.log(matches);
+
+}
+// marked.use({ extensions: [formula, internal_link, highlight, tag] });
+// marked.use({ walkTokens: remove_href });
+// marked.use({ renderer });
 
 function renderLabel({ option, checked, selected }: { option: TreeOption; checked: boolean; selected: boolean; }) {
     let result = marked.parse(option.label ?? "").trim();

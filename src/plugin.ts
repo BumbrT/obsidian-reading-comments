@@ -44,6 +44,7 @@ export class HtmlCommentsPlugin extends Plugin {
 
 		this.initState();
 		this.registerCommand();
+		this.registerListener();
 	}
 
 	onunload() {
@@ -63,6 +64,8 @@ export class HtmlCommentsPlugin extends Plugin {
 		state.dark = document.body.hasClass("theme-dark");
 		state.autoExpand = this.settings.autoExpand;
 		state.leafChange = false;
+		const view =  this.app.workspace.getActiveViewOfType(MarkdownView);
+		state.currentNote = view;
 	}
 
 	registerCommand() {
@@ -75,6 +78,33 @@ export class HtmlCommentsPlugin extends Plugin {
 		});
 	}
 
+	registerListener() {
+		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
+
+			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
+			if (view) {
+				// 保证第一次获取标题信息时，也能正常展开到默认层级
+				if (!this.current_note) {
+					this.current_note = view;
+					this.current_file = view.file.path;
+					// refresh_outline();
+					// store.refreshTree();
+					return;
+				}
+
+				const pathEq = view.file.path === this.current_file;
+				if (!pathEq) {
+					// store.refreshTree();
+				}
+
+				// refresh_outline();
+				this.current_note = view;
+				state.currentNote = view;
+				this.current_file = view.file.path;
+			}
+		}));
+	}
+
 	async activateView() {
 		if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length === 0) {
 			await this.app.workspace.getRightLeaf(false).setViewState({
@@ -85,6 +115,10 @@ export class HtmlCommentsPlugin extends Plugin {
 		this.app.workspace.revealLeaf(
 			this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
 		);
+	}
+
+	getActiveView(): MarkdownView | null {
+		return this.app.workspace.getActiveViewOfType(MarkdownView);
 	}
 }
 
