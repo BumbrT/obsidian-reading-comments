@@ -31,6 +31,7 @@ import { marked } from 'marked';
 import { state } from './state';
 import { HtmlCommentsPlugin } from "./plugin";
 import { createTreeMateOptions } from 'naive-ui/es/tree/src/Tree';
+import { HtmlCommentWithTags, HtmlCommentTag } from './HtmlComments';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -107,79 +108,16 @@ let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlComm
 let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
 
 // register scroll event
-onMounted(() => {
-    document.addEventListener("scroll", handleScroll, true);
-});
+// onMounted(() => {
+//     document.addEventListener("scroll", handleScroll, true);
+// });
 
-onUnmounted(() => {
-    document.removeEventListener("scroll", handleScroll, true);
-});
+// onUnmounted(() => {
+//     document.removeEventListener("scroll", handleScroll, true);
+// });
 
 let toKey = (h: HeadingCache, i: number) => "item-" + h.level + "-" + i;
 
-let handleScroll = debounce(_handleScroll, 100);
-
-function _handleScroll(evt: Event) {
-    let target = evt.target as HTMLElement;
-    if (!target.classList.contains("markdown-preview-view") && !target.classList.contains("cm-scroller")) {
-        return;
-    }
-    // const view = plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    const view = plugin.current_note;
-
-    if (!view) return;
-
-    let current_line = view.currentMode.getScroll() + 8;
-    let current_heading = null as unknown as HeadingCache;
-
-    let i = state.headers.length;
-    while (--i >= 0) {
-        if (state.headers[i].position.start.line <= current_line) {
-            current_heading = state.headers[i];
-            break;
-        }
-    }
-    if (!current_heading) {
-        return;
-    }
-
-    let index = i;
-
-    if (plugin.settings.autoExpand) {
-        let should_expand = index < state.headers.length - 1 && state.headers[index].level < state.headers[index + 1].level
-            ? [toKey(current_heading, index)]
-            : [];
-
-        let level = current_heading.level;
-        while (i-- > 0) {
-            if (state.headers[i].level < level) {
-                should_expand.push(toKey(state.headers[i], i));
-                level = state.headers[i].level;
-            }
-            if (level === 1) {
-                break;
-            }
-        }
-        expanded.value = should_expand;
-    }
-    let prevLocation = container.querySelector(".n-tree-node.located");
-    if (prevLocation) {
-        prevLocation.removeClass("located");
-    }
-    let curLocation = container.querySelector(`#no-${index}`);
-    if (curLocation) {
-        curLocation.addClass("located");
-        curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
-    } else {
-        setTimeout(() => {
-            let curLocation = container.querySelector(`#no-${index}`);
-            if (curLocation) {
-                curLocation.addClass("located");
-                curLocation.scrollIntoView({ block: "center", behavior: "smooth" });
-            }
-        }, 0);
-    }
-}
 
 
 // add html attributes to nodes
@@ -307,20 +245,7 @@ async function jump(_selected: any, nodes: TreeSelectOption[]) {
         setTimeout(() => { view.setEphemeralState({ line }); }, 100);
     }
 }
-let treeDataTest = [
-    {
-        label: "test",
-        key: "item-0",
-        line: 0,
-        children: [
-            {
-                label: "test1",
-                key: "item-1",
-                line: 0,
-            }
-        ]
-    }
-];
+
 let expandedTest = ["item-0"]
 
 // prepare data for tree component
@@ -363,6 +288,20 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
     return root.children ?? [];
 }
 
+let treeDataTest = [
+    {
+        label: "test",
+        key: "item-0",
+        line: 0,
+        children: [
+            {
+                label: "test1",
+                key: "item-1",
+                line: 0,
+            }
+        ]
+    }
+];
 
 // render markdown
 // `<span class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${selection}</span>`
@@ -375,17 +314,26 @@ function testFunc() {
     // lexer.rules.myrule = /^\[\[([^\[\]]+?)\]\]/;
     // const regEx = /<span> class="ob-html-comment" id="comment-([0-9a-fA-F]+)/gm
     // const regExSpan = /\<span\> class\=\"ob-html-comment\" id\=\"comment/gm
-    const regExSpan = /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"/gm
+    const regExSpan =
+        /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
     // const matches = text.match(regEx)  // regEx.exec(text)
     let arrayMatch;
     let lastCommentLine;
     const lines = text.split("\n");
     const foundComments = new Map<string, string | Map<string, object>>()
     lines.forEach(
-        (line, i) => {
-            while ((arrayMatch = regExSpan.exec(line)) !== null) {
-                console.log(`Found ${arrayMatch[0]}. Line ${i} Comment id ${arrayMatch[1]} Tags ${arrayMatch[2]}`);
-                lastCommentLine = i;
+        (lineContent, lineNumber) => {
+            while ((arrayMatch = regExSpan.exec(lineContent)) !== null) {
+                const commentId = arrayMatch[1];
+                const matchedTags = arrayMatch[2];
+                const commentBody = arrayMatch[3];
+                console.log(`Found ${arrayMatch[0]}. Line ${lineNumber} Comment id ${commentId} Tags ${matchedTags}`);
+                lastCommentLine = lineNumber;
+                if (matchedTags) {
+                    const parsedTags = new HtmlCommentWithTags(commentId, matchedTags, commentBody, lineNumber);
+                    console.log(`Parsed tags ${JSON.stringify(parsedTags)}`);
+                }
+
                 // Expected output: "Found foo. Next starts at 9."
                 // Expected output: "Found foo. Next starts at 19."
             }
