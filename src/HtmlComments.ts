@@ -40,5 +40,31 @@ export class HtmlCommentTag {
         }
 
     }
+}
+
+/**
+ * Organise collection of comments with tags to structure for tree:
+ [
+    {
+        label: "test",
+        key: "item-0",
+        type: "tag",
+        children: [
+            {
+                label: "child test1",
+                key: "item-1",
+                type: "tag",
+                children: [
+                    label: "Comment body",
+                    key: "comment-id",
+                    line: 112,
+                    type: "comment",
+                ]
+            }
+        ]
+    }
+];
+ */
+export class OrganasiedByTagHtmlComments {
 
 }
