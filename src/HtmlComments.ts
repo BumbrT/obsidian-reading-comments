@@ -21,10 +21,11 @@ export class HtmlCommentWithTags {
 }
 
 export class HtmlCommentTag {
-    // readonly fullName: string
+    readonly fullName: string
     readonly name: string
     readonly child: HtmlCommentTag | null
     constructor(tagString: string) {
+        this.fullName = tagString;
         const index = tagString.indexOf("/");
         if (index > 0) {
             this.name = tagString.substring(0, index);
@@ -66,5 +67,9 @@ export class HtmlCommentTag {
 ];
  */
 export class OrganasiedByTagHtmlComments {
+
+    constructor(commentsWithTags: HtmlCommentWithTags[]) {
+
+    }
 
 }
