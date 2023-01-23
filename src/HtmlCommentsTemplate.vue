@@ -12,8 +12,8 @@
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree block-line :pattern="pattern" :data="treeDataTest" :on-update:value="jump"
-                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="expandedTest" :key="update_tree"
+            <NTree block-line :default-expand-all=true :pattern="pattern" :data="treeDataTest" :on-update:value="jump"
+                :render-label="renderMethod" :node-props="setNodeProps" :key="update_tree"
                 :filter="filter" :show-irrelevant-nodes="!state.hideUnsearched" :draggable="state.dragModify"
                 @drop="onDrop" />
         </NConfigProvider>
@@ -31,7 +31,7 @@ import { marked } from 'marked';
 import { state } from './state';
 import { HtmlCommentsPlugin } from "./plugin";
 import { createTreeMateOptions } from 'naive-ui/es/tree/src/Tree';
-import { HtmlCommentWithTags, HtmlCommentTag } from './HtmlComments';
+import { TextToTreeDataParser } from './HtmlComments';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -288,71 +288,17 @@ function arrToTree(headers: HeadingCache[]): TreeOption[] {
     return root.children ?? [];
 }
 
-let treeDataTest = [
-    {
-        label: "test",
-        key: "item-0",
-        line: 0,
-        children: [
-            {
-                label: "test1",
-                key: "item-1",
-                line: 0,
-            }
-        ]
-    }
-];
+let treeDataTest = computed(() => {
+    return state.treeOptions;
+});
 
-// render markdown
-// `<span class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${selection}</span>`
 function testFunc() {
     const text = plugin.getActiveView().getViewData();
-    // const options = { extensions: [internal_link, tag] };
-    // const tokens = marked.lexer(text, options );
-    // const lexer = new marked.Lexer();
-    // lexer.rules["myrule"] = /^\[\[([^\[\]]+?)\]\]/;
-    // lexer.rules.myrule = /^\[\[([^\[\]]+?)\]\]/;
-    // const regEx = /<span> class="ob-html-comment" id="comment-([0-9a-fA-F]+)/gm
-    // const regExSpan = /\<span\> class\=\"ob-html-comment\" id\=\"comment/gm
-    const regExSpan =
-        /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
-    // const matches = text.match(regEx)  // regEx.exec(text)
-    let arrayMatch;
-    let lastCommentLine;
-    const lines = text.split("\n");
-    const foundComments = new Map<string, string | Map<string, object>>()
-    lines.forEach(
-        (lineContent, lineNumber) => {
-            while ((arrayMatch = regExSpan.exec(lineContent)) !== null) {
-                const commentId = arrayMatch[1];
-                const matchedTags = arrayMatch[2];
-                const commentBody = arrayMatch[3];
-                console.log(`Found ${arrayMatch[0]}. Line ${lineNumber} Comment id ${commentId} Tags ${matchedTags}`);
-                lastCommentLine = lineNumber;
-                if (matchedTags) {
-                    const parsedTags = new HtmlCommentWithTags(commentId, matchedTags, commentBody, lineNumber);
-                    console.log(`Parsed tags ${JSON.stringify(parsedTags)}`);
-                }
-
-                // Expected output: "Found foo. Next starts at 9."
-                // Expected output: "Found foo. Next starts at 19."
-            }
-        }
-    )
+    const parsedText = new TextToTreeDataParser(text);
+    state.treeOptions = parsedText.parsedComments.treeOptions;
 
     console.log(`Finished matching`);
-    if (lastCommentLine) {
-        plugin.getActiveView()?.editor.setCursor(lastCommentLine, 1);
-    }
-    // const filteredMatches = matches.filter(
-    //     matched => true
-    // )
-    // console.log(matches);
-
 }
-// marked.use({ extensions: [formula, internal_link, highlight, tag] });
-// marked.use({ walkTokens: remove_href });
-// marked.use({ renderer });
 
 function renderLabel({ option, checked, selected }: { option: TreeOption; checked: boolean; selected: boolean; }) {
     let result = marked.parse(option.label ?? "").trim();
@@ -502,51 +448,3 @@ function countTree(node: TreeOption): number {
 }
 
 </script>
-
-
-<style>
-/* ============ */
-/*  彩虹大纲线   */
-/* rainbow line */
-/* ============ */
-.quiet-outline .n-tree .n-tree-node-indent {
-    content: "";
-    height: unset;
-    align-self: stretch;
-}
-
-.quiet-outline .level-2 .n-tree-node-indent,
-.quiet-outline .level-3 .n-tree-node-indent:first-child,
-.quiet-outline .level-4 .n-tree-node-indent:first-child,
-.quiet-outline .level-5 .n-tree-node-indent:first-child,
-.quiet-outline .level-6 .n-tree-node-indent:first-child {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor1);
-    /* border-right: 2px solid rgb(253, 139, 31, 0.6); */
-}
-
-.quiet-outline .level-3 .n-tree-node-indent,
-.quiet-outline .level-4 .n-tree-node-indent:nth-child(2),
-.quiet-outline .level-5 .n-tree-node-indent:nth-child(2),
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(2) {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor2);
-    /* border-right: 2px solid rgb(255, 223, 0, 0.6); */
-}
-
-.quiet-outline .level-4 .n-tree-node-indent,
-.quiet-outline .level-5 .n-tree-node-indent:nth-child(3),
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(3) {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor3);
-    /* border-right: 2px solid rgb(7, 235, 35, 0.6); */
-}
-
-.quiet-outline .level-5 .n-tree-node-indent,
-.quiet-outline .level-6 .n-tree-node-indent:nth-child(4) {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor4);
-    /* border-right: 2px solid rgb(45, 143, 240, 0.6); */
-}
-
-.quiet-outline .level-6 .n-tree-node-indent {
-    border-right: var(--nav-indentation-guide-width) solid v-bind(rainbowColor5);
-    /* border-right: 2px solid rgb(188, 1, 226, 0.6); */
-}
-</style>

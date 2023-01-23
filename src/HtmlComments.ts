@@ -1,5 +1,36 @@
 import { TreeOption } from 'naive-ui';
 
+// TODO -
+export class TextToTreeDataParser {
+    readonly parsedComments: HtmlCommentsOrganasiedToViewTree
+    private regExSpan =
+        /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
+
+    constructor(text: string) {
+        const parsedCommentsWithTags = new Array<HtmlCommentWithTags>;
+
+        let arrayMatch;
+        let lastCommentLine;
+        const lines = text.split("\n");
+        lines.forEach(
+            (lineContent, lineNumber) => {
+                while ((arrayMatch = this.regExSpan.exec(lineContent)) !== null) {
+                    const commentId = arrayMatch[1];
+                    const matchedTags = arrayMatch[2];
+                    const commentBody = arrayMatch[3];
+                    // console.log(`Found ${arrayMatch[0]}. Line ${lineNumber} Comment id ${commentId} Tags ${matchedTags}`);
+                    lastCommentLine = lineNumber;
+                    if (matchedTags) {
+                        const parsed = new HtmlCommentWithTags(commentId, matchedTags, commentBody, lineNumber);
+                        parsedCommentsWithTags.push(parsed);
+                    }
+                }
+            }
+        );
+        this.parsedComments = new HtmlCommentsOrganasiedToViewTree(parsedCommentsWithTags);
+    }
+}
+
 export class HtmlCommentWithTags {
     readonly id: string
     readonly tags: HtmlCommentTag[]
@@ -92,7 +123,7 @@ export class HtmlCommentsOrganasiedToViewTree {
         this.commentsWithTags = commentsWithTags
         this.treeOptions = []
         const rootTags = commentsWithTags.filter(
-            it => it.tags
+            it => it.tags.length > 0
         ).flatMap(
             it => it.tags
         );
@@ -100,11 +131,11 @@ export class HtmlCommentsOrganasiedToViewTree {
         this.processGroupedTags(this.treeOptions, rootTagsByName);
     }
 
-    processGroupedTags(currentTreeLevel: TreeOption[], groupedTags: Map<string, HtmlCommentTag[]>) {
+    private processGroupedTags(currentTreeLevel: TreeOption[], groupedTags: Map<string, HtmlCommentTag[]>) {
         groupedTags.forEach(
             (optionTags, key) => {
                 const currentOption = this.tagToTreeOption(key, key);
-                this.treeOptions.push(currentOption);
+                currentTreeLevel.push(currentOption);
                 const comments = this.commentsWithTags.filter(
                     it => it.tags.some(
                         tag => optionTags.some(
@@ -124,14 +155,15 @@ export class HtmlCommentsOrganasiedToViewTree {
         currentTreeLevel.push(...this.commentsWithoutTagsToTreeOptions(this.commentsWithTags));
     }
 
-    commentsWithoutTagsToTreeOptions(comments: HtmlCommentWithTags[]): TreeOption[] {
+    private commentsWithoutTagsToTreeOptions(comments: HtmlCommentWithTags[]): TreeOption[] {
         return comments.filter(
-            it => !it.tags
-        ).map (
+            it => it.tags.length == 0
+        ).map(
             it => this.commentToTreeOption(it)
         )
     }
-    commentToTreeOption(comment: HtmlCommentWithTags): TreeOption {
+
+    private commentToTreeOption(comment: HtmlCommentWithTags): TreeOption {
         return <TreeOption>{
             type: "comment",
             key: comment.id,
@@ -140,7 +172,7 @@ export class HtmlCommentsOrganasiedToViewTree {
         }
     }
 
-    tagToTreeOption(key: string, name: string): TreeOptionWithChild {
+    private tagToTreeOption(key: string, name: string): TreeOptionWithChild {
         return <TreeOptionWithChild>{
             type: "tag",
             key: key,
@@ -149,7 +181,7 @@ export class HtmlCommentsOrganasiedToViewTree {
         }
     }
 
-    groupTagsByName(tags: Array<HtmlCommentTag>): Map<string, HtmlCommentTag[]> {
+    private groupTagsByName(tags: Array<HtmlCommentTag>): Map<string, HtmlCommentTag[]> {
         const tagsByName = new Map<string, HtmlCommentTag[]>;
         tags.forEach(
             tag => {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { HtmlCommentWithTags, HtmlCommentTag } from './HtmlComments'
+import { TextToTreeDataParser, HtmlCommentWithTags, HtmlCommentTag } from './HtmlComments'
 
 test("should organise comments to tree view", () => {
     const textToAnalyse = `
@@ -8,7 +8,9 @@ Struct - структура книги (кратко методы и спосо�
 <span class="ob-html-comment" id="comment-92d3475d-b262-4a8b-8990-b67f182fb4c1" data-tags="[comment,#test]"><span class="ob-html-comment-body">#test CommentPlaceholder</span>Tip - **практический** совет</span>
 <span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
     `;
-
+    const comments = new TextToTreeDataParser(textToAnalyse);
+    expect(comments.parsedComments.treeOptions.length).toBe(2)
+    console.log(JSON.stringify(comments.parsedComments.treeOptions));
 });
 
 test.skip('should match regex', () => {

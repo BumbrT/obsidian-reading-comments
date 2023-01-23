@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { HeadingCache, MarkdownView } from 'obsidian';
+import { TreeOption } from 'naive-ui';
 
 const state = reactive({
     activateView() {
@@ -7,6 +8,7 @@ const state = reactive({
         this.refreshTree();
     },
     headers: [] as HeadingCache[],
+    treeOptions: [] as TreeOption[],
     dark: true,
     autoExpand: true,
     leafChange: false,
