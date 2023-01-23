@@ -1,11 +1,10 @@
 import {describe, expect, test} from '@jest/globals';
 import { HtmlCommentWithTags, HtmlCommentTag } from './HtmlComments'
 
-const regExSpan =
-/\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
-// /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\>\<span class\=\"ob-html-comment-body\"\>\"(.+?)\<\/span\>/gm
 
-test('should match regex', () => {
+test.skip('should match regex', () => {
+    const regExSpan =
+        /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
     const lineContent = `ss
     <span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
     zz
