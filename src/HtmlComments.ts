@@ -128,14 +128,14 @@ export class HtmlCommentsOrganasiedToViewTree {
             it => it.tags
         );
         const rootTagsByName = this.groupTagsByName(rootTags);
-        this.processGroupedTags(this.treeOptions, rootTagsByName);
+        this.processGroupedTags(0, this.treeOptions, rootTagsByName);
     }
 
-    private processGroupedTags(currentTreeLevel: TreeOption[], groupedTags: Map<string, HtmlCommentTag[]>) {
+    private processGroupedTags(currentTreeLevel: number, currentTreeLevelOptions: TreeOption[], groupedTags: Map<string, HtmlCommentTag[]>) {
         groupedTags.forEach(
             (optionTags, key) => {
                 const currentOption = this.tagToTreeOption(key, key);
-                currentTreeLevel.push(currentOption);
+                currentTreeLevelOptions.push(currentOption);
                 const comments = this.commentsWithTags.filter(
                     it => it.tags.some(
                         tag => optionTags.some(
@@ -147,17 +147,16 @@ export class HtmlCommentsOrganasiedToViewTree {
                     it => it.child
                 ).filter((it): it is HtmlCommentTag => it != null);
                 const childTagsByName = this.groupTagsByName(childTags);
-                this.processGroupedTags(currentOption.children, childTagsByName)
-                currentOption.children?.push(...this.commentsWithoutTagsToTreeOptions(comments))
+                this.processGroupedTags(currentTreeLevel + 1, currentOption.children, childTagsByName)
+                // currentOption.children?.push(...this.commentsWithoutTagsToTreeOptions(comments, currentTreeLevel + 1))
             }
         )
-
-        currentTreeLevel.push(...this.commentsWithoutTagsToTreeOptions(this.commentsWithTags));
+        currentTreeLevelOptions.push(...this.commentsWithoutTagsToTreeOptions(this.commentsWithTags, currentTreeLevel));
     }
 
-    private commentsWithoutTagsToTreeOptions(comments: HtmlCommentWithTags[]): TreeOption[] {
+    private commentsWithoutTagsToTreeOptions(comments: HtmlCommentWithTags[], currentTreeLevel: number): TreeOption[] {
         return comments.filter(
-            it => it.tags.length == 0
+            it => it.tags.length == 0 || it.tags.every( tag => tag.treeLevel < currentTreeLevel)
         ).map(
             it => this.commentToTreeOption(it)
         )
