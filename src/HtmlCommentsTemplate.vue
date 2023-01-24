@@ -2,20 +2,20 @@
     <div id="container">
         <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
             <div class="function-bar" v-if="state.searchSupport">
-                <NButton size="small" circle @click="testFunc">
+                <NButton size="small" circle @click="parseCurrentNote">
                     <template #icon>
                         <Icon>
-                            <SettingsBackupRestoreRound :style="iconColor" />
+                            <SettingsBackupRestoreSharp :style="iconColor" />
                         </Icon>
                     </template>
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <code v-if="pattern">{{ matchCount }} result(s): </code>
-            <NTree block-line :default-expand-all=true :pattern="pattern" :data="treeDataTest" :on-update:value="jump"
-                :render-label="renderMethod" :node-props="setNodeProps" :key="update_tree"
-                :filter="filter" :show-irrelevant-nodes="!state.hideUnsearched" :draggable="state.dragModify"
-                @drop="onDrop" />
+            <NTree block-line :default-expand-all=true :pattern="pattern" :data="treeData"
+                :on-update:selected-keys="jump"
+                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="expanded"
+                :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
+                :show-irrelevant-nodes="!state.hideUnsearched" @drop="onDrop" />
         </NConfigProvider>
     </div>
 </template>
@@ -25,7 +25,7 @@ import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInsta
 import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
 import { NTree, TreeSelectOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo, TreeOption } from 'naive-ui';
 import { Icon } from '@vicons/utils';
-import { SettingsBackupRestoreRound } from '@vicons/material';
+import { SettingsBackupRestoreRound, SettingsBackupRestoreSharp } from '@vicons/material';
 import { marked } from 'marked';
 
 import { state } from './state';
@@ -83,18 +83,6 @@ function getDefaultColor() {
     return color;
 }
 
-let rainbowColor1 = ref("");
-let rainbowColor2 = ref("");
-let rainbowColor3 = ref("");
-let rainbowColor4 = ref("");
-let rainbowColor5 = ref("");
-
-function hexToRGB(hex: string) {
-    return `${parseInt(hex.slice(1, 3), 16)},`
-        + `${parseInt(hex.slice(3, 5), 16)},`
-        + `${parseInt(hex.slice(5, 7), 16)}`;
-}
-
 onMounted(() => {
     addEventListener("quiet-outline-reset", reset);
 });
@@ -115,8 +103,6 @@ let container = compomentSelf.appContext.config.globalProperties.container as HT
 // onUnmounted(() => {
 //     document.removeEventListener("scroll", handleScroll, true);
 // });
-
-let toKey = (h: HeadingCache, i: number) => "item-" + h.level + "-" + i;
 
 
 
@@ -220,79 +206,32 @@ let filter = computed(() => {
     return state.regexSearch ? regexFilter : simpleFilter;
 });
 
-let matchCount = computed(() => {
-    return state.headers.filter((h) => {
-        let node = { label: h.heading } as TreeOption;
-        return filter.value(pattern.value, node);
-    }).length;
-});
-
 
 // click and jump
 async function jump(_selected: any, nodes: TreeSelectOption[]) {
     if (nodes[0] === undefined) {
         return;
     }
+    const selectedOption = nodes[0];
+    if ( selectedOption.type !== "comment") {
+        return;
+    }
+    const line: number = selectedOption.line;
 
-    const key_value = (nodes[0].key as string).split("-");
-    const key = parseInt(key_value[2]);
-    let line: number = state.headers[key].position.start.line;
-
-    // const view = state.plugin.app.workspace.getActiveViewOfType(MarkdownView)
-    const view = plugin.current_note;
+    const view = plugin.getActiveView();
     if (view) {
         view.setEphemeralState({ line });
         setTimeout(() => { view.setEphemeralState({ line }); }, 100);
+    } else {
+        console.log(`view not found`);
     }
 }
 
-let expandedTest = ["item-0"]
-
-// prepare data for tree component
 let treeData = computed(() => {
-    return makeTree(state.headers);
-});
-
-function makeTree(headers: HeadingCache[]): TreeOption[] {
-
-    let tree: TreeOption[] = arrToTree(headers);
-    return tree;
-}
-
-function arrToTree(headers: HeadingCache[]): TreeOption[] {
-    const root: TreeOption = { children: [] };
-    const stack = [{ node: root, level: -1 }];
-
-    headers.forEach((h, i) => {
-        let node: TreeOption = {
-            label: h.heading,
-            key: "item-" + h.level + "-" + i,
-            line: h.position.start.line,
-        };
-
-        while (h.level <= (stack.last()?.level ?? -1)) {
-            stack.pop();
-        }
-
-        let parent = stack.last()?.node;
-        if (!parent) {
-            parent = root
-        }
-        if (!parent.children) {
-            parent.children = [];
-        }
-        parent.children.push(node);
-        stack.push({ node, level: h.level });
-    });
-
-    return root.children ?? [];
-}
-
-let treeDataTest = computed(() => {
     return state.treeOptions;
 });
 
-function testFunc() {
+function parseCurrentNote() {
     const text = plugin.getActiveView().getViewData();
     const parsedText = new TextToTreeDataParser(text);
     state.treeOptions = parsedText.parsedComments.treeOptions;

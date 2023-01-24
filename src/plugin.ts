@@ -7,8 +7,7 @@ import { HtmlCommentsView, VIEW_TYPE } from './view';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
-	current_note: MarkdownView;
-	current_file: string;
+	private currentNote: MarkdownView;
 
 	async onload() {
 		await this.loadSettings();
@@ -80,28 +79,16 @@ export class HtmlCommentsPlugin extends Plugin {
 	}
 
 	registerListener() {
-		this.registerEvent(this.app.workspace.on('active-leaf-change', async (leaf) => {
-
+		// this.registerEvent(this.app.workspace.on('active-leaf-change', async (_) => {
+		// 	let view = this.app.workspace.getActiveViewOfType(MarkdownView);
+		// 	if (view) {
+		// 		this.currentNote = view;
+		// 	}
+		// }));
+		this.registerEvent(this.app.workspace.on('file-open', async (_) => {
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
-				// 保证第一次获取标题信息时，也能正常展开到默认层级
-				if (!this.current_note) {
-					this.current_note = view;
-					this.current_file = view.file.path;
-					// refresh_outline();
-					// store.refreshTree();
-					return;
-				}
-
-				const pathEq = view.file.path === this.current_file;
-				if (!pathEq) {
-					// store.refreshTree();
-				}
-
-				// refresh_outline();
-				this.current_note = view;
-				state.currentNote = view;
-				this.current_file = view.file.path;
+				this.currentNote = view;
 			}
 		}));
 	}
@@ -118,8 +105,12 @@ export class HtmlCommentsPlugin extends Plugin {
 		);
 	}
 
-	getActiveView(): MarkdownView | null {
-		return this.app.workspace.getActiveViewOfType(MarkdownView);
+	getActiveView(): MarkdownView {
+		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (!activeView) {
+			return this.currentNote;
+		}
+		return activeView;
 	}
 }
 

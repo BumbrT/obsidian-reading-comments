@@ -1,9 +1,10 @@
 np# Todo
 ## Todo features
 - delete comment (or just clear html in selection with marked or remark)
-- search in comments
+- handle scroll
 - rename project to HTML comments
 - add to settings tags placeholder: "comment," - by default
+
 
 # Obsidian Sample Plugin
 
