@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./settings";
 import { state } from "./state";
 import { HtmlCommentsView, VIEW_TYPE } from './view';
+import { TextToTreeDataParser } from './HtmlComments';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -34,7 +35,8 @@ export class HtmlCommentsPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const commentId = uuidv4();
-				editor.replaceSelection(`<span class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${selection}</span>`);
+				const replacement = TextToTreeDataParser.selectionToComment(commentId, selection);
+				editor.replaceSelection(replacement);
 			}
 		});
 
@@ -89,6 +91,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
 				this.currentNote = view;
+				this.parseActiveViewToComments();
 			}
 		}));
 	}
@@ -111,6 +114,10 @@ export class HtmlCommentsPlugin extends Plugin {
 			return this.currentNote;
 		}
 		return activeView;
+	}
+
+	parseActiveViewToComments() {
+
 	}
 }
 

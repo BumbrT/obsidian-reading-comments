@@ -3,23 +3,26 @@ import { TreeOption } from 'naive-ui';
 // TODO -
 export class TextToTreeDataParser {
     readonly parsedComments: HtmlCommentsOrganasiedToViewTree
-    private regExSpan =
+    private regExpComment =
         /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
+
+    static selectionToComment(commentId: string, selection: string): string {
+        return `<span class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${selection}</span>`;
+    }
 
     constructor(text: string) {
         const parsedCommentsWithTags = new Array<HtmlCommentWithTags>;
 
         let arrayMatch;
-        let lastCommentLine;
         const lines = text.split("\n");
         lines.forEach(
             (lineContent, lineNumber) => {
-                while ((arrayMatch = this.regExSpan.exec(lineContent)) !== null) {
+                while ((arrayMatch = this.regExpComment.exec(lineContent)) !== null) {
                     const commentId = arrayMatch[1];
                     const matchedTags = arrayMatch[2];
                     const commentBody = arrayMatch[3];
                     // console.log(`Found ${arrayMatch[0]}. Line ${lineNumber} Comment id ${commentId} Tags ${matchedTags}`);
-                    lastCommentLine = lineNumber;
+                    // lastCommentLine = lineNumber;
                     if (matchedTags) {
                         const parsed = new HtmlCommentWithTags(commentId, matchedTags, commentBody, lineNumber);
                         parsedCommentsWithTags.push(parsed);
@@ -129,6 +132,7 @@ export class HtmlCommentsOrganasiedToViewTree {
         );
         const rootTagsByName = this.groupTagsByName(rootTags);
         this.processGroupedTags(0, this.treeOptions, rootTagsByName);
+        this.treeOptions.push(...this.commentsWithoutTagsToTreeOptions(this.commentsWithTags, 0));
     }
 
     private processGroupedTags(currentTreeLevel: number, currentTreeLevelOptions: TreeOption[], groupedTags: Map<string, HtmlCommentTag[]>) {
@@ -148,10 +152,9 @@ export class HtmlCommentsOrganasiedToViewTree {
                 ).filter((it): it is HtmlCommentTag => it != null);
                 const childTagsByName = this.groupTagsByName(childTags);
                 this.processGroupedTags(currentTreeLevel + 1, currentOption.children, childTagsByName)
-                // currentOption.children?.push(...this.commentsWithoutTagsToTreeOptions(comments, currentTreeLevel + 1))
+                currentOption.children?.push(...this.commentsWithoutTagsToTreeOptions(comments, currentTreeLevel + 1))
             }
         )
-        currentTreeLevelOptions.push(...this.commentsWithoutTagsToTreeOptions(this.commentsWithTags, currentTreeLevel));
     }
 
     private commentsWithoutTagsToTreeOptions(comments: HtmlCommentWithTags[], currentTreeLevel: number): TreeOption[] {

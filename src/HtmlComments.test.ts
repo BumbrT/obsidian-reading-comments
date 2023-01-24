@@ -25,6 +25,18 @@ test.skip('should match regex', () => {
     console.log(result);
 });
 
+test.skip('empty comment should match regex', () => {
+    const regExSpan =
+        /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
+    const lineContent = `ss
+    <span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
+    zz
+    `;
+    const result = regExSpan.exec(lineContent);
+    expect(result?.length).toBeGreaterThan(0);
+    console.log(result);
+});
+
 describe("parsing tag", () => {
     test.skip('should parse simple tag', () => {
         const tagStr = "comments";
