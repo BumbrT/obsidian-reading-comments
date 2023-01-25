@@ -1,16 +1,46 @@
 import { describe, expect, test } from '@jest/globals';
+import { exitCode, hasUncaughtExceptionCaptureCallback } from 'process';
 import { TextToTreeDataParser, HtmlCommentWithTags, HtmlCommentTag } from './HtmlComments'
+
+test.skip("should organise comments to tree view", () => {
+    const textToAnalyse = `
+    Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
+Struct - структура книги (кратко методы и способы чтения)
+<span class="ob-html-comment" id="comment-92d3475d-b262-4a8b-8990-b67f182fb4c1" data-tags="[comment,#test]"><span class="ob-html-comment-body">#test CommentPlaceholder</span>Tip - **практический** совет</span>
+<span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
+    `;
+    const parser = new TextToTreeDataParser(textToAnalyse);
+    const comments = parser.parsedComments.treeOptions;
+    const commentsWithoutTag = comments.filter(it => it.type === "comment");
+    expect(comments.length).toBe(3);
+    expect(commentsWithoutTag.length).toBe(1);
+    console.log(JSON.stringify(comments));
+});
 
 test("should organise comments to tree view", () => {
     const textToAnalyse = `
     Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
 Struct - структура книги (кратко методы и способы чтения)
 <span class="ob-html-comment" id="comment-92d3475d-b262-4a8b-8990-b67f182fb4c1" data-tags="[comment,#test]"><span class="ob-html-comment-body">#test CommentPlaceholder</span>Tip - **практический** совет</span>
-<span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
+<span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[comment]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
     `;
-    const comments = new TextToTreeDataParser(textToAnalyse);
-    expect(comments.parsedComments.treeOptions.length).toBe(2)
-    console.log(JSON.stringify(comments.parsedComments.treeOptions));
+    const parser = new TextToTreeDataParser(textToAnalyse);
+    const comments = parser.parsedComments.treeOptions;
+    for (let comment of comments) {
+        if (comment.key == "comment") {
+            expect(comment.children?.length).toBe(2)
+        } else if (comment.key == "#test") {
+            expect(comment.children?.length).toBe(1)
+        } else {
+            fail("onlty tags above should be present");
+        }
+    }
+    const commentsWithoutTag = comments.filter(it => it.type === "comment");
+    expect(comments.length).toBe(2);
+    expect(commentsWithoutTag.length).toBe(0);
+
+
+    console.log(JSON.stringify(comments));
 });
 
 test.skip('should match regex', () => {

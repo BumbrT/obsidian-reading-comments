@@ -21,12 +21,14 @@ export class TextToTreeDataParser {
                     const commentId = arrayMatch[1];
                     const matchedTags = arrayMatch[2];
                     const commentBody = arrayMatch[3];
-                    // console.log(`Found ${arrayMatch[0]}. Line ${lineNumber} Comment id ${commentId} Tags ${matchedTags}`);
-                    // lastCommentLine = lineNumber;
+                    let parsed: HtmlCommentWithTags;
                     if (matchedTags) {
-                        const parsed = new HtmlCommentWithTags(commentId, matchedTags, commentBody, lineNumber);
-                        parsedCommentsWithTags.push(parsed);
+                        parsed = new HtmlCommentWithTags(commentId, matchedTags, commentBody, lineNumber);
+                    } else {
+                        parsed = new HtmlCommentWithTags(commentId, null, commentBody, lineNumber);
                     }
+                    parsedCommentsWithTags.push(parsed);
+
                 }
             }
         );
@@ -40,10 +42,14 @@ export class HtmlCommentWithTags {
     readonly commentBody: string
     readonly line: number
     private tagsNames: Set<string>
-    constructor(id: string, tagsString: string, commentBody: string, line: number) {
+    constructor(id: string, tagsString: string | null, commentBody: string, line: number) {
         this.id = id;
         this.commentBody = commentBody;
         this.line = line;
+        if (tagsString == null) {
+            this.tags = [];
+            return;
+        }
         const tagsArr = tagsString.split(",").map(
             tag => tag.trim()
         ).filter(
@@ -74,7 +80,7 @@ export class HtmlCommentTag {
         const index = tagString.indexOf("/");
         if (index > 0) {
             this.name = tagString.substring(0, index);
-            this.treeId = `${parentTreeKey}/${this.name}`;
+            this.treeId = this.getTreeId(parentTreeKey, this.name);
             const childTagString = tagString.substring(index + 1);
             if (childTagString) {
                 this.child = new HtmlCommentTag(childTagString, this.treeId, this.treeLevel);
@@ -82,11 +88,19 @@ export class HtmlCommentTag {
                 this.child = null;
             }
         } else {
-            this.treeId = `${parentTreeKey}/${this.name}`;
             this.name = tagString;
+            this.treeId = this.getTreeId(parentTreeKey, this.name);
             this.child = null;
         }
 
+    }
+
+    private getTreeId(parentTreeKey: string | null, name: string) {
+        if (parentTreeKey != null) {
+            return  `${parentTreeKey}/${this.name}`;
+        } else {
+            return name;
+        }
     }
 }
 

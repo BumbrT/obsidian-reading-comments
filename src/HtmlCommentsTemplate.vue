@@ -232,11 +232,8 @@ let treeData = computed(() => {
 });
 
 function parseCurrentNote() {
-    const text = plugin.getActiveView().getViewData();
-    const parsedText = new TextToTreeDataParser(text);
-    state.treeOptions = parsedText.parsedComments.treeOptions;
-
-    console.log(`Finished matching`);
+    plugin.parseActiveViewToComments();
+    pattern.value = "";
 }
 
 function renderLabel({ option, checked, selected }: { option: TreeOption; checked: boolean; selected: boolean; }) {
