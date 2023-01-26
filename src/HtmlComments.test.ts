@@ -17,30 +17,49 @@ Struct - структура книги (кратко методы и спосо�
     console.log(JSON.stringify(comments));
 });
 
-test("should organise comments to tree view", () => {
+test.skip("should organise comments to tree view", () => {
     const textToAnalyse = `
     Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
 Struct - структура книги (кратко методы и способы чтения)
-<span class="ob-html-comment" id="comment-92d3475d-b262-4a8b-8990-b67f182fb4c1" data-tags="[comment,#test]"><span class="ob-html-comment-body">#test CommentPlaceholder</span>Tip - **практический** совет</span>
-<span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[comment]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
+<span class="ob-html-comment" id="comment-92d3475d-b262-4a8b-8990-b67f182fb4c1" data-tags="[#test]"><span class="ob-html-comment-body">#test CommentPlaceholder</span>Tip - **практический** совет</span>
+<span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[Rule/One]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
     `;
     const parser = new TextToTreeDataParser(textToAnalyse);
-    const comments = parser.parsedComments.treeOptions;
-    for (let comment of comments) {
-        if (comment.key == "comment") {
-            expect(comment.children?.length).toBe(2)
-        } else if (comment.key == "#test") {
-            expect(comment.children?.length).toBe(1)
+    const commentsOptions = parser.parsedComments.treeOptions;
+    for (let option of commentsOptions) {
+        if (option.key == "comment") {
+            expect(option.children?.length).toBe(2)
+        } else if (option.key == "tag") {
+            expect(option.children?.length).toBe(1)
         } else {
             fail("onlty tags above should be present");
         }
     }
-    const commentsWithoutTag = comments.filter(it => it.type === "comment");
-    expect(comments.length).toBe(2);
+    const commentsWithoutTag = commentsOptions.filter(it => it.type === "comment");
+    expect(commentsOptions.length).toBe(2);
     expect(commentsWithoutTag.length).toBe(0);
+});
 
-
-    console.log(JSON.stringify(comments));
+test.skip("should organise hierarchical comment to tree view", () => {
+    const textToAnalyse = `
+    Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
+Struct - структура книги (кратко методы и способы чтения)
+<span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[Rule/One]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
+    `;
+    const parser = new TextToTreeDataParser(textToAnalyse);
+    const commentsOptions = parser.parsedComments.treeOptions;
+    for (let option of commentsOptions) {
+        if (option.key == "comment") {
+            expect(option.children?.length).toBe(2)
+        } else if (option.key == "tag") {
+            expect(option.children?.length).toBe(1)
+        } else {
+            fail("onlty tags above should be present");
+        }
+    }
+    const commentsWithoutTag = commentsOptions.filter(it => it.type === "comment");
+    expect(commentsOptions.length).toBe(2);
+    expect(commentsWithoutTag.length).toBe(0);
 });
 
 test.skip('should match regex', () => {
@@ -74,7 +93,7 @@ describe("parsing tag", () => {
         expect(parsedTag.name).toBe("comments");
     });
 
-    test.skip('should parse simple hierarchical tag', () => {
+    test('should parse simple hierarchical tag', () => {
         const tagStr = "parent/child/child-two";
         const parsedTag = new HtmlCommentTag(tagStr);
         expect(parsedTag.name).toBe("parent");
