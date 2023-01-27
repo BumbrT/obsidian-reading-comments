@@ -15,15 +15,6 @@ describe("parsing hierarchical comment", () => {
         `;
         const parser = new TextToTreeDataParser(textToAnalyse);
         const commentsOptions = parser.parsedComments.treeOptions;
-        // for (let option of commentsOptions) {
-        //     if (option.key == "comment") {
-        //         expect(option.children?.length).toBe(2)
-        //     } else if (option.key == "tag") {
-        //         expect(option.children?.length).toBe(1)
-        //     } else {
-        //         fail("onlty tags above should be present");
-        //     }
-        // }
         const commentsWithoutTag = commentsOptions.filter(it => it.type === "comment");
         expect(commentsOptions.length).toBe(2);
         expect(commentsWithoutTag.length).toBe(0);
