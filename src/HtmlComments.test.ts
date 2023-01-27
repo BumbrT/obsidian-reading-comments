@@ -96,9 +96,12 @@ describe("parsing tag", () => {
     test('should parse simple hierarchical tag', () => {
         const tagStr = "parent/child/child-two";
         const parsedTag = new HtmlCommentTag(tagStr);
-        expect(parsedTag.name).toBe("parent");
-        expect(parsedTag.child?.name).toBe("child");
-        expect(parsedTag.child?.child?.name).toBe("child-two");
+        expect(parsedTag.name).toBe("child-two");
+        expect(parsedTag.treeKey).toBe("parent/child/child-two");
+        expect(parsedTag.parent?.name).toBe("child");
+        expect(parsedTag.parent?.treeKey).toBe("parent/child");
+        expect(parsedTag.parent?.parent?.name).toBe("parent");
+        expect(parsedTag.parent?.parent?.treeKey).toBe("parent");
     });
 });
 
