@@ -1,6 +1,8 @@
 import { describe, expect, test } from '@jest/globals';
 import { exitCode, hasUncaughtExceptionCaptureCallback } from 'process';
-import { TextToTreeDataParser, HtmlCommentWithTags, HtmlCommentTag } from './HtmlComments'
+import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
+import { HtmlComment } from "./comments/HtmlComment";
+import { HtmlCommentTag } from "./comments/HtmlCommentTag";
 
 test.skip("should organise comments to tree view", () => {
     const textToAnalyse = `
@@ -126,20 +128,20 @@ describe("parsing tag", () => {
 describe("parsing multiple tags from coma separated string", () => {
     test.skip('should parse tags string', () => {
         const tagsStr = "comments,tag";
-        const parsed = new HtmlCommentWithTags("", tagsStr, "", 0);
+        const parsed = new HtmlComment("", tagsStr, "", 0);
         expect(parsed.tags.length).toBe(2);
     });
 
     test.skip('should parse tags string, ignore coma', () => {
         const tagsStr = "comments,";
-        const parsed = new HtmlCommentWithTags("", tagsStr, "", 0);
+        const parsed = new HtmlComment("", tagsStr, "", 0);
         expect(parsed.tags.length).toBe(1);
     });
 
 
     test.skip('should parse tags string with duplicate', () => {
         const tagsStr = "comments,tag,tag";
-        const parsed = new HtmlCommentWithTags("", tagsStr, "", 0);
+        const parsed = new HtmlComment("", tagsStr, "", 0);
         expect(parsed.tags.length).toBe(2);
     });
 });

@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./settings";
 import { state } from "./state";
 import { HtmlCommentsView, VIEW_TYPE } from './view';
-import { TextToTreeDataParser } from './HtmlComments';
+import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
