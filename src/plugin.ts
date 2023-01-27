@@ -119,6 +119,7 @@ export class HtmlCommentsPlugin extends Plugin {
 	parseActiveViewToComments() {
 		const text = this.getActiveView().getViewData();
 		const parsedText = new TextToTreeDataParser(text);
+		state.treeOptions = [];
 		state.treeOptions = parsedText.parsedComments.treeOptions;
 
 		console.log(`Finished matching`);
