@@ -1,6 +1,7 @@
 <template>
     <div id="container">
-        <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
+        <!-- :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig" -->
+        <NConfigProvider :theme="theme">
             <div v-if="state.searchSupport">
                 <NButton size="small" circle @click="parseCurrentNote">
                     <template #icon>
@@ -12,9 +13,8 @@
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <NTree block-line :default-expand-all=true :pattern="pattern" :data="treeData"
-                :on-update:selected-keys="jump"
-                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="expanded"
-                :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
+                :on-update:selected-keys="jump" :render-label="renderMethod" :node-props="setNodeProps"
+                :expanded-keys="expanded" :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
                 :show-irrelevant-nodes="!state.hideUnsearched" @drop="onDrop" />
         </NConfigProvider>
     </div>
@@ -65,7 +65,7 @@ let theme: any = computed(() => {
     if (state.dark) {
         return darkTheme;
     }
-    return null;
+    return undefined;
 });
 let iconColor = computed(() => {
     if (state.dark) {
@@ -211,15 +211,17 @@ async function jump(_selected: any, nodes: TreeSelectOption[]) {
         return;
     }
     const selectedOption = nodes[0];
-    if ( selectedOption.type !== "comment") {
+    if (selectedOption.type !== "comment") {
         return;
     }
     const line: number = selectedOption.line;
 
-    const view = plugin.getActiveView();
+    const view = plugin.currentNote;
     if (view) {
+        view.editor.focus();
+        view.editor.setCursor(line - 1);
         view.setEphemeralState({ line });
-        setTimeout(() => { view.setEphemeralState({ line }); }, 100);
+        // setTimeout(() => { view.setEphemeralState({ line }); }, 100);
     } else {
         console.log(`view not found`);
     }

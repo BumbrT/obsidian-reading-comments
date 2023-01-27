@@ -1,7 +1,7 @@
 np# Todo
 ## Todo features
-- comments formatting from obsidian comments
 - fix input in light theme
+- ordering tags settings
 - translate my note to proper format
 - delete comment (or just clear html in selection with marked or remark)
 - handle scroll

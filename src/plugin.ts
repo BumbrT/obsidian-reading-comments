@@ -8,7 +8,7 @@ import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
-	private currentNote: MarkdownView;
+	currentNote: MarkdownView;
 
 	async onload() {
 		await this.loadSettings();
