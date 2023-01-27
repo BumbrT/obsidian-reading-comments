@@ -125,11 +125,11 @@ interface TreeOptionWithChild extends TreeOption {
 
 export class HtmlCommentsOrganasiedToViewTree {
     readonly treeOptions: TreeOption[]
-    readonly commentsWithTags: HtmlCommentWithTags[]
+    readonly comments: HtmlCommentWithTags[]
     private allTags: HtmlCommentTag[] = []
 
     constructor(commentsWithTags: HtmlCommentWithTags[]) {
-        this.commentsWithTags = commentsWithTags
+        this.comments = commentsWithTags
         this.treeOptions = []
         const commentsTags = commentsWithTags.filter(
             it => it.tags.length > 0
@@ -142,32 +142,32 @@ export class HtmlCommentsOrganasiedToViewTree {
             this.allTags = this.allTags.concat(parents);
         }
         const rootTagsByName = this.groupTagsByTreeKey(0);
-        this.processGroupedTags(0, this.treeOptions, this.commentsWithTags, rootTagsByName);
-        this.treeOptions.push(...this.commentsWithoutTagsToTreeOptions(this.commentsWithTags, 0));
+        this.processGroupedTags(0, this.treeOptions, rootTagsByName);
+        this.treeOptions.push(...this.commentsWithoutTagsToTreeOptions(this.comments, 0));
     }
     private extractParents(tags: HtmlCommentTag[]): HtmlCommentTag[] {
         return tags.map(it => it.parent).filter((it): it is HtmlCommentTag => it != null);
     }
 
-    private processGroupedTags(currentTreeLevel: number, currentTreeLevelOptions: TreeOption[], currentComments: HtmlCommentWithTags[], groupedTags: Map<string, HtmlCommentTag[]>) {
+    private processGroupedTags(currentTreeLevel: number, currentTreeLevelOptions: TreeOption[], groupedTags: Map<string, HtmlCommentTag[]>) {
         groupedTags.forEach(
             (tagsByKey, treeKey) => {
                 const childTreeLevel = currentTreeLevel + 1;
                 const treeKeyLabel = HtmlCommentTag.stripTreeKeyToTreeLabel(treeKey);
                 const currentTreeOptionOption = this.tagToTreeOption(treeKey, treeKeyLabel);
                 currentTreeLevelOptions.push(currentTreeOptionOption);
-                const comments = currentComments.filter(
-                    it => {
+                const taggedComments = this.comments.filter(
+                    it =>
                         it.tags.some(
                             tag => tagsByKey.some(
                                 ot => ot.treeKey === tag.treeKey
                             )
                         )
-                    }
+
                 );
                 const childTagsByKey = this.groupTagsByTreeKey(childTreeLevel);
-                this.processGroupedTags(childTreeLevel, currentTreeOptionOption.children, comments, childTagsByKey);
-                const currentTagComments = this.commentsWithoutTagsToTreeOptions(comments, childTreeLevel);
+                this.processGroupedTags(childTreeLevel, currentTreeOptionOption.children, childTagsByKey);
+                const currentTagComments = this.commentsWithoutTagsToTreeOptions(taggedComments, childTreeLevel);
                 currentTreeOptionOption.children.push(...currentTagComments);
             }
         )

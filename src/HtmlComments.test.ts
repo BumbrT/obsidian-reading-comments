@@ -51,14 +51,14 @@ Struct - структура книги (кратко методы и спосо�
     for (let option of commentsOptions) {
         if (option.key == "Rule") {
             expect(option.children?.length).toBe(1)
-            const childOption = option.children
-            if (childOption == null) {
+            const childOptions = option.children
+            if (childOptions == null) {
                 fail("should have child");
             }
-            if (childOption[0].key == "Rule/One") {
-                expect(option.children?.length).toBe(1)
+            if (childOptions[0].key == "Rule/One") {
+                expect(childOptions[0].children?.length).toBe(1)
             } else {
-                fail("should have child comment");
+                fail("Rule/One should have child comment");
             }
         } else {
             fail("onlty tags above should be present");
