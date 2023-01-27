@@ -1,7 +1,7 @@
 <template>
     <div id="container">
         <NConfigProvider :theme="theme" :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig">
-            <div class="function-bar" v-if="state.searchSupport">
+            <div v-if="state.searchSupport">
                 <NButton size="small" circle @click="parseCurrentNote">
                     <template #icon>
                         <Icon>
@@ -30,8 +30,6 @@ import { marked } from 'marked';
 
 import { state } from './state';
 import { HtmlCommentsPlugin } from "./plugin";
-import { createTreeMateOptions } from 'naive-ui/es/tree/src/Tree';
-import { TextToTreeDataParser } from "./comments/TextToTreeDataParser"
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
