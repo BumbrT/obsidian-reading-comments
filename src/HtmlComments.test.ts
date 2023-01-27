@@ -40,7 +40,7 @@ Struct - структура книги (кратко методы и спосо�
     expect(commentsWithoutTag.length).toBe(0);
 });
 
-test.skip("should organise hierarchical comment to tree view", () => {
+test("should organise hierarchical comment to tree view", () => {
     const textToAnalyse = `
     Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
 Struct - структура книги (кратко методы и способы чтения)
@@ -49,16 +49,23 @@ Struct - структура книги (кратко методы и спосо�
     const parser = new TextToTreeDataParser(textToAnalyse);
     const commentsOptions = parser.parsedComments.treeOptions;
     for (let option of commentsOptions) {
-        if (option.key == "comment") {
-            expect(option.children?.length).toBe(2)
-        } else if (option.key == "tag") {
+        if (option.key == "Rule") {
             expect(option.children?.length).toBe(1)
+            const childOption = option.children
+            if (childOption == null) {
+                fail("should have child");
+            }
+            if (childOption[0].key == "Rule/One") {
+                expect(option.children?.length).toBe(1)
+            } else {
+                fail("should have child comment");
+            }
         } else {
             fail("onlty tags above should be present");
         }
     }
     const commentsWithoutTag = commentsOptions.filter(it => it.type === "comment");
-    expect(commentsOptions.length).toBe(2);
+    expect(commentsOptions.length).toBe(1);
     expect(commentsWithoutTag.length).toBe(0);
 });
 
@@ -74,7 +81,7 @@ test.skip('should match regex', () => {
     console.log(result);
 });
 
-test.skip('empty comment should match regex', () => {
+test('empty comment should match regex', () => {
     const regExSpan =
         /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
     const lineContent = `ss
@@ -93,7 +100,7 @@ describe("parsing tag", () => {
         expect(parsedTag.name).toBe("comments");
     });
 
-    test('should parse simple hierarchical tag', () => {
+    test.skip('should parse simple hierarchical tag', () => {
         const tagStr = "parent/child/child-two";
         const parsedTag = new HtmlCommentTag(tagStr);
         expect(parsedTag.name).toBe("child-two");

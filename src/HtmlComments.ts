@@ -126,7 +126,7 @@ interface TreeOptionWithChild extends TreeOption {
 export class HtmlCommentsOrganasiedToViewTree {
     readonly treeOptions: TreeOption[]
     readonly commentsWithTags: HtmlCommentWithTags[]
-    private readonly allTags: HtmlCommentTag[] = []
+    private allTags: HtmlCommentTag[] = []
 
     constructor(commentsWithTags: HtmlCommentWithTags[]) {
         this.commentsWithTags = commentsWithTags
@@ -137,9 +137,9 @@ export class HtmlCommentsOrganasiedToViewTree {
             it => it.tags
         );
         this.allTags.push(...commentsTags);
-        let parents: HtmlCommentTag[]
-        while ((parents = this.extractParents(commentsTags)).length > 0) {
-            this.allTags.push(...parents);
+        let parents: HtmlCommentTag[] = commentsTags;
+        while ((parents = this.extractParents(parents)).length > 0) {
+            this.allTags = this.allTags.concat(parents);
         }
         const rootTagsByName = this.groupTagsByTreeKey(0);
         this.processGroupedTags(0, this.treeOptions, this.commentsWithTags, rootTagsByName);
@@ -151,23 +151,24 @@ export class HtmlCommentsOrganasiedToViewTree {
 
     private processGroupedTags(currentTreeLevel: number, currentTreeLevelOptions: TreeOption[], currentComments: HtmlCommentWithTags[], groupedTags: Map<string, HtmlCommentTag[]>) {
         groupedTags.forEach(
-            (tagsByName, treeKey) => {
+            (tagsByKey, treeKey) => {
                 const childTreeLevel = currentTreeLevel + 1;
                 const treeKeyLabel = HtmlCommentTag.stripTreeKeyToTreeLabel(treeKey);
-                const currentTreeOptionOption = this.tagToTreeOption(treeKeyLabel, treeKeyLabel);
+                const currentTreeOptionOption = this.tagToTreeOption(treeKey, treeKeyLabel);
                 currentTreeLevelOptions.push(currentTreeOptionOption);
                 const comments = currentComments.filter(
                     it => {
                         it.tags.some(
-                            tag => tagsByName.some(
+                            tag => tagsByKey.some(
                                 ot => ot.treeKey === tag.treeKey
                             )
                         )
                     }
                 );
-                const childTagsByName = this.groupTagsByTreeKey(childTreeLevel);
-                this.processGroupedTags(currentTreeLevel + 1, currentTreeOptionOption.children, comments, childTagsByName)
-                currentTreeOptionOption.children.push(...this.commentsWithoutTagsToTreeOptions(comments, childTreeLevel))
+                const childTagsByKey = this.groupTagsByTreeKey(childTreeLevel);
+                this.processGroupedTags(childTreeLevel, currentTreeOptionOption.children, comments, childTagsByKey);
+                const currentTagComments = this.commentsWithoutTagsToTreeOptions(comments, childTreeLevel);
+                currentTreeOptionOption.children.push(...currentTagComments);
             }
         )
     }
@@ -206,7 +207,7 @@ export class HtmlCommentsOrganasiedToViewTree {
                 let foundTags = tagsByKey.get(tag.treeKey);
                 if (foundTags == null) {
                     foundTags = [];
-                    tagsByKey.set(tag.name, foundTags);
+                    tagsByKey.set(tag.treeKey, foundTags);
                 }
                 foundTags.push(tag);
             }
