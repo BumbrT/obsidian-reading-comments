@@ -1,6 +1,5 @@
 np# Todo
 ## Todo features
-- fix comments to tree parser
 - comments formatting from obsidian comments
 - translate my note to proper format
 - delete comment (or just clear html in selection with marked or remark)
