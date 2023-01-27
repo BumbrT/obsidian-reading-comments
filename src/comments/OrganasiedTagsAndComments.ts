@@ -26,7 +26,7 @@ import { HtmlComment } from './HtmlComment';
 ];
  */
 
-export class OrganasiedHtmlComments {
+export class OrganasiedTagsAndComments {
     readonly treeOptions: TreeOption[]
     private readonly comments: HtmlComment[]
     private allTags: HtmlCommentTag[] = []
@@ -107,14 +107,17 @@ export class OrganasiedHtmlComments {
         const tagsByKey = new Map<string, HtmlCommentTag[]>;
         currentLevelTags.forEach(
             tag => {
+                if (parentTagKey != null && tag.parent?.treeKey != parentTagKey) {
+                    return;
+                }
                 let foundTags = tagsByKey.get(tag.treeKey);
                 if (foundTags == null) {
                     foundTags = [];
                     tagsByKey.set(tag.treeKey, foundTags);
                 }
-                if (parentTagKey == null || tag.parent?.treeKey == parentTagKey) {
-                    foundTags.push(tag);
-                }
+                foundTags.push(tag);
+
+
             }
         );
         return tagsByKey;

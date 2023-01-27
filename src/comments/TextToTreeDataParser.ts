@@ -1,9 +1,9 @@
 import { HtmlComment } from './HtmlComment';
-import { OrganasiedHtmlComments } from './OrganasiedHtmlComments';
+import { OrganasiedTagsAndComments } from './OrganasiedTagsAndComments';
 
 
 export class TextToTreeDataParser {
-    readonly parsedComments: OrganasiedHtmlComments;
+    readonly parsedComments: OrganasiedTagsAndComments;
     private regExpComment = /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm;
 
     static selectionToComment(commentId: string, selection: string): string {
@@ -32,6 +32,6 @@ export class TextToTreeDataParser {
                 }
             }
         );
-        this.parsedComments = new OrganasiedHtmlComments(parsedCommentsWithTags);
+        this.parsedComments = new OrganasiedTagsAndComments(parsedCommentsWithTags);
     }
 }
