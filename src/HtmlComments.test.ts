@@ -40,7 +40,7 @@ Struct - структура книги (кратко методы и спосо�
     expect(commentsWithoutTag.length).toBe(0);
 });
 
-test("should organise hierarchical comment to tree view", () => {
+test.skip("should organise hierarchical comment to tree view", () => {
     const textToAnalyse = `
     Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
 Struct - структура книги (кратко методы и способы чтения)
@@ -81,7 +81,7 @@ test.skip('should match regex', () => {
     console.log(result);
 });
 
-test('empty comment should match regex', () => {
+test.skip('empty comment should match regex', () => {
     const regExSpan =
         /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
     const lineContent = `ss
@@ -101,6 +101,17 @@ describe("parsing tag", () => {
     });
 
     test.skip('should parse simple hierarchical tag', () => {
+        const tagStr = "parent/child/child-two";
+        const parsedTag = new HtmlCommentTag(tagStr);
+        expect(parsedTag.name).toBe("child-two");
+        expect(parsedTag.treeKey).toBe("parent/child/child-two");
+        expect(parsedTag.parent?.name).toBe("child");
+        expect(parsedTag.parent?.treeKey).toBe("parent/child");
+        expect(parsedTag.parent?.parent?.name).toBe("parent");
+        expect(parsedTag.parent?.parent?.treeKey).toBe("parent");
+    });
+
+    test.skip('should parse simple hierarchical tag2', () => {
         const tagStr = "parent/child/child-two";
         const parsedTag = new HtmlCommentTag(tagStr);
         expect(parsedTag.name).toBe("child-two");

@@ -141,8 +141,8 @@ export class HtmlCommentsOrganasiedToViewTree {
         while ((parents = this.extractParents(parents)).length > 0) {
             this.allTags = this.allTags.concat(parents);
         }
-        const rootTagsByName = this.groupTagsByTreeKey(0);
-        this.processGroupedTags(0, this.treeOptions, rootTagsByName);
+        const rootTagsByKey = this.groupTagsByTreeKey(0, null);
+        this.processGroupedTags(0, this.treeOptions, rootTagsByKey);
         this.treeOptions.push(...this.commentsWithoutTagsToTreeOptions(this.comments, 0));
     }
     private extractParents(tags: HtmlCommentTag[]): HtmlCommentTag[] {
@@ -165,7 +165,7 @@ export class HtmlCommentsOrganasiedToViewTree {
                         )
 
                 );
-                const childTagsByKey = this.groupTagsByTreeKey(childTreeLevel);
+                const childTagsByKey = this.groupTagsByTreeKey(childTreeLevel, treeKey);
                 this.processGroupedTags(childTreeLevel, currentTreeOptionOption.children, childTagsByKey);
                 const currentTagComments = this.commentsWithoutTagsToTreeOptions(taggedComments, childTreeLevel);
                 currentTreeOptionOption.children.push(...currentTagComments);
@@ -199,17 +199,19 @@ export class HtmlCommentsOrganasiedToViewTree {
         }
     }
 
-    private groupTagsByTreeKey(treeLevel: number): Map<string, HtmlCommentTag[]> {
-        const tags = this.allTags.filter(it => it.treeLevel == treeLevel);
+    private groupTagsByTreeKey(treeLevel: number, parentTagKey: string | null): Map<string, HtmlCommentTag[]> {
+        const currentLevelTags = this.allTags.filter(it => it.treeLevel == treeLevel);
         const tagsByKey = new Map<string, HtmlCommentTag[]>;
-        tags.forEach(
+        currentLevelTags.forEach(
             tag => {
                 let foundTags = tagsByKey.get(tag.treeKey);
                 if (foundTags == null) {
                     foundTags = [];
                     tagsByKey.set(tag.treeKey, foundTags);
                 }
-                foundTags.push(tag);
+                if (parentTagKey == null || tag.parent?.treeKey == parentTagKey) {
+                    foundTags.push(tag);
+                }
             }
         );
         return tagsByKey;
