@@ -14,7 +14,7 @@
             </div>
             <NTree block-line :default-expand-all=true :pattern="pattern" :data="treeData"
                 :on-update:selected-keys="jump" :render-label="renderMethod" :node-props="setNodeProps"
-                :expanded-keys="expanded" :on-update:expanded-keys="expand" :key="update_tree" :filter="filter"
+                :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
                 :show-irrelevant-nodes="!state.hideUnsearched" @drop="onDrop" />
         </NConfigProvider>
     </div>
@@ -141,17 +141,6 @@ function switchLevel(lev: number) {
         });
 }
 
-// TODO - watching for variable
-// watch(
-//     level,
-//     (cur, prev) => {
-//         switchLevel(cur);
-//     }
-// );
-
-// force remake tree
-let update_tree = ref(0);
-
 watch(
     () => state.leafChange,
     () => {
@@ -163,16 +152,6 @@ watch(
 
     }
 );
-
-function formatTooltip(value: number): string {
-    let num = state.headers.filter((h) => h.level === value).length;
-
-    if (value > 0) {
-        return `H${value}: ${num}`;
-    }
-    return "No expand";
-}
-
 
 // load settings
 let renderMethod = computed(() => {
@@ -221,9 +200,8 @@ async function jump(_selected: any, nodes: TreeSelectOption[]) {
         view.editor.focus();
         view.editor.setCursor(line - 1);
         view.setEphemeralState({ line });
-        // setTimeout(() => { view.setEphemeralState({ line }); }, 100);
     } else {
-        console.log(`view not found`);
+        console.error(`view not found`);
     }
 }
 

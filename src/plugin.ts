@@ -16,22 +16,11 @@ export class HtmlCommentsPlugin extends Plugin {
 			VIEW_TYPE,
 			(leaf) => new HtmlCommentsView(leaf, this)
 		);
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a HFF notice!');
-		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
-
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
 
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
-			id: 'add-html-comment',
-			name: 'Add html comment for selection',
+			id: 'add-reading-comment',
+			name: 'Add reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const commentId = uuidv4();
@@ -73,7 +62,7 @@ export class HtmlCommentsPlugin extends Plugin {
 	registerCommand() {
 		this.addCommand({
 			id: "reading-comments",
-			name: "Reading Comments",
+			name: "Reading Comments Panel",
 			callback: () => {
 				this.activateView();
 			}
@@ -81,12 +70,6 @@ export class HtmlCommentsPlugin extends Plugin {
 	}
 
 	registerListener() {
-		// this.registerEvent(this.app.workspace.on('active-leaf-change', async (_) => {
-		// 	let view = this.app.workspace.getActiveViewOfType(MarkdownView);
-		// 	if (view) {
-		// 		this.currentNote = view;
-		// 	}
-		// }));
 		this.registerEvent(this.app.workspace.on('file-open', async (_) => {
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
@@ -121,8 +104,6 @@ export class HtmlCommentsPlugin extends Plugin {
 		const parsedText = new TextToTreeDataParser(text);
 		state.treeOptions = [];
 		state.treeOptions = parsedText.parsedComments.treeOptions;
-
-		console.log(`Finished matching`);
 	}
 }
 
