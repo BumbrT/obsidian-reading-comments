@@ -15,7 +15,7 @@
             <NTree block-line :default-expand-all=true :pattern="pattern" :data="treeData"
                 :on-update:selected-keys="jump" :render-label="renderMethod" :node-props="setNodeProps"
                 :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
-                :show-irrelevant-nodes="!state.hideUnsearched" @drop="onDrop" />
+                :show-irrelevant-nodes="!state.hideUnsearched" />
         </NConfigProvider>
     </div>
 </template>
@@ -74,37 +74,11 @@ let iconColor = computed(() => {
     return { color: "#727272" };
 });
 
-function getDefaultColor() {
-    let button = document.body.createEl("button", { cls: "mod-cta", attr: { style: "width: 0px; height: 0px;" } });
-    let color = getComputedStyle(button, null).getPropertyValue("background-color");
-    button.remove();
-    return color;
-}
-
-onMounted(() => {
-    addEventListener("quiet-outline-reset", reset);
-});
-onUnmounted(() => {
-    removeEventListener("quiet-outline-reset", reset);
-});
-
 let compomentSelf = getCurrentInstance();
 if (!compomentSelf) throw Error("vue not found");
 let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlCommentsPlugin
 let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
 
-// register scroll event
-// onMounted(() => {
-//     document.addEventListener("scroll", handleScroll, true);
-// });
-
-// onUnmounted(() => {
-//     document.removeEventListener("scroll", handleScroll, true);
-// });
-
-
-
-// add html attributes to nodes
 
 const setNodeProps = computed(() => {
     return (info: { option: TreeSelectOption; }): HTMLAttributes & Record<string, unknown> => {
@@ -229,136 +203,6 @@ function renderLabel({ option, checked, selected }: { option: TreeOption; checke
     });
 
     return h("div", { innerHTML: result });
-}
-
-// reset button
-function reset() {
-    pattern.value = "";
-}
-
-// drag and drop
-async function onDrop({ node, dragNode, dropPosition }: TreeDropInfo) {
-    // return;
-    const file = plugin.app.workspace.getActiveFile();
-    if (!file) {
-        throw Error("File not found");
-    }
-    let lines = (await plugin.app.vault.read(file)).split("\n");
-    let rawExpand = toRaw(expanded.value);
-
-    const dragStart = getNo(dragNode);
-    const dragEnd = dragStart + countTree(dragNode) - 1;
-    let moveStart = 0, moveEnd = 0;
-    switch (dropPosition) {
-        case "inside": {
-            const lastNode = node.children?.last()
-            if (!lastNode) {
-                throw new Error("Last node not found")
-            }
-            node = lastNode;
-        }
-        case "after": {
-            if (dragStart > getNo(node) + countTree(node)) {
-                moveStart = getNo(node) + countTree(node);
-                moveEnd = dragStart - 1;
-            } else {
-                moveStart = dragEnd + 1;
-                moveEnd = getNo(node) + countTree(node) - 1;
-            }
-            break;
-        }
-        case "before": {
-            if (dragStart > getNo(node)) {
-                moveStart = getNo(node);
-                moveEnd = dragStart - 1;
-            } else {
-                moveStart = dragStart + countTree(dragNode);
-                moveEnd = getNo(node) - 1;
-            }
-            break;
-        }
-    }
-    const levDelta = getLevel(node) - getLevel(dragNode);
-    changeExpandKey(rawExpand, dragStart, dragEnd, moveStart, moveEnd, levDelta);
-    moveSection(
-        lines,
-        getLine(dragStart)[0],
-        getLine(dragEnd)[1] || lines.length - 1,
-        getLine(moveStart)[0],
-        getLine(moveEnd)[1] || lines.length - 1,
-        levDelta
-    );
-
-    plugin.app.vault.modify(file, lines.join("\n"));
-}
-
-function getLine(headNo: number) {
-    return [
-        state.headers[headNo].position.start.line,
-        state.headers[headNo + 1]?.position.start.line - 1
-    ];
-}
-
-// dls: drag lines start  mle: move lines end
-function moveSection(lines: string[], dls: number, dle: number, mls: number, mle: number, delta: number) {
-    let newPos = 0;
-    if (dls < mls) {
-        let moved = lines.splice(mls, mle - mls + 1);
-        lines.splice(dls, 0, ...moved);
-        newPos = dls + (mle - mls) + 1;
-    } else {
-        let moved = lines.splice(dls, dle - dls + 1);
-        lines.splice(mls, 0, ...moved);
-        newPos = mls;
-    }
-    for (let i = newPos; i <= newPos + (dle - dls); ++i) {
-        if (lines[i].match(/^#+ /)) {
-            delta > 0
-                ? lines[i] = Array(delta).fill("#").join("") + lines[i]
-                : lines[i] = lines[i].slice(-delta);
-        }
-    }
-}
-
-function changeExpandKey(expanded: string[], ds: number, de: number, ms: number, me: number, delta: number) {
-    let dNewPos = 0, mNewPos = 0;
-    if (ds < ms) {
-        mNewPos = ds;
-        dNewPos = ds + (me - ms) + 1;
-    } else {
-        dNewPos = ms;
-        mNewPos = ms + (de - ds) + 1;
-    }
-    expanded.forEach((key, i) => {
-        const no = getNo(key);
-        if (ds <= no && no <= de) {
-            expanded[i] = `item-${getLevel(key) + delta}-${dNewPos + (no - ds)}`;
-        }
-        if (ms <= no && no <= me) {
-            expanded[i] = `item-${getLevel(key)}-${mNewPos + (no - ms)}`;
-        }
-    });
-}
-
-function getNo(node: TreeOption | string): number {
-    if (typeof node !== "string") {
-        node = node.key as string;
-    }
-    return parseInt(node.split("-")[2]);
-}
-function getLevel(node: TreeOption | string): number {
-    if (typeof node !== "string") {
-        node = node.key as string;
-    }
-    return parseInt(node.split("-")[1]);
-
-}
-function countTree(node: TreeOption): number {
-    if (!node.children) return 1;
-
-    return node.children.reduce((sum, n) => {
-        return sum + countTree(n);
-    }, 1);
 }
 
 </script>
