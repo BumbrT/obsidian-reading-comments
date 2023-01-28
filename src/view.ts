@@ -3,7 +3,7 @@ import { createApp, App } from 'vue';
 import HtmlCommentsTemplate from './HtmlCommentsTemplate.vue';
 import { HtmlCommentsPlugin } from "./plugin";
 
-export const VIEW_TYPE: string = 'html-comments';
+export const VIEW_TYPE: string = 'reading-comments';
 
 export class HtmlCommentsView extends ItemView {
     vueApp: App;
@@ -29,7 +29,7 @@ export class HtmlCommentsView extends ItemView {
         const container = this.containerEl.children[1];
         container.empty();
         const mountPoint = container.createEl("div", {
-            cls: "html-comments"
+            cls: "reading-comments"
         });
         this.vueApp = createApp(HtmlCommentsTemplate);
         this.vueApp.config.globalProperties.plugin = this.plugin;

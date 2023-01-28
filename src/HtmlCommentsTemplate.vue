@@ -2,7 +2,7 @@
     <div id="container">
         <!-- :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig" -->
         <NConfigProvider :theme="theme">
-            <div v-if="state.searchSupport">
+            <div class="function-bar" v-if="state.searchSupport">
                 <NButton size="small" circle @click="parseCurrentNote">
                     <template #icon>
                         <Icon>

@@ -6,7 +6,7 @@
     background-color: rgb(88, 88, 9);
 }
 
-.view-content .ob-html-comment:hover > .ob-html-comment-body {
+.view-content .ob-html-comment:hover>.ob-html-comment-body {
     display: block;
     background-color: rgb(51, 2, 2);
 }
@@ -15,7 +15,24 @@
     background-color: rgb(243, 243, 103);
 }
 
-.theme-light .view-content .ob-html-comment:hover > .ob-html-comment-body {
+.theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
     display: block;
     background-color: rgb(241, 110, 110);
+}
+
+.reading-comments .function-bar {
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    margin-bottom: 5px;
+}
+
+.reading-comments .function-bar .n-button {
+    margin-right: 5px;
+    text-align: center;
+}
+
+.reading-comments .function-bar .n-input {
+    flex: 1;
+    min-width: 10px;
 }

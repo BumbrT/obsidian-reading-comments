@@ -72,8 +72,8 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	registerCommand() {
 		this.addCommand({
-			id: "html-comments",
-			name: "Html Comments",
+			id: "reading-comments",
+			name: "Reading Comments",
 			callback: () => {
 				this.activateView();
 			}
