@@ -5,6 +5,7 @@ import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "
 import { state } from "./state";
 import { HtmlCommentsView, VIEW_TYPE } from './view';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
+import { constantsAndUtils } from './comments/ConstantsAndUtils';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -24,7 +25,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const commentId = uuidv4();
-				const replacement = TextToTreeDataParser.selectionToComment(commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment(commentId, selection);
 				editor.replaceSelection(replacement);
 			}
 		});
@@ -55,7 +56,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		state.dark = document.body.hasClass("theme-dark");
 		state.autoExpand = this.settings.autoExpand;
 		state.leafChange = false;
-		const view =  this.app.workspace.getActiveViewOfType(MarkdownView);
+		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		state.currentNote = view;
 	}
 
