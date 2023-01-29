@@ -7,6 +7,7 @@ Plugin allows to create inline html comments while reading markdown notes in Obs
 Insert a comment: Open command panel and type `Add reading comment for selection` ，then press `Enter` .
 
 It's recommended to assign hotkey for this command panel action.
+
 You can use hiaearchical Parent/Child tags in "data-tags" field.
 
 Open comments panel: Open command panel and type `Reading comments` ，then press `Enter` .
