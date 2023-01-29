@@ -26,7 +26,7 @@ import { HtmlComment } from './HtmlComment';
 ];
  */
 
-export class OrganasiedTagsAndComments {
+export class OrganaizedTagsAndComments {
     readonly treeOptions: TreeOption[]
     private readonly comments: HtmlComment[]
     private allTags: HtmlCommentTag[] = []
@@ -46,7 +46,9 @@ export class OrganasiedTagsAndComments {
         }
         const rootTagsByKey = this.groupTagsByTreeKey(0, null);
         this.processGroupedTags(0, this.treeOptions, rootTagsByKey);
-        this.treeOptions.push(...this.commentsWithoutTagsToTreeOptions(this.comments, 0));
+        this.treeOptions.push(...this.filterRootComments(this.comments).map(
+            it => this.commentToTreeOption(it)
+        ));
     }
     private extractParents(tags: HtmlCommentTag[]): HtmlCommentTag[] {
         return tags.map(it => it.parent).filter((it): it is HtmlCommentTag => it != null);
@@ -59,7 +61,7 @@ export class OrganasiedTagsAndComments {
                 const treeKeyLabel = HtmlCommentTag.stripTreeKeyToTreeLabel(treeKey);
                 const currentTreeOptionOption = this.tagToTreeOption(treeKey, treeKeyLabel);
                 currentTreeLevelOptions.push(currentTreeOptionOption);
-                const taggedComments = this.comments.filter(
+                const currentTagComments = this.comments.filter(
                     it =>
                         it.tags.some(
                             tag => tagsByKey.some(
@@ -70,18 +72,17 @@ export class OrganasiedTagsAndComments {
                 );
                 const childTagsByKey = this.groupTagsByTreeKey(childTreeLevel, treeKey);
                 this.processGroupedTags(childTreeLevel, currentTreeOptionOption.children, childTagsByKey);
-                const currentTagComments = this.commentsWithoutTagsToTreeOptions(taggedComments, childTreeLevel);
-                currentTreeOptionOption.children.push(...currentTagComments);
+                currentTreeOptionOption.children.push(...currentTagComments.map(
+                    comment => this.commentToTreeOption(comment)
+                ));
             }
         )
     }
 
-    private commentsWithoutTagsToTreeOptions(comments: HtmlComment[], currentTreeLevel: number): TreeOption[] {
-        return comments.filter(
-            it => it.tags.length == 0 || it.tags.every(tag => tag.treeLevel < currentTreeLevel)
-        ).map(
-            it => this.commentToTreeOption(it)
-        )
+    private filterRootComments(currentComments: HtmlComment[]): HtmlComment[] {
+        return currentComments.filter(
+            it => it.tags.length == 0
+        );
     }
 
     private commentToTreeOption(comment: HtmlComment): TreeOption {

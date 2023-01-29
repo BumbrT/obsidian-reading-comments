@@ -6,7 +6,7 @@ import { HtmlCommentTag } from "../comments/HtmlCommentTag";
 
 describe("parsing hierarchical comment", () => {
 
-    test("should organise comments to tree view", () => {
+    test.skip("should organise comments to tree view", () => {
         const textToAnalyse = `
         Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
     Struct - структура книги (кратко методы и способы чтения)

@@ -33,6 +33,9 @@ Implementation has been based on [Obsidian Quiet Outline](https://github.com/guo
 Basic idea has been taken from [Comments plugin](https://github.com/Darakah/obsidian-comments-plugin)
 
 
+## TODO
+- Replace sample gifs with engilsh
+
 
 
 ## Nice to have features
