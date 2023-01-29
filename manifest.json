@@ -1,11 +1,11 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-reading-comments",
+	"name": "Reading comments",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Plugin allows you to create comments while you read books or articles in Obsidian. Comments could be grouped hierarchically by tags.",
+	"author": "BumbrT",
+	"authorUrl": "https://github.com/BumbrT/",
+	"fundingUrl": "https://www.buymeacoffee.com/bumbrtg",
 	"isDesktopOnly": false
 }
