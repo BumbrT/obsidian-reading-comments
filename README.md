@@ -37,7 +37,8 @@ If you enjoy this plugin, feel free to buy me a coffee.
 <a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 
 ## Installation
-Install from obsidian community plugins store, or download latest release .zip file and extract to your vaulut/.obsidian/plugins folder. Community plugins should be anabled.
+- Install from obsidian community plugins store
+- Or download latest release .zip file from [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) and extract to your vaulut/.obsidian/plugins folder. Community plugins should be anabled.
 
 ## Implementation details for DIY plugin modifications and pull requests
 ### Comments logic
