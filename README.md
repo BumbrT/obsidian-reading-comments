@@ -5,7 +5,9 @@ Plugin allows to create inline html comments while reading markdown notes in Obs
 
 ## Usage
 Insert a comment: Open command panel and type `Add reading comment for selection` ，then press `Enter` .
-It's recommended to assign hotkey for this command panel action. You can use hiaearchical Parent/Child tags in "data-tags" field.
+
+It's recommended to assign hotkey for this command panel action.
+You can use hiaearchical Parent/Child tags in "data-tags" field.
 
 Open comments panel: Open command panel and type `Reading comments` ，then press `Enter` .
 
@@ -20,20 +22,23 @@ Open comments panel: Open command panel and type `Reading comments` ，then pres
 ### Buy me a coffee
 If you enjoy this plugin, feel free to buy me a coffee.
 <a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
-Create comment:
+
+### Create comment:
 
 ![Create comment](https://raw.githubusercontent.com/BumbrT/obsidian-reading-comments/master/resources/create-comment-ru.gif)
 
 ### Buy me a coffee
 If you enjoy this plugin, feel free to buy me a coffee.
 <a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
-Search comments in the panel:
+
+### Search comments in the panel:
 
 ![Search comments](https://raw.githubusercontent.com/BumbrT/obsidian-reading-comments/master/resources/navigate-comment-ru.gif)
 
 ### Buy me a coffee
 If you enjoy this plugin, feel free to buy me a coffee.
 <a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
+
 ## Installation
 Install from obsidian community plugins store, or download latest release .zip file and extract to your vaulut/.obsidian/plugins folder. Community plugins should be anabled.
 
