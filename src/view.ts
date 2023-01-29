@@ -35,7 +35,6 @@ export class HtmlCommentsView extends ItemView {
         this.vueApp.config.globalProperties.plugin = this.plugin;
         this.vueApp.config.globalProperties.container = mountPoint;
         this.vueApp.mount(mountPoint);
-        // setTimeout(()=> { createApp(Outline).mount(mountPoint) }, 0)
     }
 
     async onClose() {
