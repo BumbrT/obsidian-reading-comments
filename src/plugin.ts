@@ -105,7 +105,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		state.treeOptions = [];
 		state.treeOptions = parsedText.parsedComments.treeOptions;
 		if (state.autoExpand) {
-			const expandedKeys = state.treeOptions.map(it => it.key);
+			const expandedKeys = state.treeOptions.map(it => it.key) as string[];
 			state.expandedKeys = expandedKeys;
 		}
 	}
