@@ -23,10 +23,10 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Settings for my awesome plugin.' });
+        containerEl.createEl('h2', { text: 'Settings for Reading comments plugin.' });
 
         new Setting(containerEl)
-            .setName('Auto Expand')
+            .setName('Auto Expand Tags')
             .setDesc('Automatically expand all tags')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoExpand)

@@ -2,7 +2,7 @@
     <div id="container">
         <!-- :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig" -->
         <NConfigProvider :theme="theme">
-            <div class="function-bar" v-if="state.searchSupport">
+            <div class="function-bar" v-if="true">
                 <NButton size="small" circle @click="parseCurrentNote">
                     <template #icon>
                         <Icon>
@@ -12,7 +12,7 @@
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <NTree block-line :default-expand-all=true :pattern="pattern" :data="treeData"
+            <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="treeData"
                 :on-update:selected-keys="jump" :render-label="renderMethod" :node-props="setNodeProps"
                 :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
                 :show-irrelevant-nodes="!state.hideUnsearched" />
@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
-import { Notice, MarkdownView, sanitizeHTMLToDom, HeadingCache, debounce } from 'obsidian';
+import { Notice, MarkdownView, sanitizeHTMLToDom } from 'obsidian';
 import { NTree, TreeSelectOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo, TreeOption } from 'naive-ui';
 import { Icon } from '@vicons/utils';
 import { SettingsBackupRestoreRound, SettingsBackupRestoreSharp } from '@vicons/material';
@@ -82,13 +82,9 @@ let container = compomentSelf.appContext.config.globalProperties.container as HT
 
 const setNodeProps = computed(() => {
     return (info: { option: TreeSelectOption; }): HTMLAttributes & Record<string, unknown> => {
-        let lev = parseInt((info.option.key as string).split('-')[1]);
-        let no = parseInt((info.option.key as string).split('-')[2]);
         const ellipsis = false
         const labelDirection = "left" as "top" | "bottom" | "left" | "right"
         return {
-            class: `level-${lev}`,
-            id: `no-${no}`,
             "aria-label": ellipsis ? info.option.label : "",
             "aria-label-position": labelDirection,
         };
@@ -102,19 +98,6 @@ function expand(keys: string[], option: TreeOption[]) {
     expanded.value = keys;
 }
 
-function switchLevel(lev: number) {
-    expanded.value = state.headers
-        .map((h, i) => {
-            return "item-" + h.level + "-" + i;
-        })
-        .filter((key, i, arr) => {
-            const get_level = (k: string): number => parseInt(k.split('-')[1]);
-            if (i === arr.length - 1) return false;
-            if (get_level(arr[i]) >= get_level(arr[i + 1])) return false;
-            return get_level(key) <= lev;
-        });
-}
-
 watch(
     () => state.leafChange,
     () => {
@@ -124,6 +107,13 @@ watch(
             pattern.value = old_pattern;
         });
 
+    }
+);
+
+watch(
+    () => state.expandedKeys,
+    () => {
+        expanded.value = state.expandedKeys;
     }
 );
 
