@@ -52,7 +52,6 @@ export class HtmlCommentsPlugin extends Plugin {
 	}
 
 	initState() {
-		state.headers = [];
 		state.dark = document.body.hasClass("theme-dark");
 		state.autoExpand = this.settings.autoExpand;
 		state.leafChange = false;
@@ -105,6 +104,10 @@ export class HtmlCommentsPlugin extends Plugin {
 		const parsedText = new TextToTreeDataParser(text);
 		state.treeOptions = [];
 		state.treeOptions = parsedText.parsedComments.treeOptions;
+		if (state.autoExpand) {
+			const expandedKeys = state.treeOptions.map(it => it.key);
+			state.expandedKeys = expandedKeys;
+		}
 	}
 }
 

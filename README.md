@@ -17,7 +17,7 @@ Open comments panel: Open command panel and type `Reading comments` ，then pres
 - Search in comments
 - Navigate to particular comment by click
 - Hide comment until commented text body is hovered
-- Dark and light theme support
+- Dark and light theme support (app restart required)
 
 ## Showcase
 ### Buy me a coffee
