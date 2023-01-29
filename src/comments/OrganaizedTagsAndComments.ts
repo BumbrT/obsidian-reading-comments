@@ -3,7 +3,7 @@ import { HtmlCommentTag } from './HtmlCommentTag';
 import { HtmlComment } from './HtmlComment';
 
 /**
- * Organise collection of comments with tags to structure to tree:
+ * Organise collection of comments with tags to following TreeOption[] tree structure  :
  [
     {
         label: "test",
