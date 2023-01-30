@@ -13,8 +13,9 @@
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="treeData"
-                :on-update:selected-keys="jump" :render-label="renderMethod" :node-props="setNodeProps"
-                :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
+                :selected-keys="[]"
+                :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod"
+                :node-props="setNodeProps" :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
                 :show-irrelevant-nodes="!state.hideUnsearched" />
         </NConfigProvider>
     </div>
@@ -147,18 +148,22 @@ let filter = computed(() => {
     return state.regexSearch ? regexFilter : simpleFilter;
 });
 
-
 // click and jump
-async function jump(_selected: any, nodes: TreeSelectOption[]) {
+async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[]) {
     if (nodes[0] === undefined) {
         return;
     }
     const selectedOption = nodes[0];
-    if (selectedOption.type !== "comment") {
-        return;
+    if (selectedOption.type == "comment") {
+        const line: number = selectedOption.line as number
+        jumpToComment(line);
+    } else if (selectedOption.type == "tag") {
+        const tagKey = selectedOption.key as string;
+        expandOrCollapseTag(tagKey);
     }
-    const line: number = selectedOption.line;
+}
 
+function jumpToComment(line: number) {
     const view = plugin.currentNote;
     if (view) {
         view.editor.focus();
@@ -168,6 +173,16 @@ async function jump(_selected: any, nodes: TreeSelectOption[]) {
         console.error(`view not found`);
     }
 }
+
+function expandOrCollapseTag(tagKey: string) {
+    state.expandedKeys = expanded.value;
+    if (state.expandedKeys.contains(tagKey)) {
+        state.expandedKeys.remove(tagKey);
+    } else {
+        state.expandedKeys.push(tagKey);
+    }
+}
+
 
 let treeData = computed(() => {
     return state.treeOptions;
