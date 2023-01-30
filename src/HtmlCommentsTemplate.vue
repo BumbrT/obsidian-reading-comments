@@ -169,7 +169,7 @@ function jumpToComment(line: number) {
 
         if (view.getMode() == "source") {
             view.setEphemeralState({ line });
-
+            setTimeout(() => { view.editor.setCursor(line - 1) }, 100);
         } else {
             let scrollToPosition: number = line - 1;
             if (scrollToPosition < 0) {
