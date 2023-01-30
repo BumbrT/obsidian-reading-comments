@@ -16,7 +16,6 @@
 }
 
 .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-    display: block;
     background-color: rgb(241, 110, 110);
 }
 

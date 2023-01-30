@@ -6,13 +6,13 @@ import { HtmlComment } from './HtmlComment';
  * Organise collection of comments with tags to following TreeOption[] tree structure  :
  [
     {
-        label: "test",
-        key: "item-0",
+        label: "parent",
+        key: "parent",
         type: "tag",
         children: [
             {
-                label: "child test1",
-                key: "item-1",
+                label: "child",
+                key: "parent/child",
                 type: "tag",
                 children: [
                     label: "Comment body",
