@@ -171,7 +171,7 @@ function jumpToComment(line: number) {
             view.setEphemeralState({ line });
 
         } else {
-            let scrollToPosition: number = line - 3;
+            let scrollToPosition: number = line - 1;
             if (scrollToPosition < 0) {
                 scrollToPosition = 0;
             }
