@@ -166,15 +166,16 @@ function jumpToComment(line: number) {
     const view = plugin.currentNote;
     if (view) {
         view.editor.focus();
+
         if (view.getMode() == "source") {
-            view.editor.setCursor(line - 1);
+            view.setEphemeralState({ line });
+
         } else {
-            console.log(`>> ${JSON.stringify(view.getEphemeralState())}`)
-            let previousLine: number = line - 3;
-            if (previousLine < 0) {
-                previousLine = 0;
+            let scrollToPosition: number = line - 3;
+            if (scrollToPosition < 0) {
+                scrollToPosition = 0;
             }
-            const state = { scroll: line };
+            const state = { scroll: scrollToPosition };
             view.setEphemeralState(state);
         }
     } else {
