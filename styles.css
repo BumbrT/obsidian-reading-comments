@@ -3,7 +3,7 @@
 }
 
 .view-content .ob-html-comment {
-    background-color: rgb(88, 88, 9);
+    background-color: rgb(88, 88, 9) !important;
 }
 
 .view-content .ob-html-comment:hover>.ob-html-comment-body {
@@ -12,7 +12,7 @@
 }
 
 .theme-light .view-content .ob-html-comment {
-    background-color: rgb(243, 243, 103);
+    background-color: rgb(243, 243, 103) !important;
 }
 
 .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
