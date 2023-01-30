@@ -13,8 +13,7 @@
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
             <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="treeData"
-                :selected-keys="[]"
-                :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod"
+                :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod"
                 :node-props="setNodeProps" :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
                 :show-irrelevant-nodes="!state.hideUnsearched" />
         </NConfigProvider>
@@ -167,8 +166,17 @@ function jumpToComment(line: number) {
     const view = plugin.currentNote;
     if (view) {
         view.editor.focus();
-        view.editor.setCursor(line - 1);
-        view.setEphemeralState({ line });
+        if (view.getMode() == "source") {
+            view.editor.setCursor(line - 1);
+        } else {
+            console.log(`>> ${JSON.stringify(view.getEphemeralState())}`)
+            let previousLine: number = line - 3;
+            if (previousLine < 0) {
+                previousLine = 0;
+            }
+            const state = { scroll: line };
+            view.setEphemeralState(state);
+        }
     } else {
         console.error(`view not found`);
     }
