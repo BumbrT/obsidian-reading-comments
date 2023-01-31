@@ -49,6 +49,7 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		state.toggleSettingsChanged();
 	}
 
 	initState() {

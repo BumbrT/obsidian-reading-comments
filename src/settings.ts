@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
 import { HtmlCommentsPlugin } from "./plugin";
+import { state } from './state';
 
 export interface HtmlCommentsSettings {
     autoExpand: boolean;
@@ -40,36 +41,43 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.autoExpand)
                 .onChange(
                     async (value) => {
-                        this.plugin.settings.autoExpand = value
+                        this.plugin.settings.autoExpand = value;
+                        state.expandedKeys = [];
                         await this.plugin.saveSettings();
                     }
                 )
             );
 
             new Setting(containerEl)
-            .setName("Set Commented Text Color Light/Darkjs ")
-            .addToggle(toggle => toggle
-                .setTooltip(t("Change commented text color"))
-                .setValue(this.plugin.settings.patch_color)
+            .setName("Set Commented Text Color Light/Dark")
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.commentedTextColorLight)
                 .onChange(async (value) => {
-                    this.plugin.settings.patch_color = value;
-                    store.patchColor = value;
+                    this.plugin.settings.commentedTextColorLight = value;
                     this.plugin.saveSettings();
                 })
             )
             .addColorPicker(color => color
-                .setValue(this.plugin.settings.primary_color_light)
+                .setValue(this.plugin.settings.commentedTextColorDark)
                 .onChange(async (value) => {
-                    this.plugin.settings.primary_color_light = value;
-                    store.primaryColorLight = value;
+                    this.plugin.settings.commentedTextColorDark = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+            new Setting(containerEl)
+            .setName("Set Comment Color Light/Dark")
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.commentColorLight)
+                .onChange(async (value) => {
+                    this.plugin.settings.commentedTextColorLight = value;
                     this.plugin.saveSettings();
                 })
             )
             .addColorPicker(color => color
-                .setValue(this.plugin.settings.primary_color_dark)
+                .setValue(this.plugin.settings.commentColorDark)
                 .onChange(async (value) => {
-                    this.plugin.settings.primary_color_dark = value;
-                    store.primaryColorDark = value;
+                    this.plugin.settings.commentedTextColorDark = value;
                     this.plugin.saveSettings();
                 })
             );
