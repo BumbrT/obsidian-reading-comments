@@ -49,11 +49,11 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+		state.toggleSettingsChanged();
 	}
 
 	initState() {
 		state.dark = document.body.hasClass("theme-dark");
-		state.autoExpand = this.settings.autoExpand;
 		state.leafChange = false;
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 		state.currentNote = view;
@@ -104,7 +104,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		const parsedText = new TextToTreeDataParser(text);
 		state.treeOptions = [];
 		state.treeOptions = parsedText.parsedComments.treeOptions;
-		if (state.autoExpand) {
+		if (this.settings.autoExpand) {
 			const expandedKeys = state.treeOptions.map(it => it.key) as string[];
 			state.expandedKeys = expandedKeys;
 		}

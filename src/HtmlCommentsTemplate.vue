@@ -117,6 +117,37 @@ watch(
     }
 );
 
+const customColorStyleElementId = "ob-html-comment-custom-style";
+watch(
+    () => state.settingsChanged,
+    () => {
+        let styleEl = document.getElementById(customColorStyleElementId);
+        if (styleEl) {
+            document.head.removeChild(styleEl);
+        }
+        styleEl = document.createElement('style');
+        styleEl.id = customColorStyleElementId;
+        styleEl.type = 'text/css';
+        styleEl.textContent  = `
+            .view-content .ob-html-comment {
+                background-color: ${plugin.settings.commentedTextColorDark} !important;
+            }
+
+            .view-content .ob-html-comment:hover>.ob-html-comment-body {
+                background-color: ${plugin.settings.commentColorDark} !important;
+            }
+
+            .theme-light .view-content .ob-html-comment {
+                background-color: ${plugin.settings.commentedTextColorLight} !important;
+            }
+
+            .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
+                background-color: ${plugin.settings.commentColorLight} !important;
+}`;
+        document.head.appendChild(styleEl);
+    }
+);
+
 // load settings
 let renderMethod = computed(() => {
     if (state.rederMarkdown) {
@@ -169,7 +200,7 @@ function jumpToComment(line: number) {
 
         if (view.getMode() == "source") {
             view.setEphemeralState({ line });
-
+            setTimeout(() => { view.editor.setCursor(line - 1) }, 100);
         } else {
             let scrollToPosition: number = line - 1;
             if (scrollToPosition < 0) {

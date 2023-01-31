@@ -7,14 +7,17 @@ const state = reactive({
         this.plugin.activateView();
         this.refreshTree();
     },
+    toggleSettingsChanged() {
+        this.settingsChanged = !this.settingsChanged;
+    },
     treeOptions: [] as TreeOption[],
     dark: true,
-    autoExpand: true,
     expandedKeys: [] as string[],
     leafChange: false,
     regexSearch: false,
     rederMarkdown: false,
     hideUnsearched: true,
+    settingsChanged: false,
     refreshTree() {
         this.leafChange = !this.leafChange;
     },
