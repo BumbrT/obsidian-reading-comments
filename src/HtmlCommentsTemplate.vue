@@ -123,7 +123,7 @@ watch(
     () => {
         let styleEl = document.getElementById(customColorStyleElementId);
         if (styleEl) {
-            document.removeChild(styleEl);
+            document.head.removeChild(styleEl);
         }
         styleEl = document.createElement('style');
         styleEl.id = customColorStyleElementId;

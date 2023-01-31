@@ -12,7 +12,6 @@ const state = reactive({
     },
     treeOptions: [] as TreeOption[],
     dark: true,
-    autoExpand: true,
     expandedKeys: [] as string[],
     leafChange: false,
     regexSearch: false,
