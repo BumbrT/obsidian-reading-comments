@@ -3,20 +3,20 @@
 }
 
 .view-content .ob-html-comment {
-    background-color: rgb(23, 43, 14);
+    background-color: #585809;
 }
 
 .view-content .ob-html-comment:hover>.ob-html-comment-body {
     display: block;
-    background-color: rgb(51, 2, 2);
+    background-color: #330202;
 }
 
 .theme-light .view-content .ob-html-comment {
-    background-color: rgb(243, 243, 103);
+    background-color: #f3f367;
 }
 
 .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-    background-color: rgb(241, 110, 110);
+    background-color: #f16e6e;
 }
 
 .reading-comments .function-bar {

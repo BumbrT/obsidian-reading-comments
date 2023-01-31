@@ -4,10 +4,18 @@ import { HtmlCommentsPlugin } from "./plugin";
 
 export interface HtmlCommentsSettings {
     autoExpand: boolean;
+    commentedTextColorLight: string;
+    commentedTextColorDark: string;
+    commentColorLight: string;
+    commentColorDark: string;
 }
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     autoExpand: false,
+    commentedTextColorLight: "#f16e6e",
+    commentedTextColorDark: "#585809",
+    commentColorLight: "#f3f367",
+    commentColorDark: "#330202"
 }
 
 export class HtmlCommentsSettingTab extends PluginSettingTab {
@@ -36,6 +44,34 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     }
                 )
+            );
+
+            new Setting(containerEl)
+            .setName("Set Commented Text Color Light/Darkjs ")
+            .addToggle(toggle => toggle
+                .setTooltip(t("Change commented text color"))
+                .setValue(this.plugin.settings.patch_color)
+                .onChange(async (value) => {
+                    this.plugin.settings.patch_color = value;
+                    store.patchColor = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.primary_color_light)
+                .onChange(async (value) => {
+                    this.plugin.settings.primary_color_light = value;
+                    store.primaryColorLight = value;
+                    this.plugin.saveSettings();
+                })
+            )
+            .addColorPicker(color => color
+                .setValue(this.plugin.settings.primary_color_dark)
+                .onChange(async (value) => {
+                    this.plugin.settings.primary_color_dark = value;
+                    store.primaryColorDark = value;
+                    this.plugin.saveSettings();
+                })
             );
     }
 }
