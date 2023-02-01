@@ -121,14 +121,24 @@ const customColorStyleElementId = "ob-html-comment-custom-style";
 watch(
     () => state.settingsChanged,
     () => {
-        let styleEl = document.getElementById(customColorStyleElementId);
-        if (styleEl) {
-            document.head.removeChild(styleEl);
-        }
-        styleEl = document.createElement('style');
-        styleEl.id = customColorStyleElementId;
-        styleEl.type = 'text/css';
-        styleEl.textContent  = `
+        applySettingsColors();
+    }
+);
+
+onMounted(() => {
+    applySettingsColors();
+});
+
+function applySettingsColors() {
+    console.log(">> aplying colors");
+    let styleEl = document.getElementById(customColorStyleElementId);
+    if (styleEl) {
+        document.head.removeChild(styleEl);
+    }
+    styleEl = document.createElement('style');
+    styleEl.id = customColorStyleElementId;
+    styleEl.type = 'text/css';
+    styleEl.textContent = `
             .view-content .ob-html-comment {
                 background-color: ${plugin.settings.commentedTextColorDark} !important;
             }
@@ -144,9 +154,8 @@ watch(
             .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
                 background-color: ${plugin.settings.commentColorLight} !important;
 }`;
-        document.head.appendChild(styleEl);
-    }
-);
+    document.head.appendChild(styleEl);
+}
 
 // load settings
 let renderMethod = computed(() => {
