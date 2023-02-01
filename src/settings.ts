@@ -49,7 +49,7 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
             );
 
             new Setting(containerEl)
-            .setName("Set Commented Text Color Light/Dark")
+            .setName("Commented Text Color Light/Dark")
             .addColorPicker(color => color
                 .setValue(this.plugin.settings.commentedTextColorLight)
                 .onChange(async (value) => {
@@ -66,7 +66,7 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
             );
 
             new Setting(containerEl)
-            .setName("Set Comment Color Light/Dark")
+            .setName("Comment Color Light/Dark")
             .addColorPicker(color => color
                 .setValue(this.plugin.settings.commentColorLight)
                 .onChange(async (value) => {
