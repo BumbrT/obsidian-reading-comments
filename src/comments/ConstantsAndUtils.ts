@@ -15,30 +15,28 @@ const constantsAndUtils = {
         return `<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</div>`;
     },
 
-    applySettingsColors(
-        colors: PluginColors) {
+    applySettingsColors(colors: PluginColors) {
         let styleEl = document.getElementById(customColorStyleElementId);
         if (styleEl) {
             document.head.removeChild(styleEl);
         }
         styleEl = document.createElement('style');
         styleEl.id = customColorStyleElementId;
-        styleEl.type = 'text/css';
         styleEl.textContent = `
                 .view-content .ob-html-comment {
-                    background-color: ${colors.commentedTextColorDark} !important;
+                    background-color: ${colors.commentedTextColorDark};
                 }
 
                 .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${colors.commentColorDark} !important;
+                    background-color: ${colors.commentColorDark};
                 }
 
                 .theme-light .view-content .ob-html-comment {
-                    background-color: ${colors.commentedTextColorLight} !important;
+                    background-color: ${colors.commentedTextColorLight};
                 }
 
                 .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${colors.commentColorLight} !important;
+                    background-color: ${colors.commentColorLight};
     }`;
         document.head.appendChild(styleEl);
     }
