@@ -30,6 +30,7 @@ import { marked } from 'marked';
 
 import { state } from './state';
 import { HtmlCommentsPlugin } from "./plugin";
+import { constantsAndUtils } from './comments/ConstantsAndUtils';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -117,36 +118,18 @@ watch(
     }
 );
 
-const customColorStyleElementId = "ob-html-comment-custom-style";
 watch(
     () => state.settingsChanged,
     () => {
-        let styleEl = document.getElementById(customColorStyleElementId);
-        if (styleEl) {
-            document.head.removeChild(styleEl);
-        }
-        styleEl = document.createElement('style');
-        styleEl.id = customColorStyleElementId;
-        styleEl.type = 'text/css';
-        styleEl.textContent  = `
-            .view-content .ob-html-comment {
-                background-color: ${plugin.settings.commentedTextColorDark} !important;
-            }
-
-            .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                background-color: ${plugin.settings.commentColorDark} !important;
-            }
-
-            .theme-light .view-content .ob-html-comment {
-                background-color: ${plugin.settings.commentedTextColorLight} !important;
-            }
-
-            .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                background-color: ${plugin.settings.commentColorLight} !important;
-}`;
-        document.head.appendChild(styleEl);
+        constantsAndUtils.applySettingsColors(plugin.settings);
     }
 );
+
+onMounted(() => {
+    constantsAndUtils.applySettingsColors(plugin.settings);
+});
+
+
 
 // load settings
 let renderMethod = computed(() => {

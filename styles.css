@@ -2,13 +2,14 @@
     display: none;
 }
 
-.view-content .ob-html-comment {
-    background-color: #585809;
-}
-
 .view-content .ob-html-comment:hover>.ob-html-comment-body {
     display: block;
-    background-color: #330202;
+}
+
+/* colors moved to constantsAndUtils.ts
+
+.view-content .ob-html-comment {
+    background-color: #585809;
 }
 
 .theme-light .view-content .ob-html-comment {
@@ -18,6 +19,11 @@
 .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
     background-color: #f16e6e;
 }
+
+.view-content .ob-html-comment:hover>.ob-html-comment-body {
+    background-color: #330202;
+}
+*/
 
 .reading-comments .function-bar {
     display: flex;

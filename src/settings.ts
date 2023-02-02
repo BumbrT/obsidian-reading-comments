@@ -2,8 +2,9 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 
 import { HtmlCommentsPlugin } from "./plugin";
 import { state } from './state';
+import { PluginColors } from './comments/ConstantsAndUtils'
 
-export interface HtmlCommentsSettings {
+export interface HtmlCommentsSettings extends PluginColors {
     autoExpand: boolean;
     commentedTextColorLight: string;
     commentedTextColorDark: string;
@@ -48,8 +49,8 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                 )
             );
 
-            new Setting(containerEl)
-            .setName("Set Commented Text Color Light/Dark")
+        new Setting(containerEl)
+            .setName("Commented Text Color Light/Dark")
             .addColorPicker(color => color
                 .setValue(this.plugin.settings.commentedTextColorLight)
                 .onChange(async (value) => {
@@ -65,8 +66,8 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                 })
             );
 
-            new Setting(containerEl)
-            .setName("Set Comment Color Light/Dark")
+        new Setting(containerEl)
+            .setName("Comment Color Light/Dark")
             .addColorPicker(color => color
                 .setValue(this.plugin.settings.commentColorLight)
                 .onChange(async (value) => {
