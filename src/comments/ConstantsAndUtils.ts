@@ -8,7 +8,7 @@ export interface PluginColors {
 }
 
 const constantsAndUtils = {
-    regExpComment: /\<div class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm,
+    regExpComment: /\<div class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm,
 
     selectionToComment(commentId: string, selection: string): string {
         const escapedSelection = escapeHTML(selection);

@@ -15,22 +15,22 @@
             <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="treeData"
                 :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod"
                 :node-props="setNodeProps" :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
-                :show-irrelevant-nodes="!state.hideUnsearched" />
+                :show-irrelevant-nodes="false" />
         </NConfigProvider>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
-import { Notice, MarkdownView, sanitizeHTMLToDom } from 'obsidian';
-import { NTree, TreeSelectOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo, TreeOption } from 'naive-ui';
+import { SettingsBackupRestoreSharp } from '@vicons/material';
 import { Icon } from '@vicons/utils';
-import { SettingsBackupRestoreRound, SettingsBackupRestoreSharp } from '@vicons/material';
 import { marked } from 'marked';
+import { darkTheme, GlobalThemeOverrides, NButton, NConfigProvider, NInput, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
+import { sanitizeHTMLToDom } from 'obsidian';
+import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
 
-import { state } from './state';
-import { HtmlCommentsPlugin } from "./plugin";
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
+import { HtmlCommentsPlugin } from "./plugin";
+import { state } from './state';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -99,17 +99,6 @@ function expand(keys: string[], option: TreeOption[]) {
     expanded.value = keys;
 }
 
-watch(
-    () => state.leafChange,
-    () => {
-        const old_pattern = pattern.value;
-        pattern.value = "";
-        nextTick(() => {
-            pattern.value = old_pattern;
-        });
-
-    }
-);
 
 watch(
     () => state.expandedKeys,
@@ -157,9 +146,9 @@ function simpleFilter(pattern: string, option: TreeOption): boolean {
     return (option.label ?? "").toLowerCase().contains(pattern.toLowerCase());
 }
 
-let filter = computed(() => {
-    return state.regexSearch ? regexFilter : simpleFilter;
-});
+function filter(pattern: string, option: TreeOption): boolean {
+    return state.regexSearch ? regexFilter(pattern, option) : simpleFilter(pattern, option);
+}
 
 // click and jump
 async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[]) {
@@ -212,8 +201,8 @@ let treeData = computed(() => {
 });
 
 function parseCurrentNote() {
-    plugin.parseActiveViewToComments();
     pattern.value = "";
+    plugin.parseActiveViewToComments();
 }
 
 function renderLabel({ option, checked, selected }: { option: TreeOption; checked: boolean; selected: boolean; }) {

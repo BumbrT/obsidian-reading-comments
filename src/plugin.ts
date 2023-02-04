@@ -102,11 +102,13 @@ export class HtmlCommentsPlugin extends Plugin {
 	parseActiveViewToComments() {
 		const text = this.getActiveView().getViewData();
 		const parsedText = new TextToTreeDataParser(text);
-		state.treeOptions = [];
+		// state.treeOptions = [];
 		state.treeOptions = parsedText.parsedComments.treeOptions;
 		if (this.settings.autoExpand) {
 			const expandedKeys = state.treeOptions.map(it => it.key) as string[];
 			state.expandedKeys = expandedKeys;
+		} else {
+			state.expandedKeys = [];
 		}
 	}
 }
