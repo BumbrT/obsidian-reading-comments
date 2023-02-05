@@ -1,64 +1,34 @@
 <template>
-    <div id="container">
-        <!-- :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig" -->
-        <NConfigProvider :theme="theme">
-            <div class="function-bar" v-if="true">
-                <NButton size="small" circle @click="parseCurrentNote">
-                    <template #icon>
-                        <Icon>
-                            <SettingsBackupRestoreSharp :style="iconColor" />
-                        </Icon>
-                    </template>
-                </NButton>
-                <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
-            </div>
-            <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern"
-                :data="viewState.viewTreeOptions.value" :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag"
-                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="viewState.viewExpandedKeys.value"
-                :on-update:expanded-keys="expand" :filter="filter" :show-irrelevant-nodes="false" />
-        </NConfigProvider>
-    </div>
+    <NConfigProvider :theme="theme">
+        <NSpace>
+            <NButton size="small" circle @click="parseCurrentNote">
+                <template #icon>
+                    <Icon>
+                        <SettingsBackupRestoreSharp :style="iconColor" />
+                    </Icon>
+                </template>
+            </NButton>
+            <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
+        </NSpace>
+        <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern"
+            :data="viewState.viewTreeOptions.value" :selected-keys="[]"
+            :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod" :node-props="setNodeProps"
+            :expanded-keys="viewState.viewExpandedKeys.value" :on-update:expanded-keys="expand" :filter="filter"
+            :show-irrelevant-nodes="false" />
+    </NConfigProvider>
 </template>
 
 <script setup lang="ts">
 import { SettingsBackupRestoreSharp } from '@vicons/material';
 import { Icon } from '@vicons/utils';
 import { marked } from 'marked';
-import { darkTheme, GlobalThemeOverrides, NButton, NConfigProvider, NInput, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
+import { darkTheme, GlobalThemeOverrides, NSpace, NButton, NConfigProvider, NInput, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
 import { sanitizeHTMLToDom } from 'obsidian';
 import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
 
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
 import { HtmlCommentsPlugin } from "./obsidianPlugin";
 import { viewState } from './reactiveState';
-
-const lightThemeConfig = reactive<GlobalThemeOverrides>({
-    common: {
-        primaryColor: "",
-        primaryColorHover: "",
-    },
-    Slider: {
-        handleSize: "10px",
-        fillColor: "",
-        fillColorHover: "",
-        dotBorderActive: ""
-    },
-});
-if (!lightThemeConfig) throw Error("TODO investigate vue undefined")
-
-const darkThemeConfig = reactive<GlobalThemeOverrides>({
-    common: {
-        primaryColor: "#a3a3a3",
-        primaryColorHover: "#a3a3a3",
-    },
-    Slider: {
-        handleSize: "10px",
-        fillColor: "#a3a3a3",
-        fillColorHover: "#a3a3a3",
-        dotBorderActive: ""
-    }
-});
-if (!darkThemeConfig) throw Error("TODO investigate vue undefined")
 
 
 // toggle light/dark theme
