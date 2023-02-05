@@ -4,7 +4,7 @@ import { TreeOption } from 'naive-ui';
 
 const viewState = {
     toggleColorSettingsChanged() {
-        this.settingsChangedTrigger = !this.settingsChangedTrigger;
+        this.colorSettingsChangedTrigger.value = !this.colorSettingsChangedTrigger.value;
     },
     settings: reactive({
         dark: true,

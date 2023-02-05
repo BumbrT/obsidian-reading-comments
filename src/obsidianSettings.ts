@@ -70,14 +70,14 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
             .addColorPicker(color => color
                 .setValue(this.plugin.settings.commentColorLight)
                 .onChange(async (value) => {
-                    this.plugin.settings.commentedTextColorLight = value;
+                    this.plugin.settings.commentColorLight = value;
                     this.plugin.saveSettings();
                 })
             )
             .addColorPicker(color => color
                 .setValue(this.plugin.settings.commentColorDark)
                 .onChange(async (value) => {
-                    this.plugin.settings.commentedTextColorDark = value;
+                    this.plugin.settings.commentColorDark = value;
                     this.plugin.saveSettings();
                 })
             );

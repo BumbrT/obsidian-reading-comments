@@ -4,15 +4,8 @@
     display: none;
 }
 
-.view-content .ob-html-comment:hover>pre {
-    filter: blur(5px);
-}
-
 .view-content .ob-html-comment:hover>.ob-html-comment-body {
-    display: block;
-    filter: blur(0);
-    position: absolute;
-    top: 20%;
-    left: 5px;
-    z-index: 1;
+    display: inline;
+    position: relative;
+    /* z-index: 1; */
 }

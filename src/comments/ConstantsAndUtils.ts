@@ -1,5 +1,24 @@
 import escapeHTML from "escape-html";
 
+export interface TreeItem {
+    isComment: true | false,
+    isTag: true | false,
+};
+
+export interface TagTreeItem extends TreeItem {
+    isTag: true,
+    isComment: false,
+    key: string,
+    children: TagTreeItem | CommentTreeItem[]
+};
+
+export interface CommentTreeItem {
+    isTag: false,
+    isComment: true,
+    line: number,
+    searchIndex: string
+};
+
 export interface PluginColors {
     commentedTextColorDark: string,
     commentColorDark: string,
@@ -12,7 +31,7 @@ const constantsAndUtils = {
 
     selectionToComment(commentId: string, selection: string): string {
         const escapedSelection = escapeHTML(selection);
-        return `<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span><pre>${escapedSelection}</pre></div>`;
+        return `<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</div>`;
     },
 
     applySettingsColors(colors: PluginColors) {

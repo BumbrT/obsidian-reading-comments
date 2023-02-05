@@ -49,7 +49,7 @@ If you enjoy this plugin, feel free to buy me a coffee.
 Most important logic located in src/comments/ConstantsAndUtils.ts
  When `Add reading comment for selection` executed, editor selection replaced with the following code:
 ```
-<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span><pre>${htmlEscapedSelection}</pre></div>
+<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${htmlEscapedSelection}</div>
 ```
 Plugin parses text for comments and organizes them in panel hierarchically by tags.
 
@@ -66,15 +66,16 @@ If you enjoy this plugin, feel free to buy me a coffee.
 <a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 
 
-## To introduce "nice to have" features, create issue here or better donate with "buy me a coffee" website
-### Possible features:
-- delete comment (or just clear html in selection with marked or remark)
-- tags and comments ordering algo in settings
-- add to settings tags placeholder: "comment," used by default
-- handle scroll
-
-### Possible expensive killer-features:
+## Roadmap:
 - Extract commented note to two: original clean note and comments note with links to original
 - Tags renaming in the tree, drag&drop, etc tags and comments management
+
+### To introduce "nice to have" features, create issue here or better donate with "buy me a coffee" website
+### "Nice to have" features:
+- delete comment (or just clear html in selection with marked or remark)
+- tags and comments ordering algo in settings
+- customize tags placeholder(for now "comment,")
+
+
 
 

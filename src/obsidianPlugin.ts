@@ -55,6 +55,9 @@ export class HtmlCommentsPlugin extends Plugin {
 	initState() {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (view) {
+			this.currentNote = view
+		}
 	}
 
 	registerCommand() {

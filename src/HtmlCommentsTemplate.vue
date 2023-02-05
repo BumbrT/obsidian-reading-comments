@@ -26,7 +26,7 @@ import { darkTheme, GlobalThemeOverrides, NSpace, NButton, NConfigProvider, NInp
 import { sanitizeHTMLToDom } from 'obsidian';
 import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
 
-import { constantsAndUtils } from './comments/ConstantsAndUtils';
+import { constantsAndUtils, TreeItem, TagTreeItem, CommentTreeItem } from './comments/ConstantsAndUtils';
 import { HtmlCommentsPlugin } from "./obsidianPlugin";
 import { viewState } from './reactiveState';
 
@@ -48,8 +48,6 @@ let iconColor = computed(() => {
 let compomentSelf = getCurrentInstance();
 if (!compomentSelf) throw Error("vue not found");
 let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlCommentsPlugin
-let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
-
 
 const setNodeProps = computed(() => {
     return (info: { option: TreeSelectOption; }): HTMLAttributes & Record<string, unknown> => {
@@ -68,7 +66,7 @@ function expand(keys: string[], option: TreeOption[]) {
 }
 
 watch(
-    () => viewState.colorSettingsChangedTrigger,
+    () => viewState.colorSettingsChangedTrigger.value,
     () => {
         constantsAndUtils.applySettingsColors(plugin.settings);
     }
@@ -116,12 +114,12 @@ async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[
     if (nodes[0] === undefined) {
         return;
     }
-    const selectedOption = nodes[0];
-    if (selectedOption.type == "comment") {
-        const line: number = selectedOption.line as number
+    const selectedOption = nodes[0] as TreeItem;
+    if (selectedOption.isComment) {
+        const line: number = (selectedOption as CommentTreeItem).line as number
         jumpToComment(line);
-    } else if (selectedOption.type == "tag") {
-        const tagKey = selectedOption.key as string;
+    } else if (selectedOption.isTag) {
+        const tagKey = (selectedOption as TagTreeItem).key as string;
         expandOrCollapseTag(tagKey);
     }
 }
