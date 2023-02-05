@@ -5,17 +5,18 @@ export interface TreeItem {
     isTag: true | false,
 };
 
-export interface TagTreeItem extends TreeItem {
+export interface TagTreeItem {
     isTag: true,
     isComment: false,
-    key: string,
-    children: TagTreeItem | CommentTreeItem[]
+    /* full tag name, include partents */
+    fullName: string,
 };
 
 export interface CommentTreeItem {
     isTag: false,
     isComment: true,
     line: number,
+    /* lower case comment, to search in */
     searchIndex: string
 };
 

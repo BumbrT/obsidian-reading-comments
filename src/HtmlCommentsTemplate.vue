@@ -101,7 +101,12 @@ function regexFilter(pattern: string, option: TreeOption): boolean {
 }
 
 function simpleFilter(pattern: string, option: TreeOption): boolean {
-    return (option.label ?? "").toLowerCase().contains(pattern.toLowerCase());
+    const commentOption = option as CommentTreeItem;
+    if (commentOption.searchIndex) {
+        return commentOption.searchIndex.contains(pattern.toLowerCase());
+    } else {
+        return false;
+    }
 }
 
 let filter = computed(() => {
@@ -119,7 +124,7 @@ async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[
         const line: number = (selectedOption as CommentTreeItem).line as number
         jumpToComment(line);
     } else if (selectedOption.isTag) {
-        const tagKey = (selectedOption as TagTreeItem).key as string;
+        const tagKey = (selectedOption as TagTreeItem).fullName as string;
         expandOrCollapseTag(tagKey);
     }
 }

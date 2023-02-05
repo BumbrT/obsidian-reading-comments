@@ -1,7 +1,7 @@
 import { TreeOption } from 'naive-ui';
 import { HtmlCommentTag } from './HtmlCommentTag';
 import { HtmlComment } from './HtmlComment';
-import { TagTreeItem, CommentTreeItem } from './ConstantsAndUtils'
+import { TreeItem, TagTreeItem, CommentTreeItem } from './ConstantsAndUtils'
 
 /**
  * Organise collection of comments with tags to following TreeOption[] tree structure  :
@@ -88,7 +88,8 @@ export class OrganaizedTagsAndComments {
 
     private commentToTreeOption(comment: HtmlComment): CommentTreeOption {
         return <CommentTreeOption>{
-            type: "comment",
+            isComment: true,
+            isTag: false,
             key: comment.id,
             label: comment.commentBody,
             line: comment.line,
@@ -98,9 +99,11 @@ export class OrganaizedTagsAndComments {
 
     private tagToTreeOption(key: string, name: string): TagTreeOption {
         return <TagTreeOption>{
-            type: "tag",
+            isComment: false,
+            isTag: true,
             key: key,
             label: name,
+            fullName: key,
             children: []
         }
     }
@@ -128,8 +131,9 @@ export class OrganaizedTagsAndComments {
 
 }
 
-export interface TagTreeOption extends TreeOption, TagTreeItem {
+
+interface TagTreeOption extends TreeOption, TagTreeItem {
     children: TreeOption[]
 }
 
-interface CommentTreeOption extends TreeOption, CommentTreeItem {};
+interface CommentTreeOption extends TreeOption, CommentTreeItem { };
