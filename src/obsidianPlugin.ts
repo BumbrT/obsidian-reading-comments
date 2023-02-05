@@ -1,9 +1,9 @@
 import { stat } from 'fs';
 import { App, Editor, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
 import { v4 as uuidv4 } from 'uuid';
-import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./settings";
-import { viewState, viewTreeOptions, viewExpandedKeys } from "./reactiveState";
-import { HtmlCommentsView, VIEW_TYPE } from './view';
+import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
+import { viewState } from "./reactiveState";
+import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
 
@@ -49,11 +49,11 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		viewState.toggleSettingsChanged();
+		viewState.toggleColorSettingsChanged();
 	}
 
 	initState() {
-		viewState.dark = document.body.hasClass("theme-dark");
+		viewState.settings.dark = document.body.hasClass("theme-dark");
 		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 	}
 
@@ -100,13 +100,12 @@ export class HtmlCommentsPlugin extends Plugin {
 	parseActiveViewToComments() {
 		const text = this.getActiveView().getViewData();
 		const parsedText = new TextToTreeDataParser(text);
-		viewTreeOptions.value = parsedText.parsedComments.treeOptions;
-		console.log(`Tree options: ${JSON.stringify(viewTreeOptions.value)}`);
+		viewState.viewTreeOptions.value = parsedText.parsedComments.treeOptions;
 		if (this.settings.autoExpand) {
 			const expandedKeys = parsedText.parsedComments.treeOptions.map(it => it.key) as string[];
-			viewExpandedKeys.value = expandedKeys;
+			viewState.viewExpandedKeys.value = expandedKeys;
 		} else {
-			viewExpandedKeys.value = [];
+			viewState.viewExpandedKeys.value = [];
 		}
 	}
 }

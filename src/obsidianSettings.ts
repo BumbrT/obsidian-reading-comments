@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
-import { HtmlCommentsPlugin } from "./plugin";
+import { HtmlCommentsPlugin } from "./obsidianPlugin";
 import { viewState } from './reactiveState';
 import { PluginColors } from './comments/ConstantsAndUtils'
 

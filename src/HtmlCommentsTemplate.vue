@@ -12,10 +12,10 @@
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="viewTreeOptions"
-                :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod"
-                :node-props="setNodeProps" :expanded-keys="viewExpandedKeys" :on-update:expanded-keys="expand" :filter="filter"
-                :show-irrelevant-nodes="false" />
+            <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern"
+                :data="viewState.viewTreeOptions.value" :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag"
+                :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="viewState.viewExpandedKeys.value"
+                :on-update:expanded-keys="expand" :filter="filter" :show-irrelevant-nodes="false" />
         </NConfigProvider>
     </div>
 </template>
@@ -29,8 +29,8 @@ import { sanitizeHTMLToDom } from 'obsidian';
 import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
 
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
-import { HtmlCommentsPlugin } from "./plugin";
-import { viewState, viewExpandedKeys, viewTreeOptions } from './reactiveState';
+import { HtmlCommentsPlugin } from "./obsidianPlugin";
+import { viewState } from './reactiveState';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -63,13 +63,13 @@ if (!darkThemeConfig) throw Error("TODO investigate vue undefined")
 
 // toggle light/dark theme
 let theme: any = computed(() => {
-    if (viewState.dark) {
+    if (viewState.settings.dark) {
         return darkTheme;
     }
     return undefined;
 });
 let iconColor = computed(() => {
-    if (viewState.dark) {
+    if (viewState.settings.dark) {
         return { color: "#a3a3a3" };
     }
     return { color: "#727272" };
@@ -94,11 +94,11 @@ const setNodeProps = computed(() => {
 
 
 function expand(keys: string[], option: TreeOption[]) {
-    viewExpandedKeys.value = keys;
+    viewState.viewExpandedKeys.value = keys;
 }
 
 watch(
-    () => viewState.settings.settingsChangedTrigger,
+    () => viewState.colorSettingsChangedTrigger,
     () => {
         constantsAndUtils.applySettingsColors(plugin.settings);
     }
@@ -112,7 +112,7 @@ onMounted(() => {
 
 // load settings
 let renderMethod = computed(() => {
-    if (viewState.rederMarkdown) {
+    if (viewState.settings.rederMarkdown) {
         return renderLabel;
     }
     return undefined
@@ -136,9 +136,10 @@ function simpleFilter(pattern: string, option: TreeOption): boolean {
     return (option.label ?? "").toLowerCase().contains(pattern.toLowerCase());
 }
 
-function filter(pattern: string, option: TreeOption): boolean {
-    return viewState.regexSearch ? regexFilter(pattern, option) : simpleFilter(pattern, option);
-}
+let filter = computed(() => {
+    return viewState.filterPreset.regexSearch ? regexFilter : simpleFilter;
+});
+
 
 // click and jump
 async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[]) {
@@ -177,10 +178,10 @@ function jumpToComment(line: number) {
 }
 
 function expandOrCollapseTag(tagKey: string) {
-    if (viewExpandedKeys.value.contains(tagKey)) {
-        viewExpandedKeys.value.remove(tagKey);
+    if (viewState.viewExpandedKeys.value.contains(tagKey)) {
+        viewState.viewExpandedKeys.value.remove(tagKey);
     } else {
-        viewExpandedKeys.value.push(tagKey);
+        viewState.viewExpandedKeys.value.push(tagKey);
     }
 }
 

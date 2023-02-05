@@ -1,7 +1,7 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { createApp, App } from 'vue';
 import HtmlCommentsTemplate from './HtmlCommentsTemplate.vue';
-import { HtmlCommentsPlugin } from "./plugin";
+import { HtmlCommentsPlugin } from "./obsidianPlugin";
 
 export const VIEW_TYPE: string = 'reading-comments';
 

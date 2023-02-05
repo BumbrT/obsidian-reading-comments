@@ -3,24 +3,23 @@ import { TreeOption } from 'naive-ui';
 
 
 const viewState = {
-    toggleSettingsChanged() {
+    toggleColorSettingsChanged() {
         this.settingsChangedTrigger = !this.settingsChangedTrigger;
     },
     settings: reactive({
-
         dark: true,
-        regexSearch: false,
         rederMarkdown: false,
         hideUnsearched: true,
-        settingsChangedTrigger: false,
     }),
+    filterPreset: reactive({
+        regexSearch: false,
+        caseSensitive: false,
+    }),
+    colorSettingsChangedTrigger: ref(false),
     viewTreeOptions: ref([] as TreeOption[]),
-
     viewExpandedKeys: ref<string[]>([])
 };
 
 
 
-
-
-export { viewState, viewTreeOptions, viewExpandedKeys };
+export { viewState };
