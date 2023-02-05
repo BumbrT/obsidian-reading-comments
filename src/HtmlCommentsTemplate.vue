@@ -12,9 +12,9 @@
                 </NButton>
                 <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
             </div>
-            <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="treeData"
+            <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="viewTreeOptions"
                 :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod"
-                :node-props="setNodeProps" :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
+                :node-props="setNodeProps" :expanded-keys="viewExpandedKeys" :on-update:expanded-keys="expand" :filter="filter"
                 :show-irrelevant-nodes="false" />
         </NConfigProvider>
     </div>
@@ -30,7 +30,7 @@ import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, r
 
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
 import { HtmlCommentsPlugin } from "./plugin";
-import { state } from './state';
+import { viewState, viewExpandedKeys, viewTreeOptions } from './reactiveState';
 
 const lightThemeConfig = reactive<GlobalThemeOverrides>({
     common: {
@@ -63,13 +63,13 @@ if (!darkThemeConfig) throw Error("TODO investigate vue undefined")
 
 // toggle light/dark theme
 let theme: any = computed(() => {
-    if (state.dark) {
+    if (viewState.dark) {
         return darkTheme;
     }
     return undefined;
 });
 let iconColor = computed(() => {
-    if (state.dark) {
+    if (viewState.dark) {
         return { color: "#a3a3a3" };
     }
     return { color: "#727272" };
@@ -92,23 +92,13 @@ const setNodeProps = computed(() => {
     };
 });
 
-// switch heading expand levels
-let expanded = ref<string[]>([]);
 
 function expand(keys: string[], option: TreeOption[]) {
-    expanded.value = keys;
+    viewExpandedKeys.value = keys;
 }
 
-
 watch(
-    () => state.expandedKeys,
-    () => {
-        expanded.value = state.expandedKeys;
-    }
-);
-
-watch(
-    () => state.settingsChanged,
+    () => viewState.toggleSettingsChanged,
     () => {
         constantsAndUtils.applySettingsColors(plugin.settings);
     }
@@ -122,7 +112,7 @@ onMounted(() => {
 
 // load settings
 let renderMethod = computed(() => {
-    if (state.rederMarkdown) {
+    if (viewState.rederMarkdown) {
         return renderLabel;
     }
     return undefined
@@ -147,7 +137,7 @@ function simpleFilter(pattern: string, option: TreeOption): boolean {
 }
 
 function filter(pattern: string, option: TreeOption): boolean {
-    return state.regexSearch ? regexFilter(pattern, option) : simpleFilter(pattern, option);
+    return viewState.regexSearch ? regexFilter(pattern, option) : simpleFilter(pattern, option);
 }
 
 // click and jump
@@ -187,18 +177,12 @@ function jumpToComment(line: number) {
 }
 
 function expandOrCollapseTag(tagKey: string) {
-    state.expandedKeys = expanded.value;
-    if (state.expandedKeys.contains(tagKey)) {
-        state.expandedKeys.remove(tagKey);
+    if (viewExpandedKeys.value.contains(tagKey)) {
+        viewExpandedKeys.value.remove(tagKey);
     } else {
-        state.expandedKeys.push(tagKey);
+        viewExpandedKeys.value.push(tagKey);
     }
 }
-
-
-let treeData = computed(() => {
-    return state.treeOptions;
-});
 
 function parseCurrentNote() {
     pattern.value = "";

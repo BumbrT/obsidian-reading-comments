@@ -1,7 +1,7 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
 import { HtmlCommentsPlugin } from "./plugin";
-import { state } from './state';
+import { viewState } from './reactiveState';
 import { PluginColors } from './comments/ConstantsAndUtils'
 
 export interface HtmlCommentsSettings extends PluginColors {
@@ -43,7 +43,7 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                 .onChange(
                     async (value) => {
                         this.plugin.settings.autoExpand = value;
-                        state.expandedKeys = [];
+                        viewState.expandedKeys = [];
                         await this.plugin.saveSettings();
                     }
                 )
