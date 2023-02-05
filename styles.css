@@ -1,10 +1,35 @@
 .view-content .ob-html-comment-body {
     display: none;
 }
+.view-content .ob-html-comment:hover>pre {
+    filter: blur(5px);
+}
 
 .view-content .ob-html-comment:hover>.ob-html-comment-body {
     display: block;
+    filter: blur(0);
+    position: absolute;
+    z-index: 1;
 }
+
+
+.reading-comments .function-bar {
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    margin-bottom: 5px;
+}
+
+.reading-comments .function-bar .n-button {
+    margin-right: 5px;
+    text-align: center;
+}
+
+.reading-comments .function-bar .n-input {
+    flex: 1;
+    min-width: 10px;
+}
+
 
 /* colors moved to constantsAndUtils.ts
 
@@ -24,20 +49,3 @@
     background-color: #330202;
 }
 */
-
-.reading-comments .function-bar {
-    display: flex;
-    align-items: center;
-    padding: 0px;
-    margin-bottom: 5px;
-}
-
-.reading-comments .function-bar .n-button {
-    margin-right: 5px;
-    text-align: center;
-}
-
-.reading-comments .function-bar .n-input {
-    flex: 1;
-    min-width: 10px;
-}

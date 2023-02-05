@@ -12,7 +12,7 @@ const constantsAndUtils = {
 
     selectionToComment(commentId: string, selection: string): string {
         const escapedSelection = escapeHTML(selection);
-        return `<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</div>`;
+        return `<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span><pre>${escapedSelection}</pre></div>`;
     },
 
     applySettingsColors(colors: PluginColors) {
