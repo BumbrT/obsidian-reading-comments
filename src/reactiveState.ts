@@ -1,20 +1,26 @@
 import { reactive, ref } from 'vue';
 import { TreeOption } from 'naive-ui';
 
-const viewState = reactive({
+
+const viewState = {
     toggleSettingsChanged() {
         this.settingsChangedTrigger = !this.settingsChangedTrigger;
     },
-    dark: true,
-    regexSearch: false,
-    rederMarkdown: false,
-    hideUnsearched: true,
-    settingsChangedTrigger: false,
-});
+    settings: reactive({
 
-let viewTreeOptions = ref([] as TreeOption[]);
+        dark: true,
+        regexSearch: false,
+        rederMarkdown: false,
+        hideUnsearched: true,
+        settingsChangedTrigger: false,
+    }),
+    viewTreeOptions: ref([] as TreeOption[]),
 
-let viewExpandedKeys = ref<string[]>([]);
+    viewExpandedKeys: ref<string[]>([])
+};
+
+
+
 
 
 export { viewState, viewTreeOptions, viewExpandedKeys };

@@ -101,6 +101,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		const text = this.getActiveView().getViewData();
 		const parsedText = new TextToTreeDataParser(text);
 		viewTreeOptions.value = parsedText.parsedComments.treeOptions;
+		console.log(`Tree options: ${JSON.stringify(viewTreeOptions.value)}`);
 		if (this.settings.autoExpand) {
 			const expandedKeys = parsedText.parsedComments.treeOptions.map(it => it.key) as string[];
 			viewExpandedKeys.value = expandedKeys;

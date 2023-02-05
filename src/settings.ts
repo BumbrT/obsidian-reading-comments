@@ -43,7 +43,6 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                 .onChange(
                     async (value) => {
                         this.plugin.settings.autoExpand = value;
-                        viewState.expandedKeys = [];
                         await this.plugin.saveSettings();
                     }
                 )
