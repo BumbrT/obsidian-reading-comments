@@ -1,75 +1,45 @@
 <template>
-    <div id="container">
-        <!-- :theme-overrides="theme === null ? lightThemeConfig : darkThemeConfig" -->
-        <NConfigProvider :theme="theme">
-            <div class="function-bar" v-if="true">
-                <NButton size="small" circle @click="parseCurrentNote">
-                    <template #icon>
-                        <Icon>
-                            <SettingsBackupRestoreSharp :style="iconColor" />
-                        </Icon>
-                    </template>
-                </NButton>
-                <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
-            </div>
-            <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern" :data="treeData"
-                :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod"
-                :node-props="setNodeProps" :expanded-keys="expanded" :on-update:expanded-keys="expand" :filter="filter"
-                :show-irrelevant-nodes="!state.hideUnsearched" />
-        </NConfigProvider>
-    </div>
+    <NConfigProvider :theme="theme">
+        <NSpace>
+            <NButton size="small" circle @click="clearFiltersAndParseCurrentNote">
+                <template #icon>
+                    <Icon>
+                        <SettingsBackupRestoreSharp :style="iconColor" />
+                    </Icon>
+                </template>
+            </NButton>
+            <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search" size="small" clearable />
+        </NSpace>
+        <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
+            :data="viewState.viewTreeOptions.value" :selected-keys="[]"
+            :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod" :node-props="setNodeProps"
+            :expanded-keys="viewState.viewExpandedKeys.value" :on-update:expanded-keys="expand" :filter="viewState.simpleFilter"
+            :show-irrelevant-nodes="false" />
+    </NConfigProvider>
 </template>
 
 <script setup lang="ts">
-import { ref, toRef, reactive, toRaw, computed, watch, nextTick, getCurrentInstance, onMounted, onUnmounted, HTMLAttributes, h, watchEffect } from 'vue';
-import { Notice, MarkdownView, sanitizeHTMLToDom } from 'obsidian';
-import { NTree, TreeSelectOption, NButton, NInput, NSlider, NConfigProvider, darkTheme, GlobalThemeOverrides, TreeDropInfo, TreeOption } from 'naive-ui';
+import { SettingsBackupRestoreSharp } from '@vicons/material';
 import { Icon } from '@vicons/utils';
-import { SettingsBackupRestoreRound, SettingsBackupRestoreSharp } from '@vicons/material';
 import { marked } from 'marked';
+import { darkTheme, GlobalThemeOverrides, NSpace, NButton, NConfigProvider, NInput, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
+import { sanitizeHTMLToDom } from 'obsidian';
+import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
 
-import { state } from './state';
-import { HtmlCommentsPlugin } from "./plugin";
-import { constantsAndUtils } from './comments/ConstantsAndUtils';
-
-const lightThemeConfig = reactive<GlobalThemeOverrides>({
-    common: {
-        primaryColor: "",
-        primaryColorHover: "",
-    },
-    Slider: {
-        handleSize: "10px",
-        fillColor: "",
-        fillColorHover: "",
-        dotBorderActive: ""
-    },
-});
-if (!lightThemeConfig) throw Error("TODO investigate vue undefined")
-
-const darkThemeConfig = reactive<GlobalThemeOverrides>({
-    common: {
-        primaryColor: "#a3a3a3",
-        primaryColorHover: "#a3a3a3",
-    },
-    Slider: {
-        handleSize: "10px",
-        fillColor: "#a3a3a3",
-        fillColorHover: "#a3a3a3",
-        dotBorderActive: ""
-    }
-});
-if (!darkThemeConfig) throw Error("TODO investigate vue undefined")
+import { constantsAndUtils, TreeItem, TagTreeItem, CommentTreeItem } from './comments/ConstantsAndUtils';
+import { HtmlCommentsPlugin } from "./obsidianPlugin";
+import { viewState } from './reactiveState';
 
 
 // toggle light/dark theme
 let theme: any = computed(() => {
-    if (state.dark) {
+    if (viewState.settings.dark) {
         return darkTheme;
     }
     return undefined;
 });
 let iconColor = computed(() => {
-    if (state.dark) {
+    if (viewState.settings.dark) {
         return { color: "#a3a3a3" };
     }
     return { color: "#727272" };
@@ -78,8 +48,6 @@ let iconColor = computed(() => {
 let compomentSelf = getCurrentInstance();
 if (!compomentSelf) throw Error("vue not found");
 let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlCommentsPlugin
-let container = compomentSelf.appContext.config.globalProperties.container as HTMLElement;
-
 
 const setNodeProps = computed(() => {
     return (info: { option: TreeSelectOption; }): HTMLAttributes & Record<string, unknown> => {
@@ -92,34 +60,13 @@ const setNodeProps = computed(() => {
     };
 });
 
-// switch heading expand levels
-let expanded = ref<string[]>([]);
 
 function expand(keys: string[], option: TreeOption[]) {
-    expanded.value = keys;
+    viewState.viewExpandedKeys.value = keys;
 }
 
 watch(
-    () => state.leafChange,
-    () => {
-        const old_pattern = pattern.value;
-        pattern.value = "";
-        nextTick(() => {
-            pattern.value = old_pattern;
-        });
-
-    }
-);
-
-watch(
-    () => state.expandedKeys,
-    () => {
-        expanded.value = state.expandedKeys;
-    }
-);
-
-watch(
-    () => state.settingsChanged,
+    () => viewState.colorSettingsChangedTrigger.value,
     () => {
         constantsAndUtils.applySettingsColors(plugin.settings);
     }
@@ -133,45 +80,39 @@ onMounted(() => {
 
 // load settings
 let renderMethod = computed(() => {
-    if (state.rederMarkdown) {
+    if (viewState.settings.rederMarkdown) {
         return renderLabel;
     }
     return undefined
 });
 
 // search
-let pattern = ref("");
-
-function regexFilter(pattern: string, option: TreeOption): boolean {
-    let rule = /.*/;
-    try {
-        rule = RegExp(pattern, "i");
-    } catch (e) {
-
-    } finally {
-        return rule.test(option.label ?? "");
-    }
+let searchPattern = ref('');
+let searchInputValue = ref('');
+let searchTriggered = false;
+// workaround for search bug while typing, just delay and aggregate inputs
+function onSearchInput(value: string) {
+    searchTriggered = true;
+    setTimeout(() => {
+        if (searchTriggered) {
+            searchTriggered = false;
+            viewState.viewExpandedKeys.value = [];
+            searchPattern.value = searchInputValue.value;
+        }
+     }, 100);
 }
-
-function simpleFilter(pattern: string, option: TreeOption): boolean {
-    return (option.label ?? "").toLowerCase().contains(pattern.toLowerCase());
-}
-
-let filter = computed(() => {
-    return state.regexSearch ? regexFilter : simpleFilter;
-});
 
 // click and jump
 async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[]) {
     if (nodes[0] === undefined) {
         return;
     }
-    const selectedOption = nodes[0];
-    if (selectedOption.type == "comment") {
-        const line: number = selectedOption.line as number
+    const selectedOption = nodes[0] as TreeItem;
+    if (selectedOption.isComment) {
+        const line: number = (selectedOption as CommentTreeItem).line as number
         jumpToComment(line);
-    } else if (selectedOption.type == "tag") {
-        const tagKey = selectedOption.key as string;
+    } else if (selectedOption.isTag) {
+        const tagKey = (selectedOption as TagTreeItem).fullName as string;
         expandOrCollapseTag(tagKey);
     }
 }
@@ -198,22 +139,17 @@ function jumpToComment(line: number) {
 }
 
 function expandOrCollapseTag(tagKey: string) {
-    state.expandedKeys = expanded.value;
-    if (state.expandedKeys.contains(tagKey)) {
-        state.expandedKeys.remove(tagKey);
+    if (viewState.viewExpandedKeys.value.contains(tagKey)) {
+        viewState.viewExpandedKeys.value.remove(tagKey);
     } else {
-        state.expandedKeys.push(tagKey);
+        viewState.viewExpandedKeys.value.push(tagKey);
     }
 }
 
-
-let treeData = computed(() => {
-    return state.treeOptions;
-});
-
-function parseCurrentNote() {
+function clearFiltersAndParseCurrentNote() {
+    searchInputValue.value = "";
+    searchPattern.value = "";
     plugin.parseActiveViewToComments();
-    pattern.value = "";
 }
 
 function renderLabel({ option, checked, selected }: { option: TreeOption; checked: boolean; selected: boolean; }) {

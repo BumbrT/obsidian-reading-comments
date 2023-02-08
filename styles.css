@@ -1,43 +1,11 @@
+/* colors moved to constantsAndUtils.ts */
+
 .view-content .ob-html-comment-body {
     display: none;
 }
 
 .view-content .ob-html-comment:hover>.ob-html-comment-body {
-    display: block;
-}
-
-/* colors moved to constantsAndUtils.ts
-
-.view-content .ob-html-comment {
-    background-color: #585809;
-}
-
-.theme-light .view-content .ob-html-comment {
-    background-color: #f3f367;
-}
-
-.theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-    background-color: #f16e6e;
-}
-
-.view-content .ob-html-comment:hover>.ob-html-comment-body {
-    background-color: #330202;
-}
-*/
-
-.reading-comments .function-bar {
-    display: flex;
-    align-items: center;
-    padding: 0px;
-    margin-bottom: 5px;
-}
-
-.reading-comments .function-bar .n-button {
-    margin-right: 5px;
-    text-align: center;
-}
-
-.reading-comments .function-bar .n-input {
-    flex: 1;
-    min-width: 10px;
+    display: inline;
+    position: relative;
+    /* z-index: 1; */
 }
