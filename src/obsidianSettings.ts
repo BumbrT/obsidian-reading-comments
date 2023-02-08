@@ -51,7 +51,7 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
             );
         new Setting(containerEl)
             .setName('Add comment inline or as block by default')
-            .setDesc('There is also two additional commands: Add comment as inline/ as block. Or you can change manually comment tags from span to div accordingly.')
+            .setDesc('There is also two additional commands: Add comment as inline/ as block. Or you can change manually .ob-html-comment wrapper tag from span to div accordingly.')
             .addDropdown( dropdown => dropdown
                     .addOption("span", "Inline")
                     .addOption("div", "Block")
