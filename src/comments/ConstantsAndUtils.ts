@@ -28,11 +28,11 @@ export interface PluginColors {
 }
 
 const constantsAndUtils = {
-    regExpComment: /\<div class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm,
+    regExpComment: /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/(?:div|span)\>/gm,
 
-    selectionToComment(commentId: string, selection: string): string {
+    selectionToComment(containerTag: string, commentId: string, selection: string): string {
         const escapedSelection = escapeHTML(selection);
-        return `<div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</div>`;
+        return `<${containerTag} class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
     },
 
     applySettingsColors(colors: PluginColors) {

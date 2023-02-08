@@ -7,9 +7,4 @@
 .view-content .ob-html-comment:hover>.ob-html-comment-body {
     display: inline;
     position: relative;
-    /* z-index: 1; */
-}
-
-.view-content .ob-html-comment {
-    display: inline;
 }

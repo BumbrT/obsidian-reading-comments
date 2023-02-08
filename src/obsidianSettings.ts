@@ -6,6 +6,7 @@ import { PluginColors } from './comments/ConstantsAndUtils'
 
 export interface HtmlCommentsSettings extends PluginColors {
     autoExpand: boolean;
+    container: string;
     commentedTextColorLight: string;
     commentedTextColorDark: string;
     commentColorLight: string;
@@ -14,6 +15,7 @@ export interface HtmlCommentsSettings extends PluginColors {
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     autoExpand: false,
+    container: "span",
     commentedTextColorLight: "#f16e6e",
     commentedTextColorDark: "#585809",
     commentColorLight: "#f3f367",
@@ -47,6 +49,19 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                     }
                 )
             );
+        new Setting(containerEl)
+            .setName('Add comment inline or as block')
+            .setDesc('You can change manually comment tags from span to div accordingly')
+            .addDropdown( dropdown => dropdown
+                    .addOption("span", "Inline")
+                    .addOption("div", "Block")
+                    .onChange(
+                        async (value) => {
+                            this.plugin.settings.container = value;
+                            await this.plugin.saveSettings();
+                        }
+                    )
+                );
 
         new Setting(containerEl)
             .setName("Commented Text Color Light/Dark")
