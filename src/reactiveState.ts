@@ -1,5 +1,6 @@
 import { reactive, ref } from 'vue';
 import { TreeOption } from 'naive-ui';
+import { CommentTreeItem } from './comments/ConstantsAndUtils';
 
 
 const viewState = {
@@ -17,7 +18,30 @@ const viewState = {
     }),
     colorSettingsChangedTrigger: ref(false),
     viewTreeOptions: ref([] as TreeOption[]),
-    viewExpandedKeys: ref<string[]>([])
+    viewExpandedKeys: ref<string[]>([]),
+    regexFilter(pattern: string, option: TreeOption): boolean {
+        let rule = /.*/;
+        try {
+            rule = RegExp(pattern, "i");
+        } catch (e) {
+
+        } finally {
+            return rule.test(option.label ?? "");
+        }
+    },
+
+    simpleFilter(pattern: string, option: TreeOption): boolean {
+        const commentOption = option as unknown as CommentTreeItem;
+        if (commentOption.searchIndex) {
+            let contains = commentOption.searchIndex.includes(pattern.toLowerCase());
+            if (contains) {
+                console.log(`>>> ${commentOption.searchIndex}`)
+            }
+            return commentOption.searchIndex.includes(pattern.toLowerCase());
+        } else {
+            return false;
+        }
+    }
 };
 
 

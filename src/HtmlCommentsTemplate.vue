@@ -8,12 +8,12 @@
                     </Icon>
                 </template>
             </NButton>
-            <NInput v-model:value="pattern" placeholder="Input to search" size="small" clearable />
+            <NInput :on-change="onSearchChange" v-model:value="searchInputValue" placeholder="Input to search" size="small" clearable />
         </NSpace>
-        <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="pattern"
+        <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
             :data="viewState.viewTreeOptions.value" :selected-keys="[]"
             :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod" :node-props="setNodeProps"
-            :expanded-keys="viewState.viewExpandedKeys.value" :on-update:expanded-keys="expand" :filter="filter"
+            :expanded-keys="viewState.viewExpandedKeys.value" :on-update:expanded-keys="expand" :filter="viewState.simpleFilter"
             :show-irrelevant-nodes="false" />
     </NConfigProvider>
 </template>
@@ -87,32 +87,20 @@ let renderMethod = computed(() => {
 });
 
 // search
-let pattern = ref("");
+let searchPattern = ref('');
+let searchInputValue = ref('');
+let searchTriggered = false;
+// workaround for search bug while typing, just delay and aggregate inputs
+function onSearchChange(value: string) {
+    searchTriggered = true;
+    setTimeout(() => {
+        if (searchTriggered) {
+            searchPattern.value = searchInputValue.value;
+            searchTriggered = false;
+        }
 
-function regexFilter(pattern: string, option: TreeOption): boolean {
-    let rule = /.*/;
-    try {
-        rule = RegExp(pattern, "i");
-    } catch (e) {
-
-    } finally {
-        return rule.test(option.label ?? "");
-    }
+     }, 150);
 }
-
-function simpleFilter(pattern: string, option: TreeOption): boolean {
-    const commentOption = option as CommentTreeItem;
-    if (commentOption.searchIndex) {
-        return commentOption.searchIndex.contains(pattern.toLowerCase());
-    } else {
-        return false;
-    }
-}
-
-let filter = computed(() => {
-    return viewState.filterPreset.regexSearch ? regexFilter : simpleFilter;
-});
-
 
 // click and jump
 async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[]) {
