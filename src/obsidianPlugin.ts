@@ -25,7 +25,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const commentId = uuidv4();
-				const replacement = constantsAndUtils.selectionToComment(commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment(this.settings.container, commentId, selection);
 				editor.replaceSelection(replacement);
 			}
 		});
