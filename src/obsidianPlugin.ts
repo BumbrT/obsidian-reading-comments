@@ -30,6 +30,28 @@ export class HtmlCommentsPlugin extends Plugin {
 			}
 		});
 
+		this.addCommand({
+			id: 'add-inline-reading-comment',
+			name: 'Add inline reading comment for selection',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				const selection = editor.getSelection();
+				const commentId = uuidv4();
+				const replacement = constantsAndUtils.selectionToComment("span", commentId, selection);
+				editor.replaceSelection(replacement);
+			}
+		});
+
+		this.addCommand({
+			id: 'add-block-reading-comment',
+			name: 'Add block reading comment for selection',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				const selection = editor.getSelection();
+				const commentId = uuidv4();
+				const replacement = constantsAndUtils.selectionToComment("div", commentId, selection);
+				editor.replaceSelection(replacement);
+			}
+		});
+
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new HtmlCommentsSettingTab(this.app, this));
