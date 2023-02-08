@@ -33,10 +33,6 @@ const viewState = {
     simpleFilter(pattern: string, option: TreeOption): boolean {
         const commentOption = option as unknown as CommentTreeItem;
         if (commentOption.searchIndex) {
-            let contains = commentOption.searchIndex.includes(pattern.toLowerCase());
-            if (contains) {
-                console.log(`>>> ${commentOption.searchIndex}`)
-            }
             return commentOption.searchIndex.includes(pattern.toLowerCase());
         } else {
             return false;

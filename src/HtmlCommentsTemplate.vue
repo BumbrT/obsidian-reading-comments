@@ -1,14 +1,14 @@
 <template>
     <NConfigProvider :theme="theme">
         <NSpace>
-            <NButton size="small" circle @click="parseCurrentNote">
+            <NButton size="small" circle @click="clearFiltersAndParseCurrentNote">
                 <template #icon>
                     <Icon>
                         <SettingsBackupRestoreSharp :style="iconColor" />
                     </Icon>
                 </template>
             </NButton>
-            <NInput :on-change="onSearchChange" v-model:value="searchInputValue" placeholder="Input to search" size="small" clearable />
+            <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search" size="small" clearable />
         </NSpace>
         <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
             :data="viewState.viewTreeOptions.value" :selected-keys="[]"
@@ -91,15 +91,15 @@ let searchPattern = ref('');
 let searchInputValue = ref('');
 let searchTriggered = false;
 // workaround for search bug while typing, just delay and aggregate inputs
-function onSearchChange(value: string) {
+function onSearchInput(value: string) {
     searchTriggered = true;
     setTimeout(() => {
         if (searchTriggered) {
-            searchPattern.value = searchInputValue.value;
             searchTriggered = false;
+            viewState.viewExpandedKeys.value = [];
+            searchPattern.value = searchInputValue.value;
         }
-
-     }, 150);
+     }, 100);
 }
 
 // click and jump
@@ -146,8 +146,9 @@ function expandOrCollapseTag(tagKey: string) {
     }
 }
 
-function parseCurrentNote() {
-    pattern.value = "";
+function clearFiltersAndParseCurrentNote() {
+    searchInputValue.value = "";
+    searchPattern.value = "";
     plugin.parseActiveViewToComments();
 }
 
