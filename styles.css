@@ -9,3 +9,7 @@
     position: relative;
     /* z-index: 1; */
 }
+
+.view-content .ob-html-comment {
+    display: inline;
+}
