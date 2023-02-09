@@ -6,6 +6,7 @@ import { PluginColors } from './comments/ConstantsAndUtils'
 
 export interface HtmlCommentsSettings extends PluginColors {
     autoExpand: boolean;
+    liveReloadOnEdit: boolean;
     container: string;
     commentedTextColorLight: string;
     commentedTextColorDark: string;
