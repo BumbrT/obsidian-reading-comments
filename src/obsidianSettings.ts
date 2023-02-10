@@ -6,6 +6,7 @@ import { PluginColors } from './comments/ConstantsAndUtils'
 
 export interface HtmlCommentsSettings extends PluginColors {
     autoExpand: boolean;
+    liveReloadOnEdit: boolean;
     container: string;
     commentedTextColorLight: string;
     commentedTextColorDark: string;
@@ -15,6 +16,7 @@ export interface HtmlCommentsSettings extends PluginColors {
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     autoExpand: false,
+    liveReloadOnEdit: true,
     container: "span",
     commentedTextColorLight: "#f16e6e",
     commentedTextColorDark: "#585809",
@@ -49,9 +51,22 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                     }
                 )
             );
+
         new Setting(containerEl)
-            .setName('Add comment inline or as block')
-            .setDesc('You can change manually comment tags from span to div accordingly')
+            .setName('Live reload on edit')
+            .setDesc('Automatically update comments panel during editing note')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.liveReloadOnEdit)
+                .onChange(
+                    async (value) => {
+                        this.plugin.settings.liveReloadOnEdit = value;
+                        await this.plugin.saveSettings();
+                    }
+                )
+            );
+        new Setting(containerEl)
+            .setName('Add comment inline or as block by default')
+            .setDesc('There is also two additional commands: Add comment as inline/ as block. Or you can change manually .ob-html-comment wrapper tag from span to div accordingly.')
             .addDropdown( dropdown => dropdown
                     .addOption("span", "Inline")
                     .addOption("div", "Block")

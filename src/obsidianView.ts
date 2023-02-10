@@ -18,7 +18,7 @@ export class HtmlCommentsView extends ItemView {
     }
 
     getDisplayText(): string {
-        return "Html Comments";
+        return "Reading Comments";
     }
 
     getIcon(): string {
