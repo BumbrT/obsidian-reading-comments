@@ -1,11 +1,12 @@
 import { stat } from 'fs';
-import { App, Editor, MarkdownView, Modal, Notice, Plugin } from 'obsidian';
+import { App, Editor, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin } from 'obsidian';
 import { v4 as uuidv4 } from 'uuid';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
+import { EventsAggregator } from './internalUtils';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -97,7 +98,17 @@ export class HtmlCommentsPlugin extends Plugin {
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
 				this.currentNote = view;
-				this.parseActiveViewToComments();
+				this.parseActiveViewToCommentsAndClearExpandedItems();
+			}
+		}));
+		const editorEventsAggregator = new EventsAggregator(2000, () => {
+			this.parseActiveViewToComments(false);
+		});
+		this.registerEvent(this.app.workspace.on('editor-change',async (editor: Editor, info: MarkdownView | MarkdownFileInfo) => {
+			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
+			if (view) {
+				this.currentNote = view;
+				editorEventsAggregator.triggerEvent();
 			}
 		}));
 	}
@@ -122,10 +133,17 @@ export class HtmlCommentsPlugin extends Plugin {
 		return activeView;
 	}
 
-	parseActiveViewToComments() {
+	parseActiveViewToCommentsAndClearExpandedItems() {
+		this.parseActiveViewToComments(true);
+	}
+
+	private	parseActiveViewToComments(clearExpandedItems: boolean) {
 		const text = this.getActiveView().getViewData();
 		const parsedText = new TextToTreeDataParser(text);
 		viewState.viewTreeOptions.value = parsedText.parsedComments.treeOptions;
+		if (!clearExpandedItems) {
+			return;
+		}
 		if (this.settings.autoExpand) {
 			const expandedKeys = parsedText.parsedComments.treeOptions.map(it => it.key) as string[];
 			viewState.viewExpandedKeys.value = expandedKeys;

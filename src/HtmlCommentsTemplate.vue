@@ -8,13 +8,14 @@
                     </Icon>
                 </template>
             </NButton>
-            <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search" size="small" clearable />
+            <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search"
+                size="small" clearable />
         </NSpace>
         <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
             :data="viewState.viewTreeOptions.value" :selected-keys="[]"
             :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod" :node-props="setNodeProps"
-            :expanded-keys="viewState.viewExpandedKeys.value" :on-update:expanded-keys="expand" :filter="viewState.simpleFilter"
-            :show-irrelevant-nodes="false" />
+            :expanded-keys="viewState.viewExpandedKeys.value" :on-update:expanded-keys="expand"
+            :filter="viewState.simpleFilter" :show-irrelevant-nodes="false" />
     </NConfigProvider>
 </template>
 
@@ -27,6 +28,7 @@ import { sanitizeHTMLToDom } from 'obsidian';
 import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
 
 import { constantsAndUtils, TreeItem, TagTreeItem, CommentTreeItem } from './comments/ConstantsAndUtils';
+import { EventsAggregator } from './internalUtils';
 import { HtmlCommentsPlugin } from "./obsidianPlugin";
 import { viewState } from './reactiveState';
 
@@ -89,17 +91,13 @@ let renderMethod = computed(() => {
 // search
 let searchPattern = ref('');
 let searchInputValue = ref('');
-let searchTriggered = false;
+const searchEventsAggregator = new EventsAggregator(100, () => {
+    viewState.viewExpandedKeys.value = [];
+    searchPattern.value = searchInputValue.value;
+})
 // workaround for search bug while typing, just delay and aggregate inputs
 function onSearchInput(value: string) {
-    searchTriggered = true;
-    setTimeout(() => {
-        if (searchTriggered) {
-            searchTriggered = false;
-            viewState.viewExpandedKeys.value = [];
-            searchPattern.value = searchInputValue.value;
-        }
-     }, 100);
+    searchEventsAggregator.triggerEvent();
 }
 
 // click and jump
@@ -149,7 +147,7 @@ function expandOrCollapseTag(tagKey: string) {
 function clearFiltersAndParseCurrentNote() {
     searchInputValue.value = "";
     searchPattern.value = "";
-    plugin.parseActiveViewToComments();
+    plugin.parseActiveViewToCommentsAndClearExpandedItems();
 }
 
 function renderLabel({ option, checked, selected }: { option: TreeOption; checked: boolean; selected: boolean; }) {

@@ -16,6 +16,7 @@ export interface HtmlCommentsSettings extends PluginColors {
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     autoExpand: false,
+    liveReloadOnEdit: true,
     container: "span",
     commentedTextColorLight: "#f16e6e",
     commentedTextColorDark: "#585809",
@@ -46,6 +47,19 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
                 .onChange(
                     async (value) => {
                         this.plugin.settings.autoExpand = value;
+                        await this.plugin.saveSettings();
+                    }
+                )
+            );
+
+        new Setting(containerEl)
+            .setName('Live reload on edit')
+            .setDesc('Automatically update comments panel during editing note')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.liveReloadOnEdit)
+                .onChange(
+                    async (value) => {
+                        this.plugin.settings.liveReloadOnEdit = value;
                         await this.plugin.saveSettings();
                     }
                 )
