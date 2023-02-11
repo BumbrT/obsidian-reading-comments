@@ -29,7 +29,7 @@ export interface PluginColors {
 
 const constantsAndUtils = {
     regExpComment: /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/(?:div|span)\>/gm,
-    regExpTagToggle: /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>[\s\S]+?)\<\/(div|span)\>$/,
+    regExpTagToggle: /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/,
 
     selectionToComment(containerTag: string, commentId: string, selection: string): string {
         const escapedSelection = escapeHTML(selection);
@@ -38,19 +38,31 @@ const constantsAndUtils = {
 
     toggleTagInSelection(selection: string): string | null {
         const matches = this.regExpTagToggle.exec(selection);
-        if (matches == null || matches.length < 4) {
+        if (matches == null || matches.length < 5) {
             return null;
         }
-        let replacement: string | null = null;
+        let replacementTag: string | null = null;
         let openTag = matches[1];
         if (openTag == "span") {
-            replacement = "div";
+            replacementTag = "div";
         } else if (openTag == "div") {
-            replacement = "span";
+            replacementTag = "span";
         } else {
             return null;
         }
-        return `<${replacement}${matches[2]}</${replacement}>`;
+        return `<${replacementTag}${matches[2]}</${replacementTag}>`;
+    },
+
+    removeCommentInSelection(selection: string): string | null {
+        const matches = this.regExpTagToggle.exec(selection);
+        if (matches == null || matches.length < 5) {
+            return null;
+        }
+        let openTag = matches[1];
+        if (openTag != "span" && openTag != "div") {
+            return null;
+        }
+        return htmlDecode(matches[3]);
     },
 
     applySettingsColors(colors: PluginColors) {
@@ -81,6 +93,10 @@ const constantsAndUtils = {
 };
 
 const customColorStyleElementId = "ob-html-comment-custom-style";
+const htmlDecode = (input: string) => {
+    const doc = new DOMParser().parseFromString(input, "text/html");
+    return doc.documentElement.textContent;
+}
 
 export { constantsAndUtils };
 

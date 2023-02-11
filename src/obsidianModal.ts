@@ -7,7 +7,7 @@ export class ToggleSelectionErrorModal extends Modal {
 
 	onOpen() {
 		const {contentEl} = this;
-		contentEl.setText('Please put full comment with all tags into editor selection!');
+		contentEl.setText('Please select full comment with all tags in editor!');
 	}
 
 	onClose() {

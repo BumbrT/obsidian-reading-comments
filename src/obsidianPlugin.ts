@@ -99,6 +99,19 @@ export class HtmlCommentsPlugin extends Plugin {
 		});
 
 		this.addCommand({
+			id: 'remove-comment-reading-comment',
+			name: 'Remove selected reading comment',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				const selection = editor.getSelection();
+				const replacement = constantsAndUtils.removeCommentInSelection(selection);
+				if (!replacement) {
+					new ToggleSelectionErrorModal(this.app).open();
+				}
+				editor.replaceSelection(replacement);
+			}
+		});
+
+		this.addCommand({
 			id: "reading-comments",
 			name: "Reading Comments Panel",
 			callback: () => {
