@@ -105,6 +105,9 @@ export class HtmlCommentsPlugin extends Plugin {
 			this.parseActiveViewToComments(false);
 		});
 		this.registerEvent(this.app.workspace.on('editor-change',async (editor: Editor, info: MarkdownView | MarkdownFileInfo) => {
+			if (!this.settings.liveReloadOnEdit) {
+				return;
+			}
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
 				this.currentNote = view;
