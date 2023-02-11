@@ -18,6 +18,8 @@ Open command panel and type `Reading comments` ，then press `Enter` .
 - Tag comments hierarchically: Parent/Child/Etc tags supported and grouped by parent in the panel.
 - Search in comments
 - Navigate to particular comment by click
+- Remove selected comment by hotkey
+- Toggle selected comment to block/inline by hotkey
 - Hide comment until commented text body is hovered
 - Pick comment color from settings
 - Dark and light theme support (app restart required)
