@@ -6,7 +6,7 @@ import { HtmlCommentTag } from "../comments/HtmlCommentTag";
 
 describe("parsing hierarchical comment", () => {
 
-    test.skip("should organise comments to tree view", () => {
+    test("should organise comments to tree view", () => {
         const textToAnalyse = `
         Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
     Struct - структура книги (кратко методы и способы чтения)
@@ -20,7 +20,7 @@ describe("parsing hierarchical comment", () => {
         expect(commentsWithoutTag.length).toBe(0);
     });
 
-    test.skip("should organise hierarchical comment to tree view", () => {
+    test("should organise hierarchical comment to tree view", () => {
         const textToAnalyse = `
         Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
     Struct - структура книги (кратко методы и способы чтения)
@@ -51,7 +51,7 @@ describe("parsing hierarchical comment", () => {
 });
 
 describe("parsing comment", () => {
-    test.skip("should organise comments to tree view", () => {
+    test("should find tags and orphan comment", () => {
         const textToAnalyse = `
         Rule* ( Common, One, Two, Three, Four, Practice, Theory, Hud) - описание правила чтения
     Struct - структура книги (кратко методы и способы чтения)
@@ -60,14 +60,13 @@ describe("parsing comment", () => {
         `;
         const parser = new TextToTreeDataParser(textToAnalyse);
         const comments = parser.parsedComments.treeOptions;
-        const commentsWithoutTag = comments.filter(it => it.type === "comment");
+        const commentsWithoutTag = comments.filter(it => it.isComment);
         expect(comments.length).toBe(3);
         expect(commentsWithoutTag.length).toBe(1);
-        console.log(JSON.stringify(comments));
     });
 
 
-    test.skip('should match regex', () => {
+    test('should match regex', () => {
         const regExSpan =
             /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
         const lineContent = `ss
@@ -79,7 +78,7 @@ describe("parsing comment", () => {
         console.log(result);
     });
 
-    test.skip('empty comment should match regex', () => {
+    test('empty comment should match regex', () => {
         const regExSpan =
             /\<span class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>(.+?)\<\/span\>/gm
         const lineContent = `ss

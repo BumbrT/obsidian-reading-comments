@@ -7,6 +7,7 @@ import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
+import { ToggleSelectionErrorModal } from './obsidianModal';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -19,6 +20,37 @@ export class HtmlCommentsPlugin extends Plugin {
 			(leaf) => new HtmlCommentsView(leaf, this)
 		);
 
+
+		// This adds a settings tab so the user can configure various aspects of the plugin
+		this.addSettingTab(new HtmlCommentsSettingTab(this.app, this));
+
+		this.initState();
+		this.registerCommand();
+		this.registerListener();
+	}
+
+	onunload() {
+
+	}
+
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	}
+
+	async saveSettings() {
+		await this.saveData(this.settings);
+		viewState.toggleColorSettingsChanged();
+	}
+
+	initState() {
+		viewState.settings.dark = document.body.hasClass("theme-dark");
+		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (view) {
+			this.currentNote = view
+		}
+	}
+
+	registerCommand() {
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
 			id: 'add-reading-comment',
@@ -53,37 +85,32 @@ export class HtmlCommentsPlugin extends Plugin {
 			}
 		});
 
+		this.addCommand({
+			id: 'toggle-block-inline-reading-comment',
+			name: 'Toggle block/inline for selected reading comment',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				const selection = editor.getSelection();
+				const replacement = constantsAndUtils.toggleTagInSelection(selection);
+				if (!replacement) {
+					new ToggleSelectionErrorModal(this.app).open();
+				}
+				editor.replaceSelection(replacement);
+			}
+		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new HtmlCommentsSettingTab(this.app, this));
+		this.addCommand({
+			id: 'remove-comment-reading-comment',
+			name: 'Remove selected reading comment',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				const selection = editor.getSelection();
+				const replacement = constantsAndUtils.removeCommentInSelection(selection);
+				if (!replacement) {
+					new ToggleSelectionErrorModal(this.app).open();
+				}
+				editor.replaceSelection(replacement);
+			}
+		});
 
-		this.initState();
-		this.registerCommand();
-		this.registerListener();
-	}
-
-	onunload() {
-
-	}
-
-	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-	}
-
-	async saveSettings() {
-		await this.saveData(this.settings);
-		viewState.toggleColorSettingsChanged();
-	}
-
-	initState() {
-		viewState.settings.dark = document.body.hasClass("theme-dark");
-		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-		if (view) {
-			this.currentNote = view
-		}
-	}
-
-	registerCommand() {
 		this.addCommand({
 			id: "reading-comments",
 			name: "Reading Comments Panel",
@@ -104,7 +131,10 @@ export class HtmlCommentsPlugin extends Plugin {
 		const editorEventsAggregator = new EventsAggregator(2000, () => {
 			this.parseActiveViewToComments(false);
 		});
-		this.registerEvent(this.app.workspace.on('editor-change',async (editor: Editor, info: MarkdownView | MarkdownFileInfo) => {
+		this.registerEvent(this.app.workspace.on('editor-change', async (editor: Editor, info: MarkdownView | MarkdownFileInfo) => {
+			if (!this.settings.liveReloadOnEdit) {
+				return;
+			}
 			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (view) {
 				this.currentNote = view;
@@ -137,7 +167,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		this.parseActiveViewToComments(true);
 	}
 
-	private	parseActiveViewToComments(clearExpandedItems: boolean) {
+	private parseActiveViewToComments(clearExpandedItems: boolean) {
 		const text = this.getActiveView().getViewData();
 		const parsedText = new TextToTreeDataParser(text);
 		viewState.viewTreeOptions.value = parsedText.parsedComments.treeOptions;
