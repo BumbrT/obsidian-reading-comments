@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import { constantsAndUtils } from '../comments/ConstantsAndUtils';
 
 
-describe("parsing hierarchical comment", () => {
+describe("toggle comments parsing", () => {
     test("can replace siple inline comment", () => {
         const textToAnalyse = `<span class="ob-html-comment" id="comment-275107f9-fed0-44f4-9988-ba5bb445a885" data-tags="[]"><span class="ob-html-comment-body">Inline test1</span>И чем глубже мы их познаем</span>`;
         const expetedResult = `<div class="ob-html-comment" id="comment-275107f9-fed0-44f4-9988-ba5bb445a885" data-tags="[]"><span class="ob-html-comment-body">Inline test1</span>И чем глубже мы их познаем</div>`;
