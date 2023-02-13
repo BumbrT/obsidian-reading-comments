@@ -70,6 +70,7 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
             .addDropdown( dropdown => dropdown
                     .addOption("span", "Inline")
                     .addOption("div", "Block")
+                    .setValue(this.plugin.settings.container)
                     .onChange(
                         async (value) => {
                             this.plugin.settings.container = value;

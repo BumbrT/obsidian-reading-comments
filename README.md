@@ -15,14 +15,14 @@ You can use hierarchical Parent/Child tags in "data-tags" field.
 Open command panel and type `Reading comments` ，then press `Enter` .
 
 ## Features
-- Tag comments hierarchically: Parent/Child/Etc tags supported and grouped by parent in the panel.
+- Tag comments hierarchically: Parent/Child/Etc tags supported and grouped by parent in the panel
 - Search in comments
 - Navigate to particular comment by click
 - Remove selected comment by hotkey
 - Toggle selected comment to block/inline by hotkey
 - Hide comment until commented text body is hovered
 - Pick comment color from settings
-- Dark and light theme support (app restart required)
+- Dark and light theme support
 
 ## Showcase
 ### Buy me a coffee
@@ -70,11 +70,11 @@ If you enjoy this plugin, feel free to buy me a coffee.
 
 ## Roadmap:
 - Extract commented note to two: original clean note and comments note with links to original
+- Tab for comments in whole vault/folder
 - Tags renaming in the tree, drag&drop, etc tags and comments management
 
 ### To introduce "nice to have" features, create issue here or better donate with "buy me a coffee" website
 ### "Nice to have" features:
-- delete comment (or just clear html in selection with marked or remark)
 - tags and comments ordering algo in settings
 - customize tags placeholder(for now "comment,")
 
