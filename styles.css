@@ -9,7 +9,7 @@
     position: relative;
 }
 
-/* quiet-outline plugin hardcoded styles conflict */
+/* quiet-outline plugin hardcoded global custom styles conflict */
 .reading-comments .n-tree .n-tree-node-switcher {
     height: revert;
 }
