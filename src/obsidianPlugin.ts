@@ -93,8 +93,9 @@ export class HtmlCommentsPlugin extends Plugin {
 				const replacement = constantsAndUtils.toggleTagInSelection(selection);
 				if (!replacement) {
 					new ToggleSelectionErrorModal(this.app).open();
+				} else {
+					editor.replaceSelection(replacement);
 				}
-				editor.replaceSelection(replacement);
 			}
 		});
 
@@ -106,8 +107,9 @@ export class HtmlCommentsPlugin extends Plugin {
 				const replacement = constantsAndUtils.removeCommentInSelection(selection);
 				if (!replacement) {
 					new ToggleSelectionErrorModal(this.app).open();
+				} else {
+					editor.replaceSelection(replacement);
 				}
-				editor.replaceSelection(replacement);
 			}
 		});
 
