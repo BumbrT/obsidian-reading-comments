@@ -24,7 +24,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		this.addSettingTab(new HtmlCommentsSettingTab(this.app, this));
 
 		this.initState();
-		this.registerCommand();
+		this.registerCommands();
 		this.registerListener();
 	}
 
@@ -49,7 +49,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		}
 	}
 
-	registerCommand() {
+	registerCommands() {
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
 			id: 'add-reading-comment',
