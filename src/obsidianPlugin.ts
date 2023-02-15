@@ -90,7 +90,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: 'Toggle block/inline for selected reading comment',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const replacement = constantsAndUtils.toggleTagInSelection(selection);
+				const replacement = constantsAndUtils.toggleCommentContainerInSelection(selection);
 				if (!replacement) {
 					new ToggleSelectionErrorModal(this.app).open();
 				} else {

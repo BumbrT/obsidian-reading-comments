@@ -36,7 +36,7 @@ const constantsAndUtils = {
         return `<${containerTag} class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
     },
 
-    toggleTagInSelection(selection: string): string | null {
+    toggleCommentContainerInSelection(selection: string): string | null {
         const matches = this.regExpTagToggle.exec(selection);
         if (matches == null || matches.length < 5) {
             return null;
