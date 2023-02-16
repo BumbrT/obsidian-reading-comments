@@ -6,11 +6,24 @@ import { constantsAndUtils } from '../comments/ConstantsAndUtils';
 describe("export parsed comments as note", () => {
     test("should export parsed comments as note", () => {
         const parser = new TextToTreeDataParser(textToAnalyse);
-        const result = constantsAndUtils.exportParsetCommentsToCommentsNote(parser.parsedComments);
+        const result = constantsAndUtils.convertParsetCommentsToCommentsNote(parser.parsedComments);
         expect(result.length).toBeGreaterThan(0);
     });
-
+    test("should export sample to original", () => {
+        const result = constantsAndUtils.convertNoteWithCommentsToOriginalNote(sampleCommentToReplace, "Note Comments");
+        expect(result.length).toBeGreaterThan(0);
+    });
+    test("should export full text to original", () => {
+        const result = constantsAndUtils.convertNoteWithCommentsToOriginalNote(textToAnalyse, "Note Comments");
+        console.log(result);
+        expect(result.length).toBeGreaterThan(0);
+    });
 });
+
+const sampleCommentToReplace = `I[[Comments Как читать книги]]
+<span class="ob-html-comment" id="comment-3ffae302-265b-4949-bcf5-60c6861f7e11" data-tags="[]"><span class="ob-html-comment-body">Coment without tag</span>Казалось бы, на протяжении многих столетий книга была основным инструментом знаний в руках народов. Вспоминая ее историю — как она зарождалась, как распространялась на выбитых камнях, глиняных табличках, свитках, как «боролась» за свое существование, — мы убеждаемся, насколько мало знаем и ценим то, что имеем.</span>
+<div class="ob-html-comment" id="comment-c169c557-8964-4312-82ca-a9ba85d2af6b" data-tags="[Rule/One]"><span class="ob-html-comment-body">CommentPlaceholder</span>Скользя взглядом по «контенту», выхватывая фрагменты мыслей и идей, мы считаем, что нашли истину, но, увы, это всего лишь «гуляющий ветер», влетающий в одно ухо и вылетающий в другое. И, как мираж, тает глубина познания. Мы не достигаем «потолка» в чтении великих книг, зачастую даже самим себе не можем сказать: я научился читать, я научился понимать, я вижу душу писателя, который донес до меня свой мир, свои переживания, свой опыт.</div>
+`;
 
 const textToAnalyse = `I[[Comments Как читать книги]]
 #gg

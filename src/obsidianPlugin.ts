@@ -4,7 +4,7 @@ import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
-import { constantsAndUtils, TreeItem } from './comments/ConstantsAndUtils';
+import { constantsAndUtils, CommonTreeOption } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
 import { ExtractNoteErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
 import { TreeOption } from 'naive-ui';
@@ -209,14 +209,20 @@ export class HtmlCommentsPlugin extends Plugin {
 
 		const noteText = this.currentNote.getViewData();
 		const parsedText = new TextToTreeDataParser(noteText);
-		const commentsFileContent = constantsAndUtils.exportParsetCommentsToCommentsNote(parsedText.parsedComments);
+		const commentsFileContent = constantsAndUtils.convertParsetCommentsToCommentsNote(parsedText.parsedComments);
+		const originalFileContent = constantsAndUtils.convertNoteWithCommentsToOriginalNote(noteText, extractedNoteCommentsName);
 
 		const commentsFile = this.app.vault.getAbstractFileByPath(extractedNoteCommentsPath);
 		if (commentsFile) {
 			this.app.vault.delete(commentsFile);
 		}
 		await this.app.vault.create(extractedNoteCommentsPath, commentsFileContent);
-		// await this.app.vault.create(extractedNotePath, "Note content here");
+
+		const originalFile = this.app.vault.getAbstractFileByPath(extractedNotePath);
+		if (originalFile) {
+			this.app.vault.delete(originalFile);
+		}
+		await this.app.vault.create(extractedNotePath, originalFileContent);
 	}
 }
 

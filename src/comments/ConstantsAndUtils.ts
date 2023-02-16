@@ -12,7 +12,7 @@ export interface TagTreeOption extends TreeOption {
     fullName: string,
     treeLevel: number,
     label: string,
-    children: TreeItem[]
+    children: CommonTreeOption[]
 }
 
 export interface CommentTreeOption extends TreeOption {
@@ -25,7 +25,7 @@ export interface CommentTreeOption extends TreeOption {
     label: string,
 };
 
-export interface TreeItem extends TreeOption {
+export interface CommonTreeOption extends TreeOption {
     isComment: true | false,
     isTag: true | false,
 };
@@ -37,7 +37,7 @@ export interface PluginColors {
     commentColorLight: string
 }
 class ConstantsAndUtils {
-    readonly regExpComment = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/(?:div|span)\>/gm;
+    readonly regExpComment = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
     private readonly regExpTagToggle = /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/;
     private readonly customColorStyleElementId = "ob-html-comment-custom-style";
     constructor() {
@@ -107,13 +107,13 @@ class ConstantsAndUtils {
         document.head.appendChild(styleEl);
     }
 
-    exportParsetCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
+    convertParsetCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
         const mapTreeOptionToCommentsNoteEntries = function (option: TreeOption): string[][] {
             if (option.isTag) {
                 return mapTagOptionToCommentsNoteEntries(<TagTreeOption><unknown>option);
             } else if (option.isComment) {
                 const optionComment = <CommentTreeOption><unknown>option;
-                return [[optionComment.label], [`^${optionComment.commentId}`]];
+                return [[optionComment.label], [`^${optionComment.commentId}`], ["\n"]];
             }
             return [];
         }
@@ -141,6 +141,11 @@ class ConstantsAndUtils {
         const commentsFileContent = [...orphanCommentsContent, ...treeOfTagsContent]
             .flatMap(it => it).flatMap(it => it).join("\n");
         return commentsFileContent;
+    }
+
+    convertNoteWithCommentsToOriginalNote(noteWithCommentsContent: string, commentNoteName: string): string {
+        return noteWithCommentsContent.replace(this.regExpComment,
+            `[[${commentNoteName}#^$1|$4]]`);
     }
 };
 
