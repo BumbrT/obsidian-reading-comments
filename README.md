@@ -21,7 +21,7 @@ Open command panel and type `Extract original note with links to comments note` 
 - Tag comments hierarchically: Parent/Child/Etc tags supported and grouped by parent in the panel
 - Search in comments
 - Navigate to particular comment by click
-- **Extract original not with link to comments note**
+- **Extract original note with link to comments note**
 - Remove selected comment by hotkey
 - Toggle selected comment to block/inline by hotkey
 - Hide comment until commented text body is hovered
