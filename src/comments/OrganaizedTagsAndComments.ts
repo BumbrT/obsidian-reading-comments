@@ -1,7 +1,7 @@
 import { TreeOption } from 'naive-ui';
 import { HtmlCommentTag } from './HtmlCommentTag';
 import { HtmlComment } from './HtmlComment';
-import { TreeItem, TagTreeItem, CommentTreeItem } from './ConstantsAndUtils'
+import { CommentTreeOption, TagTreeOption, CommonTreeOption } from './ConstantsAndUtils'
 
 /**
  * Organise collection of comments with tags to following TreeOption[] tree structure  :
@@ -28,7 +28,7 @@ import { TreeItem, TagTreeItem, CommentTreeItem } from './ConstantsAndUtils'
  */
 
 export class OrganaizedTagsAndComments {
-    readonly treeOptions: TreeOption[]
+    readonly treeOptions: CommonTreeOption[]
     private readonly comments: HtmlComment[]
     private allTags: HtmlCommentTag[] = []
 
@@ -60,7 +60,7 @@ export class OrganaizedTagsAndComments {
             (tagsByKey, treeKey) => {
                 const childTreeLevel = currentTreeLevel + 1;
                 const treeKeyLabel = HtmlCommentTag.stripTreeKeyToTreeLabel(treeKey);
-                const currentTreeOptionOption = this.tagToTreeOption(treeKey, treeKeyLabel);
+                const currentTreeOptionOption = this.tagToTreeOption(treeKey, treeKeyLabel, currentTreeLevel);
                 currentTreeLevelOptions.push(currentTreeOptionOption);
                 const currentTagComments = this.comments.filter(
                     it =>
@@ -92,18 +92,20 @@ export class OrganaizedTagsAndComments {
             isTag: false,
             key: comment.id,
             label: comment.commentBody,
+            commentId: comment.id,
             line: comment.line,
             searchIndex: comment.commentBody.toLowerCase()
         }
     }
 
-    private tagToTreeOption(key: string, name: string): TagTreeOption {
+    private tagToTreeOption(key: string, name: string, treeLevel: number): TagTreeOption {
         return <TagTreeOption>{
             isComment: false,
             isTag: true,
             key: key,
             label: name,
             fullName: key,
+            treeLevel: treeLevel,
             children: []
         }
     }
@@ -132,8 +134,4 @@ export class OrganaizedTagsAndComments {
 }
 
 
-interface TagTreeOption extends TreeOption, TagTreeItem {
-    children: TreeOption[]
-}
 
-interface CommentTreeOption extends TreeOption, CommentTreeItem { };

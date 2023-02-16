@@ -1,13 +1,13 @@
-import { stat } from 'fs';
 import { App, Editor, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin } from 'obsidian';
 import { v4 as uuidv4 } from 'uuid';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
-import { constantsAndUtils } from './comments/ConstantsAndUtils';
+import { constantsAndUtils, CommonTreeOption } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
-import { ToggleSelectionErrorModal } from './obsidianModal';
+import { ExtractNoteErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
+import { TreeOption } from 'naive-ui';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -25,7 +25,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		this.addSettingTab(new HtmlCommentsSettingTab(this.app, this));
 
 		this.initState();
-		this.registerCommand();
+		this.registerCommands();
 		this.registerListener();
 	}
 
@@ -50,15 +50,14 @@ export class HtmlCommentsPlugin extends Plugin {
 		}
 	}
 
-	registerCommand() {
+	registerCommands() {
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
 			id: 'add-reading-comment',
 			name: 'Add reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const commentId = uuidv4();
-				const replacement = constantsAndUtils.selectionToComment(this.settings.container, commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment(this.settings.container, selection);
 				editor.replaceSelection(replacement);
 			}
 		});
@@ -68,8 +67,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: 'Add inline reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const commentId = uuidv4();
-				const replacement = constantsAndUtils.selectionToComment("span", commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment("span", selection);
 				editor.replaceSelection(replacement);
 			}
 		});
@@ -79,8 +77,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: 'Add block reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const commentId = uuidv4();
-				const replacement = constantsAndUtils.selectionToComment("div", commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment("div", selection);
 				editor.replaceSelection(replacement);
 			}
 		});
@@ -90,7 +87,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: 'Toggle block/inline for selected reading comment',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const replacement = constantsAndUtils.toggleTagInSelection(selection);
+				const replacement = constantsAndUtils.toggleCommentContainerInSelection(selection);
 				if (!replacement) {
 					new ToggleSelectionErrorModal(this.app).open();
 				} else {
@@ -118,6 +115,14 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: "Reading Comments Panel",
 			callback: () => {
 				this.activateView();
+			}
+		});
+
+		this.addCommand({
+			id: "reading-comments-extract-original-note",
+			name: "Extract original note with links to comments note",
+			callback: () => {
+				this.extractOriginalNote();
 			}
 		});
 	}
@@ -182,6 +187,42 @@ export class HtmlCommentsPlugin extends Plugin {
 		} else {
 			viewState.viewExpandedKeys.value = [];
 		}
+	}
+
+	private async extractOriginalNote() {
+		if (this.currentNote == null) {
+			new ExtractNoteErrorModal(this.app).open();
+			return;
+		}
+		const fileName = this.currentNote.file.name;
+		const parentPath = this.currentNote.file.parent.path;
+		if (!fileName.endsWith(".md")) {
+			new ExtractNoteErrorModal(this.app, "Current file should end with '.md'!").open();
+			return;
+		}
+		const fileNameWithoutExtension = fileName.substring(0, fileName.length - 3)
+		let extractedNoteName = `${fileNameWithoutExtension} Original.md`;
+		let extractedOriginalNotePath = `${parentPath == "/" ? '' : parentPath + '/'}${extractedNoteName}`;
+
+		let extractedNoteCommentsName = `${fileNameWithoutExtension} Comments.md`;
+		let extractedCommentsNotePath = `${parentPath == "/" ? '' : parentPath + '/'}${extractedNoteCommentsName}`;
+
+		const noteText = this.currentNote.getViewData();
+		const parsedText = new TextToTreeDataParser(noteText);
+		const commentsFileContent = constantsAndUtils.convertParsetCommentsToCommentsNote(parsedText.parsedComments);
+		const originalFileContent = constantsAndUtils.convertNoteWithCommentsToOriginalNote(noteText, extractedNoteCommentsName);
+
+		const commentsFile = this.app.vault.getAbstractFileByPath(extractedCommentsNotePath);
+		if (commentsFile) {
+			this.app.vault.trash(commentsFile, true);
+		}
+		await this.app.vault.create(extractedCommentsNotePath, commentsFileContent);
+
+		const originalFile = this.app.vault.getAbstractFileByPath(extractedOriginalNotePath);
+		if (originalFile) {
+			this.app.vault.trash(originalFile, true);
+		}
+		await this.app.vault.create(extractedOriginalNotePath, originalFileContent);
 	}
 }
 

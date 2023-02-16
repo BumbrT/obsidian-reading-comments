@@ -6,7 +6,7 @@ describe("toggle comments parsing", () => {
     test("can replace siple inline comment", () => {
         const textToAnalyse = `<span class="ob-html-comment" id="comment-275107f9-fed0-44f4-9988-ba5bb445a885" data-tags="[]"><span class="ob-html-comment-body">Inline test1</span>И чем глубже мы их познаем</span>`;
         const expetedResult = `<div class="ob-html-comment" id="comment-275107f9-fed0-44f4-9988-ba5bb445a885" data-tags="[]"><span class="ob-html-comment-body">Inline test1</span>И чем глубже мы их познаем</div>`;
-        const replacement = constantsAndUtils.toggleTagInSelection(textToAnalyse);
+        const replacement = constantsAndUtils.toggleCommentContainerInSelection(textToAnalyse);
         expect(replacement).toBe(expetedResult);
     });
 
@@ -19,7 +19,7 @@ describe("toggle comments parsing", () => {
         Struct - структура книги (кратко методы и способы чтения)
         Tip - **практический** совет
         Class - классификация книг, наук</span>`;
-        const replacement = constantsAndUtils.toggleTagInSelection(textToAnalyse);
+        const replacement = constantsAndUtils.toggleCommentContainerInSelection(textToAnalyse);
         expect(replacement).toBe(expetedResult);
     });
 });

@@ -12,12 +12,16 @@ It's recommended to assign hotkey for this command panel action.
 You can use hierarchical Parent/Child tags in "data-tags" field.
 
 ### Open comments panel:
-Open command panel and type `Reading comments` ，then press `Enter` .
+Open command panel and type `Reading Comments Panel` ，then press `Enter` .
+
+### Extract original note with links to comments note
+Open command panel and type `Extract original note with links to comments note` ，then press `Enter` .
 
 ## Features
 - Tag comments hierarchically: Parent/Child/Etc tags supported and grouped by parent in the panel
 - Search in comments
 - Navigate to particular comment by click
+- **Extract original not with link to comments note**
 - Remove selected comment by hotkey
 - Toggle selected comment to block/inline by hotkey
 - Hide comment until commented text body is hovered
@@ -36,6 +40,10 @@ If you enjoy this plugin, feel free to buy me a coffee.
 ### Search comments in the panel:
 
 ![Search comments](https://raw.githubusercontent.com/BumbrT/obsidian-reading-comments/master/resources/navigate-comment-ru.gif)
+
+### Extract original note with links to comments note:
+
+![Extract original note](https://raw.githubusercontent.com/BumbrT/obsidian-reading-comments/master/resources/extract-original-ru.gif)
 
 ### Buy me a coffee
 If you enjoy this plugin, feel free to buy me a coffee.

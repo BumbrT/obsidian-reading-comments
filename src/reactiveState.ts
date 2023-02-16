@@ -1,6 +1,6 @@
 import { reactive, ref } from 'vue';
 import { TreeOption } from 'naive-ui';
-import { CommentTreeItem } from './comments/ConstantsAndUtils';
+import { CommentTreeOption } from './comments/ConstantsAndUtils';
 
 
 const viewState = {
@@ -31,7 +31,7 @@ const viewState = {
     },
 
     simpleFilter(pattern: string, option: TreeOption): boolean {
-        const commentOption = option as unknown as CommentTreeItem;
+        const commentOption = option as unknown as CommentTreeOption;
         if (commentOption.searchIndex) {
             return commentOption.searchIndex.includes(pattern.toLowerCase());
         } else {
