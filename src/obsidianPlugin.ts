@@ -202,27 +202,27 @@ export class HtmlCommentsPlugin extends Plugin {
 		}
 		const fileNameWithoutExtension = fileName.substring(0, fileName.length - 3)
 		let extractedNoteName = `${fileNameWithoutExtension} Original.md`;
-		let extractedNotePath = `${parentPath}/${extractedNoteName}`;
+		let extractedOriginalNotePath = `${parentPath == "/" ? '' : parentPath + '/'}${extractedNoteName}`;
 
 		let extractedNoteCommentsName = `${fileNameWithoutExtension} Comments.md`;
-		let extractedNoteCommentsPath = `${parentPath}/${extractedNoteCommentsName}`;
+		let extractedCommentsNotePath = `${parentPath == "/" ? '' : parentPath + '/'}${extractedNoteCommentsName}`;
 
 		const noteText = this.currentNote.getViewData();
 		const parsedText = new TextToTreeDataParser(noteText);
 		const commentsFileContent = constantsAndUtils.convertParsetCommentsToCommentsNote(parsedText.parsedComments);
 		const originalFileContent = constantsAndUtils.convertNoteWithCommentsToOriginalNote(noteText, extractedNoteCommentsName);
 
-		const commentsFile = this.app.vault.getAbstractFileByPath(extractedNoteCommentsPath);
+		const commentsFile = this.app.vault.getAbstractFileByPath(extractedCommentsNotePath);
 		if (commentsFile) {
-			this.app.vault.delete(commentsFile);
+			this.app.vault.trash(commentsFile, true);
 		}
-		await this.app.vault.create(extractedNoteCommentsPath, commentsFileContent);
+		await this.app.vault.create(extractedCommentsNotePath, commentsFileContent);
 
-		const originalFile = this.app.vault.getAbstractFileByPath(extractedNotePath);
+		const originalFile = this.app.vault.getAbstractFileByPath(extractedOriginalNotePath);
 		if (originalFile) {
-			this.app.vault.delete(originalFile);
+			this.app.vault.trash(originalFile, true);
 		}
-		await this.app.vault.create(extractedNotePath, originalFileContent);
+		await this.app.vault.create(extractedOriginalNotePath, originalFileContent);
 	}
 }
 
