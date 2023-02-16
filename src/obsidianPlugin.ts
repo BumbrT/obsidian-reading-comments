@@ -4,9 +4,10 @@ import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
-import { constantsAndUtils } from './comments/ConstantsAndUtils';
+import { CommentTreeItem, constantsAndUtils, TagTreeItem, TreeItem } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
-import { ToggleSelectionErrorModal } from './obsidianModal';
+import { ExtractNoteErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
+import { TreeOption } from 'naive-ui';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -56,8 +57,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: 'Add reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const commentId = uuidv4();
-				const replacement = constantsAndUtils.selectionToComment(this.settings.container, commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment(this.settings.container, selection);
 				editor.replaceSelection(replacement);
 			}
 		});
@@ -67,8 +67,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: 'Add inline reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const commentId = uuidv4();
-				const replacement = constantsAndUtils.selectionToComment("span", commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment("span", selection);
 				editor.replaceSelection(replacement);
 			}
 		});
@@ -78,8 +77,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: 'Add block reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
-				const commentId = uuidv4();
-				const replacement = constantsAndUtils.selectionToComment("div", commentId, selection);
+				const replacement = constantsAndUtils.selectionToComment("div", selection);
 				editor.replaceSelection(replacement);
 			}
 		});
@@ -117,6 +115,14 @@ export class HtmlCommentsPlugin extends Plugin {
 			name: "Reading Comments Panel",
 			callback: () => {
 				this.activateView();
+			}
+		});
+
+		this.addCommand({
+			id: "reading-comments-extract-original-note",
+			name: "Extract original note with links to comments note",
+			callback: () => {
+				this.extractOriginalNote();
 			}
 		});
 	}
@@ -181,6 +187,41 @@ export class HtmlCommentsPlugin extends Plugin {
 		} else {
 			viewState.viewExpandedKeys.value = [];
 		}
+	}
+
+	private async extractOriginalNote() {
+		if (this.currentNote == null) {
+			new ExtractNoteErrorModal(this.app).open();
+			return;
+		}
+		const fileName = this.currentNote.file.name;
+		const parentPath = this.currentNote.file.parent.path;
+		if (!fileName.endsWith(".md")) {
+			new ExtractNoteErrorModal(this.app, "Current file should end with '.md'!").open();
+			return;
+		}
+		const fileNameWithoutExtension = fileName.substring(0, fileName.length - 3)
+		let extractedNoteName = `${fileNameWithoutExtension} Original.md`;
+		let extractedNotePath = `${parentPath}/${extractedNoteName}`;
+
+		let extractedNoteCommentsName = `${fileNameWithoutExtension} Comments.md`;
+		let extractedNoteCommentsPath = `${parentPath}/${extractedNoteCommentsName}`;
+
+		const noteText = this.currentNote.getViewData();
+		const parsedText = new TextToTreeDataParser(noteText);
+		// TODO - typed tree options
+
+		// const commentsFileContent = parsedText.parsedComments.treeOptions.map(option =>
+		// 	mapTreeOptionToCommentsNoteEntries(<TreeItem><unknown>option)
+		// ).flatMap(it => it).join("\n");
+
+		// TODO - rewrite if file exists
+		const commentsFile = this.app.vault.getAbstractFileByPath(extractedNoteCommentsPath);
+		if (commentsFile) {
+			this.app.vault.delete(commentsFile);
+		}
+		await this.app.vault.create(extractedNoteCommentsPath, '');
+		// await this.app.vault.create(extractedNotePath, "Note content here");
 	}
 }
 
