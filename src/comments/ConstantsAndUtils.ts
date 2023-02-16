@@ -5,28 +5,25 @@ import { OrganaizedTagsAndComments } from "./OrganaizedTagsAndComments";
 
 
 
-interface TagTreeItem {
+export interface TagTreeOption extends TreeOption {
     isTag: true,
     isComment: false,
     /* full tag name, include partents */
     fullName: string,
     treeLevel: number,
-};
+    label: string,
+    children: TreeItem[]
+}
 
-interface CommentTreeItem {
+export interface CommentTreeOption extends TreeOption {
     isTag: false,
     isComment: true,
     commentId: string,
     line: number,
     /* lower case comment, to search in */
     searchIndex: string,
+    label: string,
 };
-
-export interface TagTreeOption extends TreeOption, TagTreeItem {
-    children: TreeOption[]
-}
-
-export interface CommentTreeOption extends TreeOption, CommentTreeItem { };
 
 export interface TreeItem extends TreeOption {
     isComment: true | false,
@@ -111,16 +108,16 @@ class ConstantsAndUtils {
     }
 
     exportParsetCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
-        const mapTreeOptionToCommentsNoteEntries = function (option: TreeItem): string[][] {
+        const mapTreeOptionToCommentsNoteEntries = function (option: TreeOption): string[][] {
             if (option.isTag) {
-                return mapTagOptionToCommentsNoteEntries(<TagTreeItem><unknown>option);
+                return mapTagOptionToCommentsNoteEntries(<TagTreeOption><unknown>option);
             } else if (option.isComment) {
-                const optionComment = <CommentTreeItem><unknown>option;
+                const optionComment = <CommentTreeOption><unknown>option;
                 return [[optionComment.label], [`^${optionComment.commentId}`]];
             }
             return [];
         }
-        const mapTagOptionToCommentsNoteEntries = function (option: TagTreeItem): string[][] {
+        const mapTagOptionToCommentsNoteEntries = function (option: TagTreeOption): string[][] {
             const tagLevel = option.treeLevel + 1;
             const headingPrefix = "#".repeat(tagLevel);
             const currentTagLine = `${headingPrefix} ${option.label}`;
@@ -134,10 +131,15 @@ class ConstantsAndUtils {
             return result;
         }
         const treeOptions = organaizedTagsAndComments.treeOptions;
+        const orphanCommentsContent = treeOptions.filter(it => it.isComment).map(option =>
+            mapTreeOptionToCommentsNoteEntries(option)
+        );
+        const treeOfTagsContent = treeOptions.filter(it => it.isTag).map(option =>
+            mapTreeOptionToCommentsNoteEntries(option)
+        );
 
-        const commentsFileContent = treeOptions.map(option =>
-            mapTreeOptionToCommentsNoteEntries(<TreeItem><unknown>option)
-        ).flatMap(it => it).join("\n");
+        const commentsFileContent = [...orphanCommentsContent, ...treeOfTagsContent]
+            .flatMap(it => it).flatMap(it => it).join("\n");
         return commentsFileContent;
     }
 };

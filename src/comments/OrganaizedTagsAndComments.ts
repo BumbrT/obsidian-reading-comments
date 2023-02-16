@@ -1,7 +1,7 @@
 import { TreeOption } from 'naive-ui';
 import { HtmlCommentTag } from './HtmlCommentTag';
 import { HtmlComment } from './HtmlComment';
-import { TreeItem, TagTreeItem, CommentTreeItem } from './ConstantsAndUtils'
+import { CommentTreeOption, TagTreeOption, TreeItem } from './ConstantsAndUtils'
 
 /**
  * Organise collection of comments with tags to following TreeOption[] tree structure  :
@@ -28,7 +28,7 @@ import { TreeItem, TagTreeItem, CommentTreeItem } from './ConstantsAndUtils'
  */
 
 export class OrganaizedTagsAndComments {
-    readonly treeOptions: TreeOption[]
+    readonly treeOptions: TreeItem[]
     private readonly comments: HtmlComment[]
     private allTags: HtmlCommentTag[] = []
 
