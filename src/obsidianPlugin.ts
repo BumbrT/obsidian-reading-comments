@@ -4,7 +4,7 @@ import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
-import { constantsAndUtils, CommonTreeOption } from './comments/ConstantsAndUtils';
+import { constantsAndUtils, AbstractTreeOption } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
 import { ExtractNoteErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
 import { TreeOption } from 'naive-ui';

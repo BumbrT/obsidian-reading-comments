@@ -12,7 +12,7 @@ export interface TagTreeOption extends TreeOption {
     fullName: string,
     treeLevel: number,
     label: string,
-    children: CommonTreeOption[]
+    children: AbstractTreeOption[]
 }
 
 export interface CommentTreeOption extends TreeOption {
@@ -25,7 +25,7 @@ export interface CommentTreeOption extends TreeOption {
     label: string,
 };
 
-export interface CommonTreeOption extends TreeOption {
+export interface AbstractTreeOption extends TreeOption {
     isComment: true | false,
     isTag: true | false,
 };
@@ -108,12 +108,12 @@ class ConstantsAndUtils {
     }
 
     convertParsetCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
-        const mapTreeOptionToCommentsNoteEntries = function (option: TreeOption): string[][] {
+        const mapTreeOptionToCommentsNoteEntries = function (option: AbstractTreeOption): string[][] {
             if (option.isTag) {
-                return mapTagOptionToCommentsNoteEntries(<TagTreeOption><unknown>option);
+                return mapTagOptionToCommentsNoteEntries(<TagTreeOption>option);
             } else if (option.isComment) {
-                const optionComment = <CommentTreeOption><unknown>option;
-                return [[optionComment.label], [`^${optionComment.commentId}`], ["\n"]];
+                const optionComment = <CommentTreeOption>option;
+                return [[optionComment.label], [`^${optionComment.commentId}`], [""]];
             }
             return [];
         }

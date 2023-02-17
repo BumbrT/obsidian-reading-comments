@@ -27,7 +27,7 @@ import { darkTheme, GlobalThemeOverrides, NSpace, NButton, NConfigProvider, NInp
 import { sanitizeHTMLToDom } from 'obsidian';
 import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
 
-import { constantsAndUtils, TreeItem, TagTreeItem, CommentTreeItem } from './comments/ConstantsAndUtils';
+import { AbstractTreeOption, CommentTreeOption, constantsAndUtils, TagTreeOption } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
 import { HtmlCommentsPlugin } from "./obsidianPlugin";
 import { viewState } from './reactiveState';
@@ -105,12 +105,12 @@ async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[
     if (nodes[0] === undefined) {
         return;
     }
-    const selectedOption = nodes[0] as TreeItem;
+    const selectedOption = nodes[0] as AbstractTreeOption;
     if (selectedOption.isComment) {
-        const line: number = (selectedOption as CommentTreeItem).line as number
+        const line: number = (selectedOption as CommentTreeOption).line as number
         jumpToComment(line);
     } else if (selectedOption.isTag) {
-        const tagKey = (selectedOption as TagTreeItem).fullName as string;
+        const tagKey = (selectedOption as TagTreeOption).fullName as string;
         expandOrCollapseTag(tagKey);
     }
 }
