@@ -6,7 +6,7 @@ import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 import { constantsAndUtils, AbstractTreeOption } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
-import { ExtractNoteErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
+import { ErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
 import { TreeOption } from 'naive-ui';
 
 export class HtmlCommentsPlugin extends Plugin {
@@ -58,7 +58,11 @@ export class HtmlCommentsPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const replacement = constantsAndUtils.selectionToComment(this.settings.container, selection);
-				editor.replaceSelection(replacement);
+				if (replacement) {
+					editor.replaceSelection(replacement);
+				} else {
+					new ErrorModal(this.app, 'Multiline comments not supported yet!').open();
+				}
 			}
 		});
 
@@ -68,7 +72,11 @@ export class HtmlCommentsPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const replacement = constantsAndUtils.selectionToComment("span", selection);
-				editor.replaceSelection(replacement);
+				if (replacement) {
+					editor.replaceSelection(replacement);
+				} else {
+					new ErrorModal(this.app, 'Multiline comments not supported yet!').open();
+				}
 			}
 		});
 
@@ -78,7 +86,11 @@ export class HtmlCommentsPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const selection = editor.getSelection();
 				const replacement = constantsAndUtils.selectionToComment("div", selection);
-				editor.replaceSelection(replacement);
+				if (replacement) {
+					editor.replaceSelection(replacement);
+				} else {
+					new ErrorModal(this.app, 'Multiline comments not supported yet!').open();
+				}
 			}
 		});
 
@@ -191,13 +203,13 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	private async extractOriginalNote() {
 		if (this.currentNote == null) {
-			new ExtractNoteErrorModal(this.app).open();
+			new ErrorModal(this.app, 'There is no comments in current file or file not selected!').open();
 			return;
 		}
 		const fileName = this.currentNote.file.name;
 		const parentPath = this.currentNote.file.parent.path;
 		if (!fileName.endsWith(".md")) {
-			new ExtractNoteErrorModal(this.app, "Current file should end with '.md'!").open();
+			new ErrorModal(this.app, "Current file should end with '.md'!").open();
 			return;
 		}
 		const fileNameWithoutExtension = fileName.substring(0, fileName.length - 3)

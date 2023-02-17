@@ -37,7 +37,8 @@ export interface PluginColors {
     commentColorLight: string
 }
 class ConstantsAndUtils {
-    readonly regExpComment = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
+    readonly regExpCommentSingleLine = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm;
+    private readonly regExpCommentWithCommentedText = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
     private readonly regExpTagToggle = /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/;
     private readonly customColorStyleElementId = "ob-html-comment-custom-style";
     constructor() {
@@ -47,7 +48,10 @@ class ConstantsAndUtils {
         return `comment-${uuidv4()}`;
     }
 
-    selectionToComment(containerTag: string, selection: string): string {
+    selectionToComment(containerTag: string, selection: string): string | null {
+        if (selection.contains('\n')) {
+            return null;
+        }
         const escapedSelection = escapeHTML(selection);
         return `<${containerTag} class="ob-html-comment" id="${this.generateCommentId()}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
     }
@@ -144,8 +148,14 @@ class ConstantsAndUtils {
     }
 
     convertNoteWithCommentsToOriginalNote(noteWithCommentsContent: string, commentNoteName: string): string {
-        return noteWithCommentsContent.replace(this.regExpComment,
-            `[[${commentNoteName}#^$1|$4]]`);
+        const replacer = function (match: string, p1: string, p2: string, p3: string, p4: string): string {
+            // decode html, could also remove new line when support
+            // const decodedComment = htmlDecode(p4)?.replaceAll("\n", '');
+            const decodedComment = htmlDecode(p4);
+            return `[[${commentNoteName}#^${p1}|${decodedComment}]]`
+        }
+
+        return noteWithCommentsContent.replace(this.regExpCommentWithCommentedText, replacer);
     }
 };
 

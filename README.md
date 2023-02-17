@@ -77,7 +77,7 @@ If you enjoy this plugin, feel free to buy me a coffee.
 
 
 ## Roadmap:
-- Extract commented note to two: original clean note and comments note with links to original
+- Multiline comments support (refactoring line by line parsing to multiline).
 - Tab for comments in whole vault/folder
 - Tags renaming in the tree, drag&drop, etc tags and comments management
 
