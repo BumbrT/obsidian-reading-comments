@@ -6,32 +6,28 @@ export class ToggleSelectionErrorModal extends Modal {
 	}
 
 	onOpen() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.setText('Please select full comment with all tags in editor!');
 	}
 
 	onClose() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.empty();
 	}
 }
 
-export class ExtractNoteErrorModal extends Modal {
-	constructor(app: App, private readonly text?: string) {
+export class ErrorModal extends Modal {
+	constructor(app: App, private readonly text: string) {
 		super(app);
 	}
 
 	onOpen() {
-		const {contentEl} = this;
-		if (this.text) {
-			contentEl.setText(this.text);
-		} else {
-			contentEl.setText('There is no comments in current file or file not selected!');
-		}
+		const { contentEl } = this;
+		contentEl.setText(this.text);
 	}
 
 	onClose() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.empty();
 	}
 }

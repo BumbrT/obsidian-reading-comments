@@ -1,8 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
-import { exitCode, hasUncaughtExceptionCaptureCallback } from 'process';
 import { TextToTreeDataParser } from "../comments/TextToTreeDataParser";
-import { HtmlComment } from "../comments/HtmlComment";
-import { HtmlCommentTag } from "../comments/HtmlCommentTag";
+
 
 describe("parsing hierarchical comment", () => {
 
@@ -88,6 +86,24 @@ describe("parsing comment", () => {
         const result = regExSpan.exec(lineContent);
         expect(result?.length).toBeGreaterThan(0);
         console.log(result);
+    });
+
+
+    test("should not find multiline escaped comment (not supported yet)", () => {
+        const textToAnalyse = `
+        — Читал, ваше превосходительство.
+
+<span class="ob-html-comment" id="comment-f60e1a37-35a8-48af-9d63-2176d6b204e2" data-tags="[comment,]"><span class="ob-html-comment-body">Escaping test</span>— О чем же вы читали, любезнейший? А ну-ка, расскажите\! &lt;…&gt;
+
+— Забыл, ваше превосходительство &lt;…&gt;</span>
+
+— Значит, вы не читали или, э-э-э… невнимательно читали\! Авто-мма-тически\! Так нельзя\!
+        `;
+        const parser = new TextToTreeDataParser(textToAnalyse);
+        const comments = parser.parsedComments.treeOptions;
+        const commentsWithoutTag = comments.filter(it => it.isComment);
+        expect(comments.length).toBe(0);
+        expect(commentsWithoutTag.length).toBe(0);
     });
 });
 

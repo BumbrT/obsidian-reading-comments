@@ -47,7 +47,10 @@ class ConstantsAndUtils {
         return `comment-${uuidv4()}`;
     }
 
-    selectionToComment(containerTag: string, selection: string): string {
+    selectionToComment(containerTag: string, selection: string): string | null {
+        if (selection.contains('\n')) {
+            return null;
+        }
         const escapedSelection = escapeHTML(selection);
         return `<${containerTag} class="ob-html-comment" id="${this.generateCommentId()}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
     }
@@ -144,8 +147,14 @@ class ConstantsAndUtils {
     }
 
     convertNoteWithCommentsToOriginalNote(noteWithCommentsContent: string, commentNoteName: string): string {
-        return noteWithCommentsContent.replace(this.regExpComment,
-            `[[${commentNoteName}#^$1|$4]]`);
+        const replacer = function (match: string, p1: string, p2: string, p3: string, p4: string): string {
+            // decode html, could also remove new line when support
+            // const decodedComment = htmlDecode(p4)?.replaceAll("\n", '');
+            const decodedComment = htmlDecode(p4);
+            return `[[${commentNoteName}#^${p1}|${decodedComment}]]`
+        }
+
+        return noteWithCommentsContent.replace(this.regExpComment, replacer);
     }
 };
 
