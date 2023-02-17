@@ -11,7 +11,7 @@ export class TextToTreeDataParser {
         const lines = text.split("\n");
         lines.forEach(
             (lineContent, lineNumber) => {
-                while ((arrayMatch = constantsAndUtils.regExpComment.exec(lineContent)) !== null) {
+                while ((arrayMatch = constantsAndUtils.regExpCommentSingleLine.exec(lineContent)) !== null) {
                     const commentId = arrayMatch[1];
                     const matchedTags = arrayMatch[2];
                     const commentBody = arrayMatch[3];
@@ -22,7 +22,6 @@ export class TextToTreeDataParser {
                         parsed = new HtmlComment(commentId, null, commentBody, lineNumber);
                     }
                     parsedCommentsWithTags.push(parsed);
-
                 }
             }
         );

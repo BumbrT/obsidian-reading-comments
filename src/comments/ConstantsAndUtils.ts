@@ -37,7 +37,8 @@ export interface PluginColors {
     commentColorLight: string
 }
 class ConstantsAndUtils {
-    readonly regExpComment = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
+    readonly regExpCommentSingleLine = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm;
+    private readonly regExpCommentWithCommentedText = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
     private readonly regExpTagToggle = /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/;
     private readonly customColorStyleElementId = "ob-html-comment-custom-style";
     constructor() {
@@ -154,7 +155,7 @@ class ConstantsAndUtils {
             return `[[${commentNoteName}#^${p1}|${decodedComment}]]`
         }
 
-        return noteWithCommentsContent.replace(this.regExpComment, replacer);
+        return noteWithCommentsContent.replace(this.regExpCommentWithCommentedText, replacer);
     }
 };
 
