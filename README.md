@@ -1,5 +1,5 @@
 # Obsidian Reading Comments
-Plugin allows to create inline html comments while reading markdown notes in Obsidian. After commenting job done and finalized, original note with links to comments note could be extracted for integration with rest of the vault.
+Plugin allows to create inline html comments while reading markdown notes in Obsidian. After commenting job done and finalized, original note with internal links to comments note could be extracted for integration with rest of the vault.
 
 [Readme на русском](https://github.com/BumbrT/obsidian-reading-comments/blob/master/README-RU.md)
 
