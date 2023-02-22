@@ -47,9 +47,9 @@ let iconColor = computed(() => {
     return { color: "#727272" };
 });
 
-let compomentSelf = getCurrentInstance();
-if (!compomentSelf) throw Error("vue not found");
-let plugin = compomentSelf.appContext.config.globalProperties.plugin as HtmlCommentsPlugin
+let componentSelf = getCurrentInstance();
+if (!componentSelf) throw Error("vue not found");
+let plugin = componentSelf.appContext.config.globalProperties.plugin as HtmlCommentsPlugin
 
 const setNodeProps = computed(() => {
     return (info: { option: TreeSelectOption; }): HTMLAttributes & Record<string, unknown> => {
@@ -82,7 +82,7 @@ onMounted(() => {
 
 // load settings
 let renderMethod = computed(() => {
-    if (viewState.settings.rederMarkdown) {
+    if (viewState.settings.renderMarkdown) {
         return renderLabel;
     }
     return undefined

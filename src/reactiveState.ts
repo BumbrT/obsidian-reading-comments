@@ -9,8 +9,7 @@ const viewState = {
     },
     settings: reactive({
         dark: true,
-        rederMarkdown: false,
-        hideUnsearched: true,
+        renderMarkdown: false,
     }),
     filterPreset: reactive({
         regexSearch: false,
