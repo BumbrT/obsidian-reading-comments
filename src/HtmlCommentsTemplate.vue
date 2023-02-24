@@ -9,7 +9,7 @@
                 </template>
             </NButton>
             <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search"
-                size="small" clearable />
+                size="small" />
         </NSpace>
         <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
             :data="viewState.viewTreeOptions.value" :selected-keys="[]"
