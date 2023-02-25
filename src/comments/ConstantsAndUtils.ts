@@ -111,7 +111,7 @@ class ConstantsAndUtils {
         document.head.appendChild(styleEl);
     }
 
-    convertParsetCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
+    convertParsedCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
         const mapTreeOptionToCommentsNoteEntries = function (option: AbstractTreeOption): string[][] {
             if (option.isTag) {
                 return mapTagOptionToCommentsNoteEntries(<TagTreeOption>option);
