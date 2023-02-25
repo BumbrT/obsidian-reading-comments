@@ -1,5 +1,5 @@
 # Obsidian Reading Comments
-Plugin allows to create inline html comments while reading markdown notes in Obsidian.
+Plugin allows to create inline html comments while reading markdown notes in Obsidian. After commenting job done and finalized, original note with internal links to comments note (in plain obsidian markdown, clean from HTML formatting) could be extracted for integration with rest of the vault.
 
 [Readme на русском](https://github.com/BumbrT/obsidian-reading-comments/blob/master/README-RU.md)
 
@@ -12,16 +12,16 @@ It's recommended to assign hotkey for this command panel action.
 You can use hierarchical Parent/Child tags in "data-tags" field.
 
 ### Open comments panel:
-Open command panel and type `Reading Comments Panel` ，then press `Enter` .
+Open command panel and type `Reading Comments Panel`.
 
 ### Extract original note with links to comments note
-Open command panel and type `Extract original note with links to comments note` ，then press `Enter` .
+Open command panel and type `Extract original note with links to comments note`.
 
 ## Features
 - Tag comments hierarchically: Parent/Child/Etc tags supported and grouped by parent in the panel
 - Search in comments
 - Navigate to particular comment by click
-- **Extract original note with link to comments note**
+- **Extract original note with links to comments note**
 - Remove selected comment by hotkey
 - Toggle selected comment to block/inline by hotkey
 - Hide comment until commented text body is hovered
@@ -52,7 +52,7 @@ If you enjoy this plugin, feel free to buy me a coffee.
 ## Installation
 - Install from obsidian community plugins store
 - Use [obsidian BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin with github link to this repo
-- Or download latest release file from [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) and put files to your vault/.obsidian/plugins folder. Community plugins should be anabled.
+- Or download latest release file from [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) and put files to your vault/.obsidian/plugins folder. Community plugins should be enabled.
 
 ## Implementation details for DIY plugin modifications and pull requests
 ### Comments logic
