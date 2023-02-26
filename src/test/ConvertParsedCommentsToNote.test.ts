@@ -6,7 +6,7 @@ import { constantsAndUtils } from '../comments/ConstantsAndUtils';
 describe("export parsed comments as note", () => {
     test("should export parsed comments as note", () => {
         const parser = new TextToTreeDataParser(textToAnalyse);
-        const result = constantsAndUtils.convertParsetCommentsToCommentsNote(parser.parsedComments);
+        const result = constantsAndUtils.convertParsedCommentsToCommentsNote(parser.parsedComments);
         expect(result.length).toBeGreaterThan(0);
     });
     test("should export sample to original", () => {

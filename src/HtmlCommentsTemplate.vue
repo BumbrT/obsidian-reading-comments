@@ -116,7 +116,7 @@ async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[
 }
 
 function jumpToComment(line: number) {
-    const view = plugin.currentNote;
+    const view = plugin.getActiveView();
     if (view) {
         view.editor.focus();
 

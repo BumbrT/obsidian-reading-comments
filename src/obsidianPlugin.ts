@@ -1,17 +1,14 @@
-import { App, Editor, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin } from 'obsidian';
-import { v4 as uuidv4 } from 'uuid';
+import { App, Editor, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile } from 'obsidian';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
-import { constantsAndUtils, AbstractTreeOption } from './comments/ConstantsAndUtils';
+import { constantsAndUtils } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
 import { ErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
-import { TreeOption } from 'naive-ui';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
-	currentNote: MarkdownView;
 
 	async onload() {
 		await this.loadSettings();
@@ -44,10 +41,6 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	initState() {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
-		const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-		if (view) {
-			this.currentNote = view
-		}
 	}
 
 	registerCommands() {
@@ -141,24 +134,17 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	registerListener() {
 		this.registerEvent(this.app.workspace.on('file-open', async (_) => {
-			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
-			if (view) {
-				this.currentNote = view;
-				this.parseActiveViewToCommentsAndClearExpandedItems();
-			}
+			this.parseActiveViewToCommentsAndClearExpandedItems();
 		}));
 		const editorEventsAggregator = new EventsAggregator(2000, () => {
 			this.parseActiveViewToComments(false);
 		});
+
 		this.registerEvent(this.app.workspace.on('editor-change', async (editor: Editor, info: MarkdownView | MarkdownFileInfo) => {
 			if (!this.settings.liveReloadOnEdit) {
 				return;
 			}
-			let view = this.app.workspace.getActiveViewOfType(MarkdownView);
-			if (view) {
-				this.currentNote = view;
-				editorEventsAggregator.triggerEvent();
-			}
+			editorEventsAggregator.triggerEvent();
 		}));
 	}
 
@@ -174,20 +160,26 @@ export class HtmlCommentsPlugin extends Plugin {
 		);
 	}
 
-	getActiveView(): MarkdownView {
-		const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-		if (!activeView) {
-			return this.currentNote;
+	private getActiveFile(): TFile | null {
+		return this.app.workspace.getActiveFile();
+	}
+
+	getActiveView(): MarkdownView | null {
+		// @ts-ignore
+		return this.app.workspace.getActiveFileView();
+	}
+
+	async parseActiveViewToCommentsAndClearExpandedItems() {
+		await this.parseActiveViewToComments(true);
+	}
+
+	private async parseActiveViewToComments(clearExpandedItems: boolean) {
+		const file = this.getActiveFile();
+		if (!file) {
+			return;
 		}
-		return activeView;
-	}
+		const text = await this.app.vault.cachedRead(file);
 
-	parseActiveViewToCommentsAndClearExpandedItems() {
-		this.parseActiveViewToComments(true);
-	}
-
-	private parseActiveViewToComments(clearExpandedItems: boolean) {
-		const text = this.getActiveView().getViewData();
 		const parsedText = new TextToTreeDataParser(text);
 		viewState.viewTreeOptions.value = parsedText.parsedComments.treeOptions;
 		if (!clearExpandedItems) {
@@ -202,12 +194,14 @@ export class HtmlCommentsPlugin extends Plugin {
 	}
 
 	private async extractOriginalNote() {
-		if (this.currentNote == null) {
+		const file = this.getActiveFile();
+		if (!file) {
 			new ErrorModal(this.app, 'There is no comments in current file or file not selected!').open();
 			return;
 		}
-		const fileName = this.currentNote.file.name;
-		const parentPath = this.currentNote.file.parent.path;
+
+		const fileName = file.name;
+		const parentPath = file.parent.path;
 		if (!fileName.endsWith(".md")) {
 			new ErrorModal(this.app, "Current file should end with '.md'!").open();
 			return;
@@ -219,9 +213,9 @@ export class HtmlCommentsPlugin extends Plugin {
 		let extractedNoteCommentsName = `${fileNameWithoutExtension} Comments.md`;
 		let extractedCommentsNotePath = `${parentPath == "/" ? '' : parentPath + '/'}${extractedNoteCommentsName}`;
 
-		const noteText = this.currentNote.getViewData();
+		const noteText = await this.app.vault.cachedRead(file);
 		const parsedText = new TextToTreeDataParser(noteText);
-		const commentsFileContent = constantsAndUtils.convertParsetCommentsToCommentsNote(parsedText.parsedComments);
+		const commentsFileContent = constantsAndUtils.convertParsedCommentsToCommentsNote(parsedText.parsedComments);
 		const originalFileContent = constantsAndUtils.convertNoteWithCommentsToOriginalNote(noteText, extractedNoteCommentsName);
 
 		const commentsFile = this.app.vault.getAbstractFileByPath(extractedCommentsNotePath);
