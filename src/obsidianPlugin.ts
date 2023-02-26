@@ -1,13 +1,11 @@
 import { App, Editor, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile } from 'obsidian';
-import { v4 as uuidv4 } from 'uuid';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
 import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
-import { constantsAndUtils, AbstractTreeOption } from './comments/ConstantsAndUtils';
+import { constantsAndUtils } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
 import { ErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
-import { c, TreeOption } from 'naive-ui';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -166,13 +164,8 @@ export class HtmlCommentsPlugin extends Plugin {
 	}
 
 	getActiveView(): MarkdownView | null {
-		const editor = this.app.workspace.activeEditor;
-		console.log(`>>> ${editor}`);
-		if (!(editor instanceof MarkdownView)) {
-			return null;
-		} else {
-			return editor;
-		}
+		// @ts-ignore
+		return this.app.workspace.getActiveFileView();
 	}
 
 	async parseActiveViewToCommentsAndClearExpandedItems() {
