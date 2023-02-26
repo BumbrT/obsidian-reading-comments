@@ -159,6 +159,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			this.app.workspace.getLeavesOfType(VIEW_TYPE)[0]
 		);
 	}
+
 	private getActiveFile(): TFile | null {
 		return this.app.workspace.getActiveFile();
 	}
