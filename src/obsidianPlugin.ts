@@ -7,7 +7,7 @@ import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 import { constantsAndUtils, AbstractTreeOption } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
 import { ErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
-import { TreeOption } from 'naive-ui';
+import { c, TreeOption } from 'naive-ui';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -166,11 +166,13 @@ export class HtmlCommentsPlugin extends Plugin {
 	}
 
 	getActiveView(): MarkdownView | null {
-		const file = new TFile();
-		file.vault.
-			this.app.workspace.getLeaf(false)
-		// return this.app.workspace.getActiveViewOfType(MarkdownView);
-		// 		this.app.workspace.activeEditor
+		const editor = this.app.workspace.activeEditor;
+		console.log(`>>> ${editor}`);
+		if (!(editor instanceof MarkdownView)) {
+			return null;
+		} else {
+			return editor;
+		}
 	}
 
 	async parseActiveViewToCommentsAndClearExpandedItems() {
