@@ -8,7 +8,7 @@ Plugin allows to create inline html comments while reading markdown notes in Obs
 
 ## Usage
 ### Insert a comment:
-Open command panel and type `Add reading comment for selection` ，then press `Enter` .
+Select text in editor, which you want to comment. Open command panel and type `Add reading comment for selection` ，then press `Enter` .
 
 It's recommended to assign hotkey for this command panel action.
 
