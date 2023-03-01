@@ -48,7 +48,7 @@
 
 ## Установка
 
-- Установите из плагинов сообщества Obsidian (Community plugins)
+- Установите из плагинов сообщества [Obsidian Community plugins](https://obsidian.md/plugins?id=reading-comments)
 - Используйте плагин [obsidian BRAT](https://github.com/TfTHacker/obsidian42-brat) со ссылкой на данный репозиторий
 - Можно загрузить вручную со страницы [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) и скопировать в папку: vault/.obsidian/plugins folder. Должны быть включены плагины сообщества (Community plugins).
 
