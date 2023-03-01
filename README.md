@@ -53,7 +53,7 @@ If you enjoy this plugin, feel free to buy me a coffee.
 <a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 
 ## Installation
-- Install from obsidian community plugins store
+- Install from obsidian [community plugins store](https://obsidian.md/plugins?id=reading-comments)
 - Use [obsidian BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin with github link to this repo
 - Or download latest release file from [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) and put files to your vault/.obsidian/plugins folder. Community plugins should be enabled.
 
