@@ -4,8 +4,8 @@
 
 [Тема на форуме Obsidian](https://forum.obsidian.md/t/new-plugin-obsidian-reading-comments/)
 
-
 ## Использование
+
 ### Добавить комментарий к выделенному тексту
 
 Выделите текст, откройте панель команд и выполните команду `Add reading comment for selection`.
@@ -15,12 +15,15 @@
 В поле "data-tags" можно через запятую указать тэги, поддерживается иерархия: Родитель/Дочерний тэг.
 
 ### Открыть панель со списком комментариев:
+
 Выполните команду `Reading Comments Panel`.
 
 ### Выгрузить оригинальную заметку со ссылками на заметку с комментариями
+
 Выполните команду `Extract original note with links to comments note`.
 
 ## Возможности
+
 - Иерархическая группировка комментариев: тэги вида "Parent/Child/Etc" поддерживаются и группируются в панели комментариев
 - Поиск по комментариям
 - При клике по комментарию в панели, курсор в редакторе будет установлен на него
@@ -53,18 +56,23 @@
 - Можно загрузить вручную со страницы [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) и скопировать в папку: vault/.obsidian/plugins folder. Должны быть включены плагины сообщества (Community plugins).
 
 ## Детали реализации
+
 ### Логика комментариев
+
 Основная логика содержится в файле src/comments/ConstantsAndUtils.ts
  При выполнении команды `Add reading comment for selection` , выделенное в редакторе заменяется на:
-```
+
+```html
 <div class="ob-html-comment" id="comment-${commentId}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${htmlEscapedSelection}</div>
 ```
+
 Затем плагин анализирует текст заметки и выгружает комментарии на отдельную панель.
 
 ### Логика отображения
+
 Находится в файлах: styles.css и src/HtmlCommentsTemplate.vue
 
-
 ## Спасибо
+
 Реализация взята из  плагина [Obsidian Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline).
 Идея взята из плагина [Comments](https://github.com/Darakah/obsidian-comments-plugin).
