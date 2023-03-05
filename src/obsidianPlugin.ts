@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile } from 'obsidian';
+import { App, Editor, EditorPosition, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile } from 'obsidian';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
@@ -45,17 +45,26 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	registerCommands() {
 		// This adds an editor command that can perform some operation on the current editor instance
+		const addReadingComment = (editor: Editor, container: string) => {
+			const selection = editor.getSelection();
+			const replacement = constantsAndUtils.selectionToComment(container, selection);
+			if (replacement) {
+				const currentCursor = editor.getCursor("from");
+				const placeholderPositionStartCh = currentCursor.ch + container.length + 134;
+				const placeholderPositionEndCh = placeholderPositionStartCh + 18;
+				const placeholderPositionStart: EditorPosition = { line: currentCursor.line, ch: placeholderPositionStartCh }
+				const placeholderPositionEnd: EditorPosition = { line: currentCursor.line, ch: placeholderPositionEndCh }
+				editor.replaceSelection(replacement, selection);
+				editor.setSelection(placeholderPositionStart, placeholderPositionEnd);
+			} else {
+				new ErrorModal(this.app, 'Multiline comments not supported yet!').open();
+			}
+		}
 		this.addCommand({
 			id: 'add-reading-comment',
 			name: 'Add reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				const selection = editor.getSelection();
-				const replacement = constantsAndUtils.selectionToComment(this.settings.container, selection);
-				if (replacement) {
-					editor.replaceSelection(replacement);
-				} else {
-					new ErrorModal(this.app, 'Multiline comments not supported yet!').open();
-				}
+				addReadingComment(editor, this.settings.container);
 			}
 		});
 
@@ -63,13 +72,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			id: 'add-inline-reading-comment',
 			name: 'Add inline reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				const selection = editor.getSelection();
-				const replacement = constantsAndUtils.selectionToComment("span", selection);
-				if (replacement) {
-					editor.replaceSelection(replacement);
-				} else {
-					new ErrorModal(this.app, 'Multiline comments not supported yet!').open();
-				}
+				addReadingComment(editor, "span");
 			}
 		});
 
@@ -77,13 +80,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			id: 'add-block-reading-comment',
 			name: 'Add block reading comment for selection',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				const selection = editor.getSelection();
-				const replacement = constantsAndUtils.selectionToComment("div", selection);
-				if (replacement) {
-					editor.replaceSelection(replacement);
-				} else {
-					new ErrorModal(this.app, 'Multiline comments not supported yet!').open();
-				}
+				addReadingComment(editor, "div");
 			}
 		});
 
