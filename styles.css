@@ -4,10 +4,8 @@
     display: none;
 }
 
-.view-content .ob-html-comment:hover>.ob-html-comment-body {
-    display: inline;
-    position: relative;
-}
+/* hover effect moved to constantsAndUtils.ts */
+
 
 /* quiet-outline plugin hardcoded global custom styles conflict */
 .reading-comments .n-tree .n-tree-node-switcher {

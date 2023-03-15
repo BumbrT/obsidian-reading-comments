@@ -70,12 +70,12 @@ function expand(keys: string[], option: TreeOption[]) {
 watch(
     () => viewState.colorSettingsChangedTrigger.value,
     () => {
-        constantsAndUtils.applySettingsColors(plugin.settings);
+        constantsAndUtils.applySettingsStyles(plugin.settings);
     }
 );
 
 onMounted(() => {
-    constantsAndUtils.applySettingsColors(plugin.settings);
+    constantsAndUtils.applySettingsStyles(plugin.settings);
 });
 
 

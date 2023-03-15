@@ -1,9 +1,9 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
 import { HtmlCommentsPlugin } from "./obsidianPlugin";
-import { PluginColors } from './comments/ConstantsAndUtils'
+import { PluginStylesSettings } from './comments/ConstantsAndUtils'
 
-export interface HtmlCommentsSettings extends PluginColors {
+export interface HtmlCommentsSettings extends PluginStylesSettings {
     autoExpand: boolean;
     liveReloadOnEdit: boolean;
     container: string;
