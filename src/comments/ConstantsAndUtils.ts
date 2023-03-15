@@ -85,6 +85,23 @@ class ConstantsAndUtils {
         return htmlDecode(matches[3]);
     }
 
+    todoHover() {
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey) {
+                // Add a class to the element you want to apply the hover effect to
+                document.querySelector('#my-element').classList.add('hover-effect');
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.ctrlKey) {
+                // Remove the class from the element when the "Ctrl" key is released
+                document.querySelector('#my-element').classList.remove('hover-effect');
+            }
+        });
+
+    }
+
     applySettingsColors(colors: PluginColors) {
         let styleEl = document.getElementById(this.customColorStyleElementId);
         if (styleEl) {
