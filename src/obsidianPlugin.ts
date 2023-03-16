@@ -172,30 +172,46 @@ export class HtmlCommentsPlugin extends Plugin {
 			actionWithActiveView(activeView);
 		}
 	}
+	private showPopover(event: MouseEvent) {
+		if (!this.settings.showCommentWhenCtrlKeyPressed) {
+			return;
+		}
+		this.withActiveView(view => {
+			const el = event.currentTarget;
+			// @ts-ignore
+			const popover = new HoverPopover(view, el, 1000);
+			popover.hoverEl.textContent = "test!";
+		}
+		);
+
+	};
+	private hidePopover(event: MouseEvent) {
+		if (!this.settings.showCommentWhenCtrlKeyPressed) {
+			return;
+		}
+		this.withActiveView(view => {
+			view.hoverPopover = null;
+		}
+		);
+	};
 
 	applySettingsStyles() {
 		const stylesSettings = this.settings;
 		const plugin = this;
 		let hoverEffectStyle = "";
 		if (stylesSettings.showCommentWhenCtrlKeyPressed) {
-			const showPopup = (event: MouseEvent) => {};
-			const hidePopup = (event: MouseEvent) => {};
+
 			document.addEventListener('keydown', function (event) {
 				if (event.key == "Control") {
 					if (!plugin.settings.showCommentWhenCtrlKeyPressed) {
 						return;
 					}
-					plugin.withActiveView(view => {
-						const popover = new HoverPopover(view, document.querySelectorAll('.ob-html-comment')[0], null);
-						popover.hoverEl.textContent = "test!";
-						const commentsEls = document.querySelectorAll('.ob-html-comment');
-						commentsEls.forEach(it => {
-							it.addEventListener('mouseover', showPopup);
-							it.addEventListener('mouseleave',hidePopup);
+					const commentsEls = document.querySelectorAll('.ob-html-comment');
+					commentsEls.forEach(it => {
+						it.addEventListener('mouseover', plugin.showPopover);
+						it.addEventListener('mouseleave', plugin.hidePopover);
+					});
 
-						});
-					}
-					);
 				}
 			});
 
@@ -206,8 +222,8 @@ export class HtmlCommentsPlugin extends Plugin {
 					}
 					const commentsEls = document.querySelectorAll('.ob-html-comment');
 					commentsEls.forEach(it => {
-						it.removeEventListener('mouseover', showPopup);
-						it.removeEventListener('mouseleave',hidePopup);
+						it.removeEventListener('mouseover', plugin.showPopover);
+						it.removeEventListener('mouseleave', plugin.hidePopover);
 					});
 				}
 			});
