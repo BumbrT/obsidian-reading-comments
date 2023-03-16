@@ -68,7 +68,7 @@ function expand(keys: string[], option: TreeOption[]) {
 }
 
 watch(
-    () => viewState.colorSettingsChangedTrigger.value,
+    () => viewState.settingsChangedTrigger.value,
     () => {
         constantsAndUtils.applySettingsStyles(plugin.settings);
     }

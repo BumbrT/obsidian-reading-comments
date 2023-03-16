@@ -91,14 +91,16 @@ class ConstantsAndUtils {
         if (stylesSettings.showCommentWhenCtrlKeyPressed) {
             hoverEffectStyle = ".ob-html-comment-ctrl-pressed";
             document.addEventListener('keydown', function(event) {
-                if (event.ctrlKey) {
-                    document.querySelector('.ob-html-comment').classList.add('.ob-html-comment-ctrl-pressed');
+                if (event.ctrlKey || event.metaKey) {
+                    const commentsEls = document.querySelectorAll('.ob-html-comment');
+                    commentsEls.forEach(it => it.classList.add('.ob-html-comment-ctrl-pressed'));
                 }
             });
 
             document.addEventListener('keyup', function(event) {
-                if (event.ctrlKey) {
-                    document.querySelector('.ob-html-comment').classList.remove('.ob-html-comment-ctrl-pressed');
+                if (event.ctrlKey || event.metaKey) {
+                    const commentsEls = document.querySelectorAll('.ob-html-comment');
+                    commentsEls.forEach(it => it.classList.remove('.ob-html-comment-ctrl-pressed'));
                 }
             });
         }
