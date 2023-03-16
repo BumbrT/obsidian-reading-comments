@@ -8,14 +8,12 @@
                     </Icon>
                 </template>
             </NButton>
-            <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search"
-                size="small" />
+            <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search" size="small" />
         </NSpace>
         <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
-            :data="viewState.viewTreeOptions.value" :selected-keys="[]"
-            :on-update:selected-keys="jumpToCommentOrExpandTag" :render-label="renderMethod" :node-props="setNodeProps"
-            :expanded-keys="viewState.viewExpandedKeys.value" :on-update:expanded-keys="expand"
-            :filter="viewState.simpleFilter" :show-irrelevant-nodes="false" />
+            :data="viewState.viewTreeOptions.value" :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag"
+            :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="viewState.viewExpandedKeys.value"
+            :on-update:expanded-keys="expand" :filter="viewState.simpleFilter" :show-irrelevant-nodes="false" />
     </NConfigProvider>
 </template>
 
@@ -67,15 +65,8 @@ function expand(keys: string[], option: TreeOption[]) {
     viewState.viewExpandedKeys.value = keys;
 }
 
-watch(
-    () => viewState.settingsChangedTrigger.value,
-    () => {
-        constantsAndUtils.applySettingsStyles(plugin);
-    }
-);
-
 onMounted(() => {
-    constantsAndUtils.applySettingsStyles(plugin);
+    plugin.applySettingsStyles();
 });
 
 
@@ -116,8 +107,7 @@ async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[
 }
 
 function jumpToComment(line: number) {
-    const view = plugin.getActiveView();
-    if (view) {
+    plugin.withActiveView(view => {
         view.editor.focus();
 
         if (view.getMode() == "source") {
@@ -131,9 +121,8 @@ function jumpToComment(line: number) {
             const state = { scroll: scrollToPosition };
             view.setEphemeralState(state);
         }
-    } else {
-        console.error(`view not found`);
     }
+    );
 }
 
 function expandOrCollapseTag(tagKey: string) {

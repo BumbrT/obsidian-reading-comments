@@ -1,4 +1,4 @@
-import { App, Editor, EditorPosition, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile } from 'obsidian';
+import { App, Editor, EditorPosition, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile, HoverPopover } from 'obsidian';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
@@ -36,7 +36,7 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		viewState.toggleSettingsChanged();
+		this.applySettingsStyles();
 	}
 
 	initState() {
@@ -171,6 +171,76 @@ export class HtmlCommentsPlugin extends Plugin {
 		if (activeView) {
 			actionWithActiveView(activeView);
 		}
+	}
+
+	applySettingsStyles() {
+		const stylesSettings = this.settings;
+		const plugin = this;
+		let hoverEffectStyle = "";
+		if (stylesSettings.showCommentWhenCtrlKeyPressed) {
+			const showPopup = (event: MouseEvent) => {};
+			const hidePopup = (event: MouseEvent) => {};
+			document.addEventListener('keydown', function (event) {
+				if (event.key == "Control") {
+					if (!plugin.settings.showCommentWhenCtrlKeyPressed) {
+						return;
+					}
+					plugin.withActiveView(view => {
+						const popover = new HoverPopover(view, document.querySelectorAll('.ob-html-comment')[0], null);
+						popover.hoverEl.textContent = "test!";
+						const commentsEls = document.querySelectorAll('.ob-html-comment');
+						commentsEls.forEach(it => {
+							it.addEventListener('mouseover', showPopup);
+							it.addEventListener('mouseleave',hidePopup);
+
+						});
+					}
+					);
+				}
+			});
+
+			document.addEventListener('keyup', function (event) {
+				if (event.key == "Control") {
+					if (!plugin.settings.showCommentWhenCtrlKeyPressed) {
+						return;
+					}
+					const commentsEls = document.querySelectorAll('.ob-html-comment');
+					commentsEls.forEach(it => {
+						it.removeEventListener('mouseover', showPopup);
+						it.removeEventListener('mouseleave',hidePopup);
+					});
+				}
+			});
+		} else {
+			hoverEffectStyle = `.view-content .ob-html-comment:hover>.ob-html-comment-body {
+				display: inline;
+				position: relative;
+			}`;
+		}
+		let styleEl = document.getElementById(constantsAndUtils.customColorStyleElementId);
+		if (styleEl) {
+			document.head.removeChild(styleEl);
+		}
+		styleEl = document.createElement('style');
+		styleEl.id = constantsAndUtils.customColorStyleElementId;
+		styleEl.textContent = `
+				${hoverEffectStyle}
+                .view-content .ob-html-comment {
+                    background-color: ${stylesSettings.commentedTextColorDark};
+                }
+
+                .view-content .ob-html-comment:hover>.ob-html-comment-body {
+                    background-color: ${stylesSettings.commentColorDark};
+                }
+
+                .theme-light .view-content .ob-html-comment {
+                    background-color: ${stylesSettings.commentedTextColorLight};
+                }
+
+                .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
+                    background-color: ${stylesSettings.commentColorLight};
+    }`;
+		document.head.appendChild(styleEl);
 	}
 
 	async parseActiveViewToCommentsAndClearExpandedItems() {

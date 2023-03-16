@@ -17,7 +17,7 @@ export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     commentedTextColorDark: "#585809",
     commentColorLight: "#f3f367",
     commentColorDark: "#330202",
-    showCommentWhenCtrlKeyPressed: false
+    showCommentWhenCtrlKeyPressed: true
 }
 
 export class HtmlCommentsSettingTab extends PluginSettingTab {
@@ -36,8 +36,8 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
         containerEl.createEl('h2', { text: 'Settings for Reading comments plugin.' });
 
         new Setting(containerEl)
-            .setName('Show comment on Ctrl (Command) + Hover')
-            .setDesc('By default comment shown just by cursor hover on commented text.')
+            .setName('Show comment in Hover Popower Window on Ctrl (Command) + Hover')
+            .setDesc('Previously comment shown just by cursor hover on commented text.')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.showCommentWhenCtrlKeyPressed)
                 .onChange(

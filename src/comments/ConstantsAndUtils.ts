@@ -43,7 +43,7 @@ class ConstantsAndUtils {
     readonly regExpCommentSingleLine = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm;
     private readonly regExpCommentWithCommentedText = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
     private readonly regExpTagToggle = /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/;
-    private readonly customColorStyleElementId = "ob-html-comment-custom-style";
+    public readonly customColorStyleElementId = "ob-html-comment-custom-style";
     constructor() {
     }
 
@@ -86,57 +86,6 @@ class ConstantsAndUtils {
             return null;
         }
         return htmlDecode(matches[3]);
-    }
-
-    applySettingsStyles(plugin: HtmlCommentsPlugin) {
-        let stylesSettings = plugin.settings;
-        let hoverEffectStyle = "ob-html-comment";
-        if (stylesSettings.showCommentWhenCtrlKeyPressed) {
-            hoverEffectStyle = "ob-html-comment-ctrl-pressed";
-            document.addEventListener('keydown', function(event) {
-                if (event.key == "Control") {
-                    const popover = new HoverPopover(plugin.getActiveView(), document.querySelectorAll('.ob-html-comment')[0], null);
-                    popover.hoverEl.appendText("test!");
-                    const commentsEls = document.querySelectorAll('.ob-html-comment');
-                    commentsEls.forEach(it => it.classList.add('ob-html-comment-ctrl-pressed'));
-                }
-            });
-
-            document.addEventListener('keyup', function(event) {
-                if (event.key == "Control") {
-                    const commentsEls = document.querySelectorAll('.ob-html-comment');
-                    commentsEls.forEach(it => it.classList.remove('ob-html-comment-ctrl-pressed'));
-                }
-            });
-        }
-        let styleEl = document.getElementById(this.customColorStyleElementId);
-        if (styleEl) {
-            document.head.removeChild(styleEl);
-        }
-        styleEl = document.createElement('style');
-        styleEl.id = this.customColorStyleElementId;
-        styleEl.textContent = `
-                .view-content .${hoverEffectStyle}:hover>.ob-html-comment-body {
-                    display: inline;
-                    position: relative;
-                }
-
-                .view-content .ob-html-comment {
-                    background-color: ${stylesSettings.commentedTextColorDark};
-                }
-
-                .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${stylesSettings.commentColorDark};
-                }
-
-                .theme-light .view-content .ob-html-comment {
-                    background-color: ${stylesSettings.commentedTextColorLight};
-                }
-
-                .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${stylesSettings.commentColorLight};
-    }`;
-        document.head.appendChild(styleEl);
     }
 
     convertParsedCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
