@@ -36,17 +36,17 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
         containerEl.createEl('h2', { text: 'Settings for Reading comments plugin.' });
 
         new Setting(containerEl)
-        .setName('Show comment on Ctrl (Command) + Hover')
-        .setDesc('By default comment shown just by cursor hover on commented text.')
-        .addToggle(toggle => toggle
-            .setValue(this.plugin.settings.showCommentWhenCtrlKeyPressed)
-            .onChange(
-                async (value) => {
-                    this.plugin.settings.showCommentWhenCtrlKeyPressed = value;
-                    await this.plugin.saveSettings();
-                }
-            )
-        );
+            .setName('Show comment on Ctrl (Command) + Hover')
+            .setDesc('By default comment shown just by cursor hover on commented text.')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.showCommentWhenCtrlKeyPressed)
+                .onChange(
+                    async (value) => {
+                        this.plugin.settings.showCommentWhenCtrlKeyPressed = value;
+                        await this.plugin.saveSettings();
+                    }
+                )
+            );
 
         new Setting(containerEl)
             .setName('Auto Expand Tags')
@@ -76,17 +76,17 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName('Add comment inline or as block by default')
             .setDesc('There is also two additional commands: Add comment as inline/ as block. Or you can change manually .ob-html-comment wrapper tag from span to div accordingly.')
-            .addDropdown( dropdown => dropdown
-                    .addOption("span", "Inline")
-                    .addOption("div", "Block")
-                    .setValue(this.plugin.settings.container)
-                    .onChange(
-                        async (value) => {
-                            this.plugin.settings.container = value;
-                            await this.plugin.saveSettings();
-                        }
-                    )
-                );
+            .addDropdown(dropdown => dropdown
+                .addOption("span", "Inline")
+                .addOption("div", "Block")
+                .setValue(this.plugin.settings.container)
+                .onChange(
+                    async (value) => {
+                        this.plugin.settings.container = value;
+                        await this.plugin.saveSettings();
+                    }
+                )
+            );
 
         new Setting(containerEl)
             .setName("Commented Text Color Light/Dark")
