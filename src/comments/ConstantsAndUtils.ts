@@ -1,5 +1,7 @@
 import escapeHTML from "escape-html";
+import HtmlCommentsPlugin from "main";
 import { TreeOption } from "naive-ui";
+import { HoverPopover } from "obsidian";
 import { v4 as uuidv4 } from 'uuid';
 import { OrganaizedTagsAndComments } from "./OrganaizedTagsAndComments";
 
@@ -86,12 +88,15 @@ class ConstantsAndUtils {
         return htmlDecode(matches[3]);
     }
 
-    applySettingsStyles(stylesSettings: PluginStylesSettings) {
+    applySettingsStyles(plugin: HtmlCommentsPlugin) {
+        let stylesSettings = plugin.settings;
         let hoverEffectStyle = "ob-html-comment";
         if (stylesSettings.showCommentWhenCtrlKeyPressed) {
             hoverEffectStyle = "ob-html-comment-ctrl-pressed";
             document.addEventListener('keydown', function(event) {
                 if (event.key == "Control") {
+                    const popover = new HoverPopover(plugin.getActiveView(), document.querySelectorAll('.ob-html-comment')[0], null);
+                    popover.hoverEl.appendText("test!");
                     const commentsEls = document.querySelectorAll('.ob-html-comment');
                     commentsEls.forEach(it => it.classList.add('ob-html-comment-ctrl-pressed'));
                 }

@@ -161,9 +161,16 @@ export class HtmlCommentsPlugin extends Plugin {
 		return this.app.workspace.getActiveFile();
 	}
 
-	getActiveView(): MarkdownView | null {
+	private getActiveView(): MarkdownView | null {
 		// @ts-ignore
 		return this.app.workspace.getActiveFileView();
+	}
+
+	withActiveView(actionWithActiveView: (view: MarkdownView) => void) {
+		const activeView = this.getActiveView();
+		if (activeView) {
+			actionWithActiveView(activeView);
+		}
 	}
 
 	async parseActiveViewToCommentsAndClearExpandedItems() {

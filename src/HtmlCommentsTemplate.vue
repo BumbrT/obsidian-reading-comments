@@ -70,12 +70,12 @@ function expand(keys: string[], option: TreeOption[]) {
 watch(
     () => viewState.settingsChangedTrigger.value,
     () => {
-        constantsAndUtils.applySettingsStyles(plugin.settings);
+        constantsAndUtils.applySettingsStyles(plugin);
     }
 );
 
 onMounted(() => {
-    constantsAndUtils.applySettingsStyles(plugin.settings);
+    constantsAndUtils.applySettingsStyles(plugin);
 });
 
 
