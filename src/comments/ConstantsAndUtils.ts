@@ -87,20 +87,20 @@ class ConstantsAndUtils {
     }
 
     applySettingsStyles(stylesSettings: PluginStylesSettings) {
-        let hoverEffectStyle = ".ob-html-comment";
+        let hoverEffectStyle = "ob-html-comment";
         if (stylesSettings.showCommentWhenCtrlKeyPressed) {
-            hoverEffectStyle = ".ob-html-comment-ctrl-pressed";
+            hoverEffectStyle = "ob-html-comment-ctrl-pressed";
             document.addEventListener('keydown', function(event) {
-                if (event.ctrlKey || event.metaKey) {
+                if (event.key == "Control") {
                     const commentsEls = document.querySelectorAll('.ob-html-comment');
-                    commentsEls.forEach(it => it.classList.add('.ob-html-comment-ctrl-pressed'));
+                    commentsEls.forEach(it => it.classList.add('ob-html-comment-ctrl-pressed'));
                 }
             });
 
             document.addEventListener('keyup', function(event) {
-                if (event.ctrlKey || event.metaKey) {
+                if (event.key == "Control") {
                     const commentsEls = document.querySelectorAll('.ob-html-comment');
-                    commentsEls.forEach(it => it.classList.remove('.ob-html-comment-ctrl-pressed'));
+                    commentsEls.forEach(it => it.classList.remove('ob-html-comment-ctrl-pressed'));
                 }
             });
         }
@@ -111,7 +111,7 @@ class ConstantsAndUtils {
         styleEl = document.createElement('style');
         styleEl.id = this.customColorStyleElementId;
         styleEl.textContent = `
-                .view-content ${hoverEffectStyle}:hover>.ob-html-comment-body {
+                .view-content .${hoverEffectStyle}:hover>.ob-html-comment-body {
                     display: inline;
                     position: relative;
                 }
