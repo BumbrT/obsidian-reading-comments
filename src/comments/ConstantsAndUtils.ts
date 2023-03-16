@@ -30,11 +30,12 @@ export interface AbstractTreeOption extends TreeOption {
     isTag: true | false,
 };
 
-export interface PluginColors {
+export interface PluginStylesSettings {
     commentedTextColorDark: string,
     commentColorDark: string,
     commentedTextColorLight: string,
-    commentColorLight: string
+    commentColorLight: string,
+    showCommentWhenCtrlKeyPressed: boolean,
 }
 class ConstantsAndUtils {
     readonly regExpCommentSingleLine = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm;
@@ -85,7 +86,24 @@ class ConstantsAndUtils {
         return htmlDecode(matches[3]);
     }
 
-    applySettingsColors(colors: PluginColors) {
+    applySettingsStyles(stylesSettings: PluginStylesSettings) {
+        let hoverEffectStyle = "ob-html-comment";
+        if (stylesSettings.showCommentWhenCtrlKeyPressed) {
+            hoverEffectStyle = "ob-html-comment-ctrl-pressed";
+            document.addEventListener('keydown', function(event) {
+                if (event.key == "Control") {
+                    const commentsEls = document.querySelectorAll('.ob-html-comment');
+                    commentsEls.forEach(it => it.classList.add('ob-html-comment-ctrl-pressed'));
+                }
+            });
+
+            document.addEventListener('keyup', function(event) {
+                if (event.key == "Control") {
+                    const commentsEls = document.querySelectorAll('.ob-html-comment');
+                    commentsEls.forEach(it => it.classList.remove('ob-html-comment-ctrl-pressed'));
+                }
+            });
+        }
         let styleEl = document.getElementById(this.customColorStyleElementId);
         if (styleEl) {
             document.head.removeChild(styleEl);
@@ -93,20 +111,25 @@ class ConstantsAndUtils {
         styleEl = document.createElement('style');
         styleEl.id = this.customColorStyleElementId;
         styleEl.textContent = `
+                .view-content .${hoverEffectStyle}:hover>.ob-html-comment-body {
+                    display: inline;
+                    position: relative;
+                }
+
                 .view-content .ob-html-comment {
-                    background-color: ${colors.commentedTextColorDark};
+                    background-color: ${stylesSettings.commentedTextColorDark};
                 }
 
                 .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${colors.commentColorDark};
+                    background-color: ${stylesSettings.commentColorDark};
                 }
 
                 .theme-light .view-content .ob-html-comment {
-                    background-color: ${colors.commentedTextColorLight};
+                    background-color: ${stylesSettings.commentedTextColorLight};
                 }
 
                 .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${colors.commentColorLight};
+                    background-color: ${stylesSettings.commentColorLight};
     }`;
         document.head.appendChild(styleEl);
     }

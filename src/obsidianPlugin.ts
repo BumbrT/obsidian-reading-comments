@@ -36,7 +36,7 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		viewState.toggleColorSettingsChanged();
+		viewState.toggleSettingsChanged();
 	}
 
 	initState() {
