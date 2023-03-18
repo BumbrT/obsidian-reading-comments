@@ -1,4 +1,4 @@
-import { App, Editor, EditorPosition, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile } from 'obsidian';
+import { App, Editor, EditorPosition, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile, HoverPopover } from 'obsidian';
 import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
 import { viewState } from "./reactiveState";
 import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
@@ -36,11 +36,13 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		viewState.toggleSettingsChanged();
+		this.applySettingsStylesAndEvents();
 	}
 
 	initState() {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
+		document.addEventListener('keydown', this.onKeyDown);
+		document.addEventListener('keyup', this.onKeyUp);
 	}
 
 	registerCommands() {
@@ -161,9 +163,122 @@ export class HtmlCommentsPlugin extends Plugin {
 		return this.app.workspace.getActiveFile();
 	}
 
-	getActiveView(): MarkdownView | null {
+	private getActiveView(): MarkdownView | null {
 		// @ts-ignore
 		return this.app.workspace.getActiveFileView();
+	}
+
+	withActiveView(actionWithActiveView: (view: MarkdownView) => void) {
+		const activeView = this.getActiveView();
+		if (activeView) {
+			actionWithActiveView(activeView);
+		}
+	}
+	private showPopoverEventListener = (event: MouseEvent) => {
+		if (!this.settings.showCommentWhenCtrlKeyPressed) {
+			return;
+		}
+		if (event.ctrlKey || event.metaKey) {
+			this.withActiveView(view => {
+				const el = event.currentTarget as Element;
+				this.showPopover(view, el);
+			}
+			);
+		}
+	};
+
+	private showPopover(view: MarkdownView, el: Element) {
+		if (view.hoverPopover?.state) {
+			return;
+		}
+		// @ts-ignore
+		const popover = new HoverPopover(view, el, 10);
+		document.createElement
+		popover.hoverEl.innerHTML = constantsAndUtils.getPopoverLayout(el.firstChild?.textContent ?? "");
+	}
+
+	private hidePopoverEventListener = (event: MouseEvent) => {
+		if (!this.settings.showCommentWhenCtrlKeyPressed) {
+			return;
+		}
+		if (event.ctrlKey || event.metaKey) {
+			this.withActiveView(view => {
+				view.hoverPopover = null;
+			}
+			);
+		}
+	};
+
+	private onKeyDown = (event: KeyboardEvent) => {
+		if (this.settings.showCommentWhenCtrlKeyPressed && event.key == "Control") {
+			const hoveredEls = document.querySelectorAll(":hover");
+			const hoveredElement: Element | null = hoveredEls[hoveredEls.length - 1];
+			const commentsEls = document.querySelectorAll('.ob-html-comment');
+			commentsEls.forEach(it => {
+				it.addEventListener('mouseover', this.showPopoverEventListener);
+				it.addEventListener('mouseover', this.showPopoverEventListener);
+				it.addEventListener('mouseleave', this.hidePopoverEventListener);
+				if (hoveredElement && it.id == hoveredElement.id) {
+					setTimeout(() => {
+						this.withActiveView(view => this.showPopover(view, it));
+					}, 1);
+				}
+			});
+		}
+	}
+
+	private onKeyUp = (event: KeyboardEvent) => {
+		if (this.settings.showCommentWhenCtrlKeyPressed && event.key == "Control") {
+
+			const commentsEls = document.querySelectorAll('.ob-html-comment');
+			commentsEls.forEach(it => {
+				it.removeEventListener('mouseover', this.showPopoverEventListener);
+				it.removeEventListener('mouseleave', this.hidePopoverEventListener);
+			});
+		}
+	}
+
+	private ifCursorOnComment() {
+		const hoveredEls = document.querySelectorAll(":hover");
+		if (hoveredEls.length) {
+
+		}
+	}
+
+	applySettingsStylesAndEvents() {
+		const stylesSettings = this.settings;
+		let hoverEffectStyle = "";
+		if (stylesSettings.showCommentWhenCtrlKeyPressed) {
+		} else {
+			hoverEffectStyle = `.view-content .ob-html-comment:hover>.ob-html-comment-body {
+				display: inline;
+				position: relative;
+			}`;
+		}
+		let styleEl = document.getElementById(constantsAndUtils.customColorStyleElementId);
+		if (styleEl) {
+			document.head.removeChild(styleEl);
+		}
+		styleEl = document.createElement('style');
+		styleEl.id = constantsAndUtils.customColorStyleElementId;
+		styleEl.textContent = `
+				${hoverEffectStyle}
+                .view-content .ob-html-comment {
+                    background-color: ${stylesSettings.commentedTextColorDark};
+                }
+
+                .view-content .ob-html-comment:hover>.ob-html-comment-body {
+                    background-color: ${stylesSettings.commentColorDark};
+                }
+
+                .theme-light .view-content .ob-html-comment {
+                    background-color: ${stylesSettings.commentedTextColorLight};
+                }
+
+                .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
+                    background-color: ${stylesSettings.commentColorLight};
+    }`;
+		document.head.appendChild(styleEl);
 	}
 
 	async parseActiveViewToCommentsAndClearExpandedItems() {

@@ -4,9 +4,6 @@ import { CommentTreeOption } from './comments/ConstantsAndUtils';
 
 
 const viewState = {
-    toggleSettingsChanged() {
-        this.settingsChangedTrigger.value = !this.settingsChangedTrigger.value;
-    },
     settings: reactive({
         dark: true,
         renderMarkdown: false,
@@ -15,7 +12,6 @@ const viewState = {
         regexSearch: false,
         caseSensitive: false,
     }),
-    settingsChangedTrigger: ref(false),
     viewTreeOptions: ref([] as TreeOption[]),
     viewExpandedKeys: ref<string[]>([]),
     regexFilter(pattern: string, option: TreeOption): boolean {

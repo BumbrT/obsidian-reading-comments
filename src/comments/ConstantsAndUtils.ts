@@ -1,5 +1,7 @@
 import escapeHTML from "escape-html";
+import HtmlCommentsPlugin from "main";
 import { TreeOption } from "naive-ui";
+import { HoverPopover } from "obsidian";
 import { v4 as uuidv4 } from 'uuid';
 import { OrganaizedTagsAndComments } from "./OrganaizedTagsAndComments";
 
@@ -41,7 +43,7 @@ class ConstantsAndUtils {
     readonly regExpCommentSingleLine = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm;
     private readonly regExpCommentWithCommentedText = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
     private readonly regExpTagToggle = /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/;
-    private readonly customColorStyleElementId = "ob-html-comment-custom-style";
+    public readonly customColorStyleElementId = "ob-html-comment-custom-style";
     constructor() {
     }
 
@@ -84,54 +86,6 @@ class ConstantsAndUtils {
             return null;
         }
         return htmlDecode(matches[3]);
-    }
-
-    applySettingsStyles(stylesSettings: PluginStylesSettings) {
-        let hoverEffectStyle = "ob-html-comment";
-        if (stylesSettings.showCommentWhenCtrlKeyPressed) {
-            hoverEffectStyle = "ob-html-comment-ctrl-pressed";
-            document.addEventListener('keydown', function(event) {
-                if (event.key == "Control") {
-                    const commentsEls = document.querySelectorAll('.ob-html-comment');
-                    commentsEls.forEach(it => it.classList.add('ob-html-comment-ctrl-pressed'));
-                }
-            });
-
-            document.addEventListener('keyup', function(event) {
-                if (event.key == "Control") {
-                    const commentsEls = document.querySelectorAll('.ob-html-comment');
-                    commentsEls.forEach(it => it.classList.remove('ob-html-comment-ctrl-pressed'));
-                }
-            });
-        }
-        let styleEl = document.getElementById(this.customColorStyleElementId);
-        if (styleEl) {
-            document.head.removeChild(styleEl);
-        }
-        styleEl = document.createElement('style');
-        styleEl.id = this.customColorStyleElementId;
-        styleEl.textContent = `
-                .view-content .${hoverEffectStyle}:hover>.ob-html-comment-body {
-                    display: inline;
-                    position: relative;
-                }
-
-                .view-content .ob-html-comment {
-                    background-color: ${stylesSettings.commentedTextColorDark};
-                }
-
-                .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${stylesSettings.commentColorDark};
-                }
-
-                .theme-light .view-content .ob-html-comment {
-                    background-color: ${stylesSettings.commentedTextColorLight};
-                }
-
-                .theme-light .view-content .ob-html-comment:hover>.ob-html-comment-body {
-                    background-color: ${stylesSettings.commentColorLight};
-    }`;
-        document.head.appendChild(styleEl);
     }
 
     convertParsedCommentsToCommentsNote(organaizedTagsAndComments: OrganaizedTagsAndComments): string {
@@ -179,6 +133,27 @@ class ConstantsAndUtils {
         }
 
         return noteWithCommentsContent.replace(this.regExpCommentWithCommentedText, replacer);
+    }
+
+    getPopoverLayout(textContent: string) {
+        return `    <div class="markdown-embed is-loaded">
+        <div class="markdown-embed-content">
+            <div
+                class="markdown-preview-view markdown-rendered node-insert-event show-indentation-guide allow-fold-headings allow-fold-lists">
+                <div class="markdown-preview-sizer markdown-preview-section">
+                    <div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div>
+                    <div class="mod-header">
+                        <div class="inline-title" contenteditable="false" spellcheck="false" tabindex="-1"
+                            enterkeyhint="done"></div>
+                    </div>
+                    <div>
+                        <p>${textContent}<br>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
     }
 };
 
