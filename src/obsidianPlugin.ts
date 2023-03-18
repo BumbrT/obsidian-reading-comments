@@ -179,7 +179,6 @@ export class HtmlCommentsPlugin extends Plugin {
 			return;
 		}
 		if (event.ctrlKey || event.metaKey) {
-			console.log(">>> showPopoverEventListener");
 			this.withActiveView(view => {
 				const el = event.currentTarget as Element;
 				this.showPopover(view, el);
@@ -189,8 +188,6 @@ export class HtmlCommentsPlugin extends Plugin {
 	};
 
 	private showPopover(view: MarkdownView, el: Element) {
-		console.log(`>>> Current state ${view.hoverPopover?.state}`)
-		console.log(`>>> Show popover ${el.id}`)
 		if (view.hoverPopover?.state) {
 			return;
 		}
@@ -205,7 +202,6 @@ export class HtmlCommentsPlugin extends Plugin {
 			return;
 		}
 		if (event.ctrlKey || event.metaKey) {
-			console.log(">>> hidePopoverEventListener");
 			this.withActiveView(view => {
 				view.hoverPopover = null;
 			}
@@ -217,13 +213,15 @@ export class HtmlCommentsPlugin extends Plugin {
 		if (this.settings.showCommentWhenCtrlKeyPressed && event.key == "Control") {
 			const hoveredEls = document.querySelectorAll(":hover");
 			const hoveredElement: Element | null = hoveredEls[hoveredEls.length - 1];
-			console.log(`>>> ${hoveredElement.tagName} ${hoveredElement.id}`)
 			const commentsEls = document.querySelectorAll('.ob-html-comment');
 			commentsEls.forEach(it => {
 				it.addEventListener('mouseover', this.showPopoverEventListener);
+				it.addEventListener('mouseover', this.showPopoverEventListener);
 				it.addEventListener('mouseleave', this.hidePopoverEventListener);
 				if (hoveredElement && it.id == hoveredElement.id) {
-					this.withActiveView(view => this.showPopover(view, it));
+					setTimeout(() => {
+						this.withActiveView(view => this.showPopover(view, it));
+					}, 1);
 				}
 			});
 		}
