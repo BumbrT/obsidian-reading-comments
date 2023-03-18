@@ -66,7 +66,7 @@ function expand(keys: string[], option: TreeOption[]) {
 }
 
 onMounted(() => {
-    plugin.applySettingsStyles();
+    plugin.applySettingsStylesAndEvents();
 });
 
 

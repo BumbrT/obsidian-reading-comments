@@ -36,11 +36,13 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-		this.applySettingsStyles();
+		this.applySettingsStylesAndEvents();
 	}
 
 	initState() {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
+		document.addEventListener('keydown', this.onKeyDown);
+		document.addEventListener('keyup', this.onKeyUp);
 	}
 
 	registerCommands() {
@@ -172,61 +174,83 @@ export class HtmlCommentsPlugin extends Plugin {
 			actionWithActiveView(activeView);
 		}
 	}
-	private showPopover(event: MouseEvent) {
+	private showPopoverEventListener = (event: MouseEvent) => {
 		if (!this.settings.showCommentWhenCtrlKeyPressed) {
 			return;
 		}
-		this.withActiveView(view => {
-			const el = event.currentTarget;
-			// @ts-ignore
-			const popover = new HoverPopover(view, el, 1000);
-			popover.hoverEl.textContent = "test!";
+		if (event.ctrlKey || event.metaKey) {
+			console.log(">>> showPopoverEventListener");
+			this.withActiveView(view => {
+				const el = event.currentTarget as Element;
+				this.showPopover(view, el);
+			}
+			);
 		}
-		);
-
 	};
-	private hidePopover(event: MouseEvent) {
+
+	private showPopover(view: MarkdownView, el: Element) {
+		console.log(`>>> Current state ${view.hoverPopover?.state}`)
+		console.log(`>>> Show popover ${el.id}`)
+		if (view.hoverPopover?.state) {
+			return;
+		}
+		// @ts-ignore
+		const popover = new HoverPopover(view, el, 10);
+		document.createElement
+		popover.hoverEl.innerHTML = constantsAndUtils.getPopoverLayout(el.firstChild?.textContent ?? "");
+	}
+
+	private hidePopoverEventListener = (event: MouseEvent) => {
 		if (!this.settings.showCommentWhenCtrlKeyPressed) {
 			return;
 		}
-		this.withActiveView(view => {
-			view.hoverPopover = null;
+		if (event.ctrlKey || event.metaKey) {
+			console.log(">>> hidePopoverEventListener");
+			this.withActiveView(view => {
+				view.hoverPopover = null;
+			}
+			);
 		}
-		);
 	};
 
-	applySettingsStyles() {
+	private onKeyDown = (event: KeyboardEvent) => {
+		if (this.settings.showCommentWhenCtrlKeyPressed && event.key == "Control") {
+			const hoveredEls = document.querySelectorAll(":hover");
+			const hoveredElement: Element | null = hoveredEls[hoveredEls.length - 1];
+			console.log(`>>> ${hoveredElement.tagName} ${hoveredElement.id}`)
+			const commentsEls = document.querySelectorAll('.ob-html-comment');
+			commentsEls.forEach(it => {
+				it.addEventListener('mouseover', this.showPopoverEventListener);
+				it.addEventListener('mouseleave', this.hidePopoverEventListener);
+				if (hoveredElement && it.id == hoveredElement.id) {
+					this.withActiveView(view => this.showPopover(view, it));
+				}
+			});
+		}
+	}
+
+	private onKeyUp = (event: KeyboardEvent) => {
+		if (this.settings.showCommentWhenCtrlKeyPressed && event.key == "Control") {
+
+			const commentsEls = document.querySelectorAll('.ob-html-comment');
+			commentsEls.forEach(it => {
+				it.removeEventListener('mouseover', this.showPopoverEventListener);
+				it.removeEventListener('mouseleave', this.hidePopoverEventListener);
+			});
+		}
+	}
+
+	private ifCursorOnComment() {
+		const hoveredEls = document.querySelectorAll(":hover");
+		if (hoveredEls.length) {
+
+		}
+	}
+
+	applySettingsStylesAndEvents() {
 		const stylesSettings = this.settings;
-		const plugin = this;
 		let hoverEffectStyle = "";
 		if (stylesSettings.showCommentWhenCtrlKeyPressed) {
-
-			document.addEventListener('keydown', function (event) {
-				if (event.key == "Control") {
-					if (!plugin.settings.showCommentWhenCtrlKeyPressed) {
-						return;
-					}
-					const commentsEls = document.querySelectorAll('.ob-html-comment');
-					commentsEls.forEach(it => {
-						it.addEventListener('mouseover', plugin.showPopover);
-						it.addEventListener('mouseleave', plugin.hidePopover);
-					});
-
-				}
-			});
-
-			document.addEventListener('keyup', function (event) {
-				if (event.key == "Control") {
-					if (!plugin.settings.showCommentWhenCtrlKeyPressed) {
-						return;
-					}
-					const commentsEls = document.querySelectorAll('.ob-html-comment');
-					commentsEls.forEach(it => {
-						it.removeEventListener('mouseover', plugin.showPopover);
-						it.removeEventListener('mouseleave', plugin.hidePopover);
-					});
-				}
-			});
 		} else {
 			hoverEffectStyle = `.view-content .ob-html-comment:hover>.ob-html-comment-body {
 				display: inline;
