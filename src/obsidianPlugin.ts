@@ -9,6 +9,8 @@ import { ErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
+	private cursorClientX: number;
+	private cursorClientY: number;
 
 	async onload() {
 		await this.loadSettings();
@@ -43,6 +45,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
 		document.addEventListener('keydown', this.onKeyDown);
 		document.addEventListener('keyup', this.onKeyUp);
+		document.addEventListener('mousemove', this.saveMousePosition);
 	}
 
 	registerCommands() {
@@ -181,20 +184,28 @@ export class HtmlCommentsPlugin extends Plugin {
 		if (event.ctrlKey || event.metaKey) {
 			this.withActiveView(view => {
 				const el = event.currentTarget as Element;
-				this.showPopover(view, el);
+				this.showPopoverForMouseEvent(view, el);
 			}
 			);
 		}
 	};
 
-	private showPopover(view: MarkdownView, el: Element) {
+	private showPopoverForMouseEvent(view: MarkdownView, el: Element) {
+		this.showPopoverInternal(view, el, el.firstChild?.textContent ?? "");
+	}
+
+	private showPopoverInternal(view: MarkdownView, el: Element, text: string) {
 		if (view.hoverPopover?.state) {
 			return;
 		}
 		// @ts-ignore
-		const popover = new HoverPopover(view, el, 10);
-		document.createElement
-		popover.hoverEl.innerHTML = constantsAndUtils.getPopoverLayout(el.firstChild?.textContent ?? "");
+		const popover = new HoverPopover(view, el, null);
+		popover.hoverEl.innerHTML = constantsAndUtils.getPopoverLayout(text);
+	}
+
+	private saveMousePosition = (event: MouseEvent) => {
+		this.cursorClientX = event.clientX;
+		this.cursorClientY = event.clientY;
 	}
 
 	private hidePopoverEventListener = (event: MouseEvent) => {
@@ -216,12 +227,21 @@ export class HtmlCommentsPlugin extends Plugin {
 			const commentsEls = document.querySelectorAll('.ob-html-comment');
 			commentsEls.forEach(it => {
 				it.addEventListener('mouseover', this.showPopoverEventListener);
-				it.addEventListener('mouseover', this.showPopoverEventListener);
+				it.addEventListener('mousemove', this.showPopoverEventListener);
 				it.addEventListener('mouseleave', this.hidePopoverEventListener);
 				if (hoveredElement && it.id == hoveredElement.id) {
 					setTimeout(() => {
-						this.withActiveView(view => this.showPopover(view, it));
-					}, 1);
+						let mouseMoveEvent = new MouseEvent("mousemove", {
+							bubbles: true,
+							cancelable: true,
+							ctrlKey: true,
+							metaKey: true,
+							clientX: this.cursorClientX,
+							clientY: this.cursorClientY,
+							view: window
+						  });
+						hoveredElement.dispatchEvent(mouseMoveEvent);
+					}, 50);
 				}
 			});
 		}
@@ -233,15 +253,9 @@ export class HtmlCommentsPlugin extends Plugin {
 			const commentsEls = document.querySelectorAll('.ob-html-comment');
 			commentsEls.forEach(it => {
 				it.removeEventListener('mouseover', this.showPopoverEventListener);
+				it.removeEventListener('mousemove', this.showPopoverEventListener);
 				it.removeEventListener('mouseleave', this.hidePopoverEventListener);
 			});
-		}
-	}
-
-	private ifCursorOnComment() {
-		const hoveredEls = document.querySelectorAll(":hover");
-		if (hoveredEls.length) {
-
 		}
 	}
 
