@@ -192,7 +192,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			return;
 		}
 		// @ts-ignore
-		const popover = new HoverPopover(view, el, 10);
+		const popover = new HoverPopover(view, el, 1000);
 		document.createElement
 		popover.hoverEl.innerHTML = constantsAndUtils.getPopoverLayout(el.firstChild?.textContent ?? "");
 	}
