@@ -141,14 +141,8 @@ class ConstantsAndUtils {
             <div
                 class="markdown-preview-view markdown-rendered node-insert-event show-indentation-guide allow-fold-headings allow-fold-lists">
                 <div class="markdown-preview-sizer markdown-preview-section">
-                    <div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div>
-                    <div class="mod-header">
-                        <div class="inline-title" contenteditable="false" spellcheck="false" tabindex="-1"
-                            enterkeyhint="done"></div>
-                    </div>
                     <div>
-                        <p>${textContent}<br>
-                        </p>
+                        <p>${textContent}</p>
                     </div>
                 </div>
             </div>
