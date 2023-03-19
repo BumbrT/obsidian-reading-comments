@@ -136,14 +136,12 @@ class ConstantsAndUtils {
     }
 
     getPopoverLayout(textContent: string) {
-        return `    <div class="markdown-embed is-loaded">
+        return `<div class="markdown-embed is-loaded" style="height: revert">
         <div class="markdown-embed-content">
             <div
                 class="markdown-preview-view markdown-rendered node-insert-event show-indentation-guide allow-fold-headings allow-fold-lists">
                 <div class="markdown-preview-sizer markdown-preview-section">
-                    <div>
                         <p>${textContent}</p>
-                    </div>
                 </div>
             </div>
         </div>
