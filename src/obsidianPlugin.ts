@@ -43,9 +43,9 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	initState() {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
-		document.addEventListener('keydown', this.onKeyDown);
-		document.addEventListener('keyup', this.onKeyUp);
-		document.addEventListener('mousemove', this.saveMousePosition);
+		this.registerDomEvent(document, 'keydown', this.onKeyDown);
+		this.registerDomEvent(document, 'keyup', this.onKeyUp);
+		this.registerDomEvent(document, 'mousemove', this.saveMousePosition);
 	}
 
 	registerCommands() {
@@ -239,7 +239,7 @@ export class HtmlCommentsPlugin extends Plugin {
 							clientX: this.cursorClientX,
 							clientY: this.cursorClientY,
 							view: window
-						  });
+						});
 						hoveredElement.dispatchEvent(mouseMoveEvent);
 					}, 50);
 				}
