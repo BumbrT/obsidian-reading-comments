@@ -11,6 +11,7 @@ export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
 	private cursorClientX: number;
 	private cursorClientY: number;
+	private popoverShown: boolean;
 
 	async onload() {
 		await this.loadSettings();
@@ -191,15 +192,25 @@ export class HtmlCommentsPlugin extends Plugin {
 	};
 
 	private showPopoverForMouseEvent(view: MarkdownView, el: Element) {
-		this.showPopoverInternal(view, el, el.firstChild?.textContent ?? "");
+		setTimeout(() => this.showPopoverInternal(view, el, el.firstChild?.textContent ?? ""), 10);
+	}
+
+	private popoverOnLoad = () => {
+		this.popoverShown = true;
+	}
+
+	private popoverOnUnload = () => {
+		this.popoverShown = false;
 	}
 
 	private showPopoverInternal(view: MarkdownView, el: Element, text: string) {
-		if (view.hoverPopover?.state) {
+		if (this.popoverShown) {
 			return;
 		}
 		// @ts-ignore
 		const popover = new HoverPopover(view, el, null);
+		popover.onload = this.popoverOnLoad;
+		popover.onunload = this.popoverOnUnload;
 		popover.hoverEl.innerHTML = constantsAndUtils.getPopoverLayout(text);
 	}
 
