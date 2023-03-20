@@ -192,7 +192,7 @@ export class HtmlCommentsPlugin extends Plugin {
 	};
 
 	private showPopoverForMouseEvent(view: MarkdownView, el: Element) {
-		setTimeout(() => this.showPopoverInternal(view, el, el.firstChild?.textContent ?? ""), 10);
+		this.showPopoverInternal(view, el, el.firstChild?.textContent ?? "");
 	}
 
 	private popoverOnLoad = () => {
