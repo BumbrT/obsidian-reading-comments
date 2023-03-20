@@ -11,6 +11,7 @@ export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
 	private cursorClientX: number;
 	private cursorClientY: number;
+	private popoverShown: boolean;
 
 	async onload() {
 		await this.loadSettings();
@@ -43,9 +44,9 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	initState() {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
-		document.addEventListener('keydown', this.onKeyDown);
-		document.addEventListener('keyup', this.onKeyUp);
-		document.addEventListener('mousemove', this.saveMousePosition);
+		this.registerDomEvent(document, 'keydown', this.onKeyDown);
+		this.registerDomEvent(document, 'keyup', this.onKeyUp);
+		this.registerDomEvent(document, 'mousemove', this.saveMousePosition);
 	}
 
 	registerCommands() {
@@ -191,15 +192,25 @@ export class HtmlCommentsPlugin extends Plugin {
 	};
 
 	private showPopoverForMouseEvent(view: MarkdownView, el: Element) {
-		this.showPopoverInternal(view, el, el.firstChild?.textContent ?? "");
+		setTimeout(() => this.showPopoverInternal(view, el, el.firstChild?.textContent ?? ""), 10);
+	}
+
+	private popoverOnLoad = () => {
+		this.popoverShown = true;
+	}
+
+	private popoverOnUnload = () => {
+		this.popoverShown = false;
 	}
 
 	private showPopoverInternal(view: MarkdownView, el: Element, text: string) {
-		if (view.hoverPopover?.state) {
+		if (this.popoverShown) {
 			return;
 		}
 		// @ts-ignore
 		const popover = new HoverPopover(view, el, null);
+		popover.onload = this.popoverOnLoad;
+		popover.onunload = this.popoverOnUnload;
 		popover.hoverEl.innerHTML = constantsAndUtils.getPopoverLayout(text);
 	}
 
@@ -239,7 +250,7 @@ export class HtmlCommentsPlugin extends Plugin {
 							clientX: this.cursorClientX,
 							clientY: this.cursorClientY,
 							view: window
-						  });
+						});
 						hoveredElement.dispatchEvent(mouseMoveEvent);
 					}, 50);
 				}
