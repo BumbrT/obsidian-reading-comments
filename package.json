@@ -10,8 +10,8 @@
 		"version-bump": "npm version patch -git-tag-version false",
 		"test": "jest"
 	},
-	"keywords": [],
-	"author": "",
+	"keywords": ["obsidian plugin", "obsidian comments"],
+	"author": "https://github.com/BumbrT/",
 	"license": "MIT",
 	"devDependencies": {
 		"@the_tree/esbuild-plugin-vue3": "^0.3.1",
