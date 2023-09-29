@@ -139,7 +139,8 @@ export class HtmlCommentsPlugin extends Plugin {
 		this.registerEvent(this.app.workspace.on('file-open', async (_) => {
 			this.parseActiveViewToCommentsAndClearExpandedItems();
 		}));
-		const editorEventsAggregator = new EventsAggregator(2000, () => {
+		const aggregateTimeoutMillis = 2000
+		const editorEventsAggregator = new EventsAggregator(aggregateTimeoutMillis, () => {
 			this.parseActiveViewToComments(false);
 		});
 
