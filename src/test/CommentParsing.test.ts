@@ -100,10 +100,10 @@ describe("parsing comment", () => {
 — Значит, вы не читали или, э-э-э… невнимательно читали\! Авто-мма-тически\! Так нельзя\!
         `;
         const parser = new TextToTreeDataParser(textToAnalyse);
-        const comments = parser.parsedComments.treeOptions;
-        const commentsWithoutTag = comments.filter(it => it.isComment);
+        const commentsAndTags = parser.parsedComments.treeOptions;
+        const comments = commentsAndTags.filter(it => it.isComment);
+        expect(commentsAndTags.length).toBe(1);
         expect(comments.length).toBe(0);
-        expect(commentsWithoutTag.length).toBe(0);
     });
 });
 
