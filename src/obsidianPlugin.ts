@@ -1,11 +1,11 @@
-import { App, Editor, EditorPosition, MarkdownView, MarkdownFileInfo, Modal, Notice, Plugin, TFile, HoverPopover } from 'obsidian';
-import { HtmlCommentsSettings, HtmlCommentsSettingTab, DEFAULT_SETTINGS } from "./obsidianSettings";
-import { viewState } from "./reactiveState";
-import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
-import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
+import { Editor, EditorPosition, HoverPopover, MarkdownFileInfo, MarkdownView, Plugin, TFile } from 'obsidian';
 import { constantsAndUtils } from './comments/ConstantsAndUtils';
+import { TextToTreeDataParser } from "./comments/TextToTreeDataParser";
 import { EventsAggregator } from './internalUtils';
 import { ErrorModal, ToggleSelectionErrorModal } from './obsidianModal';
+import { DEFAULT_SETTINGS, HtmlCommentsSettingTab, HtmlCommentsSettings } from "./obsidianSettings";
+import { HtmlCommentsView, VIEW_TYPE } from './obsidianView';
+import { viewState } from "./reactiveState";
 
 export class HtmlCommentsPlugin extends Plugin {
 	settings: HtmlCommentsSettings;
@@ -337,19 +337,24 @@ export class HtmlCommentsPlugin extends Plugin {
 			new ErrorModal(this.app, 'There is no comments in current file or file not selected!').open();
 			return;
 		}
-		const rootPathString = "/"
 		const fileName = file.name;
-		const parentPath = file.parent?.path ?? rootPathString;
+		const parentFolderPath = file.parent?.path;
+		let parentPath = '';
+		if (parentFolderPath == null || parentFolderPath == "/") {
+			parentPath = ''
+		} else {
+			parentPath = parentFolderPath + '/';
+		}
 		if (!fileName.endsWith(".md")) {
 			new ErrorModal(this.app, "Current file should end with '.md'!").open();
 			return;
 		}
 		const fileNameWithoutExtension = fileName.substring(0, fileName.length - 3)
 		let extractedNoteName = `${fileNameWithoutExtension} Original.md`;
-		let extractedOriginalNotePath = `${parentPath == rootPathString ? '' : parentPath + '/'}${extractedNoteName}`;
+		let extractedOriginalNotePath = `${parentPath}${extractedNoteName}`;
 
 		let extractedNoteCommentsName = `${fileNameWithoutExtension} Comments.md`;
-		let extractedCommentsNotePath = `${parentPath == rootPathString ? '' : parentPath + '/'}${extractedNoteCommentsName}`;
+		let extractedCommentsNotePath = `${parentPath}${extractedNoteCommentsName}`;
 
 		const noteText = await this.app.vault.cachedRead(file);
 		const parsedText = new TextToTreeDataParser(noteText);
