@@ -1,32 +1,40 @@
 
 export class EventsAggregator {
     private eventTriggered: boolean = false;
-    private staleEventTaskDelayMillis: number = this.aggregateForMillis * 5;
+    private staleEventTaskDelayMillis: number = this.aggregateForMillis * 10;
+    private eventActionDelayMillis: number = 600;
+    private triggerEventTimeoutId: NodeJS.Timeout | null = null;
 
     constructor(private readonly aggregateForMillis: number, private readonly eventAction: () => any) {
         this.triggerStaleEvent();
     }
 
     triggerEvent() {
+        if (this.triggerEventTimeoutId != null) {
+            clearTimeout(this.triggerEventTimeoutId);
+        }
         this.eventTriggered = true;
-        setTimeout(() => {
-            if (this.eventTriggered) {
-                this.eventTriggered = false;
-                this.eventAction();
-            }
+        this.triggerEventTimeoutId = setTimeout(() => {
+            this.executeEventActionWithDelayIfNecessary();
         }, this.aggregateForMillis);
     }
 
     private triggerStaleEvent() {
         setTimeout(() => {
             try {
-                if (this.eventTriggered) {
-                    this.eventTriggered = false;
-                    this.eventAction();
-                }
+                this.executeEventActionWithDelayIfNecessary();
             } finally {
                 this.triggerStaleEvent();
             }
         }, this.staleEventTaskDelayMillis);
+    }
+
+    private executeEventActionWithDelayIfNecessary() {
+        if (this.eventTriggered) {
+            this.eventTriggered = false;
+            setTimeout(() => {
+                this.eventAction();
+            }, this.eventActionDelayMillis);
+        }
     }
 }
