@@ -337,19 +337,19 @@ export class HtmlCommentsPlugin extends Plugin {
 			new ErrorModal(this.app, 'There is no comments in current file or file not selected!').open();
 			return;
 		}
-
+		const rootPathString = "/"
 		const fileName = file.name;
-		const parentPath = file.parent.path;
+		const parentPath = file.parent?.path ?? rootPathString;
 		if (!fileName.endsWith(".md")) {
 			new ErrorModal(this.app, "Current file should end with '.md'!").open();
 			return;
 		}
 		const fileNameWithoutExtension = fileName.substring(0, fileName.length - 3)
 		let extractedNoteName = `${fileNameWithoutExtension} Original.md`;
-		let extractedOriginalNotePath = `${parentPath == "/" ? '' : parentPath + '/'}${extractedNoteName}`;
+		let extractedOriginalNotePath = `${parentPath == rootPathString ? '' : parentPath + '/'}${extractedNoteName}`;
 
 		let extractedNoteCommentsName = `${fileNameWithoutExtension} Comments.md`;
-		let extractedCommentsNotePath = `${parentPath == "/" ? '' : parentPath + '/'}${extractedNoteCommentsName}`;
+		let extractedCommentsNotePath = `${parentPath == rootPathString ? '' : parentPath + '/'}${extractedNoteCommentsName}`;
 
 		const noteText = await this.app.vault.cachedRead(file);
 		const parsedText = new TextToTreeDataParser(noteText);
