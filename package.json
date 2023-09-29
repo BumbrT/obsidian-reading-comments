@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version-bump": "npm version patch -git-tag-version false && node version-bump.mjs && git add manifest.json versions.json",
+		"obsidian-version-update": "node version-bump.mjs && git add manifest.json versions.json",
+		"version-bump": "npm version patch -git-tag-version false",
 		"test": "jest"
 	},
 	"keywords": [],
