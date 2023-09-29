@@ -1,11 +1,11 @@
 {
 	"id": "reading-comments",
 	"name": "Reading comments",
-	"version": "1.0.22",
 	"minAppVersion": "0.15.0",
 	"description": "Plugin allows you to create comments while you read books or articles in Obsidian. Comments could be grouped hierarchically by tags.",
 	"author": "BumbrT",
 	"authorUrl": "https://github.com/BumbrT/",
 	"fundingUrl": "https://www.buymeacoffee.com/bumbrtg",
-	"isDesktopOnly": false
+	"isDesktopOnly": false,
+	"version": "1.0.22"
 }

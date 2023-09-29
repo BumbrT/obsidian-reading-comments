@@ -19,11 +19,14 @@ export class EventsAggregator {
 
     private triggerStaleEvent() {
         setTimeout(() => {
-            if (this.eventTriggered) {
-                this.eventTriggered = false;
-                this.eventAction();
+            try {
+                if (this.eventTriggered) {
+                    this.eventTriggered = false;
+                    this.eventAction();
+                }
+            } finally {
+                this.triggerStaleEvent();
             }
-            this.triggerStaleEvent();
         }, this.staleEventTaskDelayMillis);
     }
 }
