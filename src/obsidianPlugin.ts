@@ -317,7 +317,6 @@ export class HtmlCommentsPlugin extends Plugin {
 			return;
 		}
 		const text = await this.app.vault.cachedRead(file);
-
 		const parsedText = new TextToTreeDataParser(text);
 		viewState.viewTreeOptions.value = parsedText.parsedComments.treeOptions;
 		if (!clearExpandedItems) {
@@ -327,7 +326,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			const expandedKeys = parsedText.parsedComments.treeOptions.map(it => it.key) as string[];
 			viewState.viewExpandedKeys.value = expandedKeys;
 		} else {
-			viewState.viewExpandedKeys.value = [];
+			viewState.viewExpandedKeys.value.length = 0;
 		}
 	}
 
