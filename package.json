@@ -30,7 +30,7 @@
 		"esbuild": "0.14.47",
 		"jest": "^29.3.1",
 		"jest-environment-jsdom": "^29.4.2",
-		"naive-ui": "^2.34.3",
+		"naive-ui": "^2.34.4",
 		"obsidian": "latest",
 		"ts-jest": "^29.0.5",
 		"tslib": "2.4.0",

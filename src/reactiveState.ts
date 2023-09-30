@@ -12,7 +12,7 @@ const viewState = {
         regexSearch: false,
         caseSensitive: false,
     }),
-    viewTreeOptions: ref([] as TreeOption[]),
+    viewTreeOptions: ref<TreeOption[]>([]),
     viewExpandedKeys: ref<string[]>([]),
     regexFilter(pattern: string, option: TreeOption): boolean {
         let rule = /.*/;
