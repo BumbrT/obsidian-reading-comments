@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-sample-plugin",
-	"version": "1.0.23",
+	"version": "1.0.24",
 	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
 	"main": "main.js",
 	"scripts": {
@@ -10,7 +10,10 @@
 		"version-bump": "npm version patch -git-tag-version false",
 		"test": "jest"
 	},
-	"keywords": ["obsidian plugin", "obsidian comments"],
+	"keywords": [
+		"obsidian plugin",
+		"obsidian comments"
+	],
 	"author": "https://github.com/BumbrT/",
 	"license": "MIT",
 	"devDependencies": {
