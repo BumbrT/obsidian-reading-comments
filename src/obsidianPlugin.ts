@@ -318,13 +318,15 @@ export class HtmlCommentsPlugin extends Plugin {
 		}
 		const text = await this.app.vault.cachedRead(file);
 		const parsedText = new TextToTreeDataParser(text);
-		viewState.viewTreeOptions.value = parsedText.parsedComments.treeOptions;
+		viewState.viewTreeOptions.value.length = 0;
+		viewState.viewTreeOptions.value.push(...parsedText.parsedComments.treeOptions);
 		if (!clearExpandedItems) {
 			return;
 		}
 		if (this.settings.autoExpand) {
 			const expandedKeys = parsedText.parsedComments.treeOptions.map(it => it.key) as string[];
-			viewState.viewExpandedKeys.value = expandedKeys;
+			viewState.viewExpandedKeys.value.length = 0
+			viewState.viewExpandedKeys.value.push(...expandedKeys);
 		} else {
 			viewState.viewExpandedKeys.value.length = 0;
 		}

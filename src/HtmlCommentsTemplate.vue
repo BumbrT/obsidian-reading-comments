@@ -62,7 +62,8 @@ const setNodeProps = computed(() => {
 
 
 function expand(keys: string[], option: TreeOption[]) {
-    viewState.viewExpandedKeys.value = keys;
+    viewState.viewExpandedKeys.value.length = 0;
+    viewState.viewExpandedKeys.value.push(...keys);
 }
 
 onMounted(() => {
@@ -83,7 +84,6 @@ let renderMethod = computed(() => {
 let searchPattern = ref('');
 let searchInputValue = ref('');
 const searchEventsAggregator = new EventsAggregator(100, () => {
-    viewState.viewExpandedKeys.value.length = 0;
     searchPattern.value = searchInputValue.value;
 })
 // workaround for search bug while typing, just delay and aggregate inputs
