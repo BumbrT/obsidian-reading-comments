@@ -83,7 +83,7 @@ let renderMethod = computed(() => {
 let searchPattern = ref('');
 let searchInputValue = ref('');
 const searchEventsAggregator = new EventsAggregator(100, () => {
-    viewState.viewExpandedKeys.value = [];
+    viewState.viewExpandedKeys.value.length = 0;
     searchPattern.value = searchInputValue.value;
 })
 // workaround for search bug while typing, just delay and aggregate inputs
