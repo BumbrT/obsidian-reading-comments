@@ -10,7 +10,7 @@
             </NButton>
             <NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search" size="small" />
         </NSpace>
-        <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
+        <NTree block-line expand-on-click :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
             :data="viewState.viewTreeOptions.value" :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag"
             :render-label="renderMethod" :node-props="setNodeProps" :default-expanded-keys="[]"
             :filter="viewState.simpleFilter" :show-irrelevant-nodes="false" />
@@ -88,7 +88,7 @@ function onSearchInput(value: string) {
 
 // click and jump
 async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[]) {
-    if (nodes[0] === undefined) {
+    if (!nodes[0]) {
         return;
     }
     const selectedOption = nodes[0] as AbstractTreeOption;
