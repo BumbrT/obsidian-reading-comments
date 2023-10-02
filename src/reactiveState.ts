@@ -13,7 +13,6 @@ const viewState = {
         caseSensitive: false,
     }),
     viewTreeOptions: ref<TreeOption[]>([]),
-    viewExpandedKeys: ref<string[]>([]),
     regexFilter(pattern: string, option: TreeOption): boolean {
         let rule = /.*/;
         try {
