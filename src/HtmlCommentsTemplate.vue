@@ -12,8 +12,8 @@
         </NSpace>
         <NTree block-line :default-expand-all="plugin.settings.autoExpand" :pattern="searchPattern"
             :data="viewState.viewTreeOptions.value" :selected-keys="[]" :on-update:selected-keys="jumpToCommentOrExpandTag"
-            :render-label="renderMethod" :node-props="setNodeProps" :expanded-keys="viewState.viewExpandedKeys.value"
-            :on-update:expanded-keys="expand" :filter="viewState.simpleFilter" :show-irrelevant-nodes="false" />
+            :render-label="renderMethod" :node-props="setNodeProps" :default-expanded-keys="[]"
+            :filter="viewState.simpleFilter" :show-irrelevant-nodes="false" />
     </NConfigProvider>
 </template>
 
@@ -21,11 +21,11 @@
 import { SettingsBackupRestoreSharp } from '@vicons/material';
 import { Icon } from '@vicons/utils';
 import { marked } from 'marked';
-import { darkTheme, GlobalThemeOverrides, NSpace, NButton, NConfigProvider, NInput, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
+import { darkTheme, NButton, NConfigProvider, NInput, NSpace, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
 import { sanitizeHTMLToDom } from 'obsidian';
-import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, reactive, ref, watch } from 'vue';
+import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, ref } from 'vue';
 
-import { AbstractTreeOption, CommentTreeOption, constantsAndUtils, TagTreeOption } from './comments/ConstantsAndUtils';
+import { AbstractTreeOption, CommentTreeOption, TagTreeOption } from './comments/ConstantsAndUtils';
 import { EventsAggregator } from './internalUtils';
 import { HtmlCommentsPlugin } from "./obsidianPlugin";
 import { viewState } from './reactiveState';
@@ -61,11 +61,6 @@ const setNodeProps = computed(() => {
 });
 
 
-function expand(keys: string[], option: TreeOption[]) {
-    viewState.viewExpandedKeys.value.length = 0;
-    viewState.viewExpandedKeys.value.push(...keys);
-}
-
 onMounted(() => {
     plugin.applySettingsStylesAndEvents();
 });
@@ -100,9 +95,6 @@ async function jumpToCommentOrExpandTag(_selected: any, nodes: TreeSelectOption[
     if (selectedOption.isComment) {
         const line: number = (selectedOption as CommentTreeOption).line as number
         jumpToComment(line);
-    } else if (selectedOption.isTag) {
-        const tagKey = (selectedOption as TagTreeOption).fullName as string;
-        expandOrCollapseTag(tagKey);
     }
 }
 
@@ -123,14 +115,6 @@ function jumpToComment(line: number) {
         }
     }
     );
-}
-
-function expandOrCollapseTag(tagKey: string) {
-    if (viewState.viewExpandedKeys.value.contains(tagKey)) {
-        viewState.viewExpandedKeys.value.remove(tagKey);
-    } else {
-        viewState.viewExpandedKeys.value.push(tagKey);
-    }
 }
 
 function clearFiltersAndParseCurrentNote() {
