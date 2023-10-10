@@ -38,7 +38,7 @@ Open command panel and type `Extract original note with links to comments note`.
 
 ## Showcase
 
-### Buy me a coffee
+### Buy me a coffee (or just star this repo:)
 
 If you enjoy this plugin, feel free to buy me a coffee.
 <a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
@@ -65,6 +65,24 @@ If you enjoy this plugin, feel free to buy me a coffee.
 - Install from obsidian [community plugins store](https://obsidian.md/plugins?id=reading-comments)
 - Or use [obsidian BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin with github link to this repo
 - Or download latest release file from [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) and put files to your vault/.obsidian/plugins folder. Community plugins should be enabled.
+
+## Customization How To
+### How to add icon next to commented text
+- Follow obsidian [CSS snippets guide](https://help.obsidian.md/Extending+Obsidian/CSS+snippets) to add custom css for vault
+- Pick icon and copy svg from [Lucide](https://lucide.dev/icons/) or any other source
+- Add following custom css:
+```css
+.ob-html-comment:after {
+    background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXN0aWNreS1ub3RlIj48cGF0aCBkPSJNMTUuNSAzSDVhMiAyIDAgMCAwLTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YTIgMiAwIDAgMCAyLTJWOC41TDE1LjUgM1oiLz48cGF0aCBkPSJNMTUgM3Y2aDYiLz48L3N2Zz4=");
+    content: "";
+    background-repeat: no-repeat;
+    width: 1em;
+    height: 1em;
+    background-color: white;
+    display: inline-block;
+}
+```
+- Play with width, height and background-color parameters
 
 ## Implementation details for DIY plugin modifications and pull requests
 
