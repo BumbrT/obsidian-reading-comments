@@ -55,6 +55,24 @@
 - Используйте плагин [obsidian BRAT](https://github.com/TfTHacker/obsidian42-brat) со ссылкой на данный репозиторий
 - Можно загрузить вручную со страницы [Release page](https://github.com/BumbrT/obsidian-reading-comments/releases) и скопировать в папку: vault/.obsidian/plugins folder. Должны быть включены плагины сообщества (Community plugins).
 
+## FAQ по настройке
+### Как добавить кастомную иконку после комментария
+- Добавьте касотный CSS [в obsidian](https://help.obsidian.md/Extending+Obsidian/CSS+snippets)
+- Выберите иконку и скопируйте SVG из [Lucide](https://lucide.dev/icons/) или любого другого источника
+- Добавьте слудющий CSS:
+```css
+.ob-html-comment:after {
+    background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXN0aWNreS1ub3RlIj48cGF0aCBkPSJNMTUuNSAzSDVhMiAyIDAgMCAwLTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YTIgMiAwIDAgMCAyLTJWOC41TDE1LjUgM1oiLz48cGF0aCBkPSJNMTUgM3Y2aDYiLz48L3N2Zz4=");
+    content: "";
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    display: inline-block;
+}
+```
+- Поиграйте с высотой, шириной и цветом в CSS
+
 ## Детали реализации
 
 ### Логика комментариев
