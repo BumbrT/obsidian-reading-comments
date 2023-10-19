@@ -1,7 +1,6 @@
+import * as crypto from 'crypto';
 import escapeHTML from "escape-html";
-import HtmlCommentsPlugin from "main";
 import { TreeOption } from "naive-ui";
-import { HoverPopover } from "obsidian";
 import { v4 as uuidv4 } from 'uuid';
 import { OrganaizedTagsAndComments } from "./OrganaizedTagsAndComments";
 
@@ -46,6 +45,14 @@ class ConstantsAndUtils {
     private readonly regExpTagToggle = /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/;
     public readonly customColorStyleElementId = "ob-html-comment-custom-style";
     constructor() {
+    }
+
+    generateNativeCommentId(lineNumber: number, commentBody: string): string | null {
+        if (commentBody && commentBody.length > 0) {
+            const hash = crypto.createHash('md5').update(commentBody).digest('hex');
+            return `comment-native-${lineNumber}-${hash}`
+        }
+        return null;
     }
 
     generateCommentId(): string {

@@ -25,8 +25,12 @@ export class TextToTreeDataParser {
                 }
                 while ((arrayMatch = constantsAndUtils.regExpNativeComment.exec(lineContent)) !== null) {
                     const commentBody = arrayMatch[1];
-                    let parsed: HtmlComment = new HtmlComment(null, null, commentBody, lineNumber);                    
-                    parsedCommentsWithTags.push(parsed);
+                    const commentId = constantsAndUtils.generateNativeCommentId(lineNumber, commentBody);
+                    if (commentId != null) {
+                        let parsed: HtmlComment = new HtmlComment(commentId, null, commentBody, lineNumber);
+                        parsedCommentsWithTags.push(parsed);
+                    }
+
                 }
             }
         );
