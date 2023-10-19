@@ -1,6 +1,6 @@
 # Obsidian Reading Comments
 
-Plugin allows to create inline html comments while reading markdown notes in Obsidian. Comments could be grouped hierarchically by tags. After commenting job done and finalized, original note with internal links to comments note (in plain obsidian markdown, clean from HTML formatting) could be extracted for integration with rest of the vault.
+Plugin allows to create inline html comments while reading markdown notes in Obsidian. Comments could be grouped hierarchically by tags. After commenting job done and finalized, original note with internal links to comments note (in plain obsidian markdown, clean from HTML formatting) could be extracted for integration with rest of the vault. Also native %%comments%% supported.
 
 [Obsidian forum thread](https://forum.obsidian.md/t/new-plugin-obsidian-reading-comments/)
 
@@ -28,7 +28,7 @@ Open command panel and type `Extract original note with links to comments note`.
 
 - Tag comments hierarchically: Parent/Child/Etc tags supported and grouped by parent in the panel
 - Search in comments
-- Navigate to particular comment by click
+- Navigate to particular comment by click. Native %%comments%% supported.
 - **Extract original note with links to comments note**
 - Remove selected comment by hotkey
 - Toggle selected comment to block/inline by hotkey
@@ -54,11 +54,6 @@ If you enjoy this plugin, feel free to buy me a coffee.
 ### Extract original note with links to comments note showcase
 
 ![Extract original note](https://raw.githubusercontent.com/BumbrT/obsidian-reading-comments/master/resources/extract-original-ru.gif)
-
-### Buy me more coffee
-
-If you enjoy this plugin, feel free to buy me a coffee.
-<a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 
 ## Installation
 
@@ -106,12 +101,8 @@ All styles and display logic are located in styles.css and src/HtmlCommentsTempl
 Implementation has been based on the [Obsidian Quiet Outline](https://github.com/guopenghui/obsidian-quiet-outline) plugin.
 Basic idea has been taken from the [Comments](https://github.com/Darakah/obsidian-comments-plugin) plugin.
 
-## Buy me a coffee, one more banner
 
-If you enjoy this plugin, feel free to buy me a coffee.
-<a href="https://www.buymeacoffee.com/bumbrtg"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=thtree&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
-
-## Roadmap
+## Possible evolutioin directions
 
 - Multiline comments support (refactoring line by line parsing to multiline).
 - Tab for comments in whole vault/folder
