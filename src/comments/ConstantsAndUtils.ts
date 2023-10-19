@@ -1,7 +1,6 @@
+import * as crypto from 'crypto';
 import escapeHTML from "escape-html";
-import HtmlCommentsPlugin from "main";
 import { TreeOption } from "naive-ui";
-import { HoverPopover } from "obsidian";
 import { v4 as uuidv4 } from 'uuid';
 import { OrganaizedTagsAndComments } from "./OrganaizedTagsAndComments";
 
@@ -41,13 +40,22 @@ export interface PluginStylesSettings {
 }
 class ConstantsAndUtils {
     readonly regExpCommentSingleLine = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>/gm;
+    readonly regExpNativeComment = /%%(.+?)%%/gm;
     private readonly regExpCommentWithCommentedText = /\<(?:div|span) class\=\"ob-html-comment\" id\=\"comment-([0-9a-fA-F\-]+)\" data\-tags\=\"\[(.*?)\]\"\>\<span class\=\"ob-html-comment-body\"\>([\s\S]+?)\<\/span\>([\s\S]+?)\<\/(?:div|span)\>/gm;
     private readonly regExpTagToggle = /^\<(div|span)( class\=\"ob-html-comment\" id\=\"comment-[0-9a-fA-F\-]+\" data\-tags\=\"\[.*?\]\"\>\<span class\=\"ob-html-comment-body\"\>[\s\S]+?\<\/span\>([\s\S]+?))\<\/(div|span)\>$/;
     public readonly customColorStyleElementId = "ob-html-comment-custom-style";
     constructor() {
     }
 
-    generateCommentId(): string {
+    generateNativeCommentId(lineNumber: number, commentBody: string): string | null {
+        if (commentBody && commentBody.length > 0) {
+            const hash = crypto.createHash('md5').update(commentBody).digest('hex');
+            return `${lineNumber}-${hash}`
+        }
+        return null;
+    }
+
+    generateCommentIdWithPrefix(): string {
         return `comment-${uuidv4()}`;
     }
 
@@ -56,7 +64,7 @@ class ConstantsAndUtils {
             return null;
         }
         const escapedSelection = escapeHTML(selection);
-        return `<${containerTag} class="ob-html-comment" id="${this.generateCommentId()}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
+        return `<${containerTag} class="ob-html-comment" id="${this.generateCommentIdWithPrefix()}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
     }
 
     toggleCommentContainerInSelection(selection: string): string | null {
