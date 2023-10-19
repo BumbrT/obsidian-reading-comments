@@ -51,6 +51,19 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
             );
 
         new Setting(containerEl)
+            .setName('Parse native obsidian comments')
+            .setDesc('Native %%Comments%% will be added to the panel')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.parseNativeComments)
+                .onChange(
+                    async (value) => {
+                        this.plugin.settings.parseNativeComments = value;
+                        await this.plugin.saveSettings();
+                    }
+                )
+            );
+
+        new Setting(containerEl)
             .setName('Auto Expand Tags')
             .setDesc('Automatically expand all tags')
             .addToggle(toggle => toggle

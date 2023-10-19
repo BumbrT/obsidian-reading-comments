@@ -4,7 +4,7 @@ import { constantsAndUtils } from './ConstantsAndUtils'
 
 export class TextToTreeDataParser {
     readonly parsedComments: OrganaizedTagsAndComments;
-    constructor(text: string) {
+    constructor(text: string, parseNativeComments: boolean) {
         const parsedCommentsWithTags = new Array<HtmlComment>;
 
         let arrayMatch;
@@ -23,14 +23,16 @@ export class TextToTreeDataParser {
                     }
                     parsedCommentsWithTags.push(parsed);
                 }
-                while ((arrayMatch = constantsAndUtils.regExpNativeComment.exec(lineContent)) !== null) {
-                    const commentBody = arrayMatch[1];
-                    const commentId = constantsAndUtils.generateNativeCommentId(lineNumber, commentBody);
-                    if (commentId != null) {
-                        let parsed: HtmlComment = new HtmlComment(commentId, null, commentBody, lineNumber);
-                        parsedCommentsWithTags.push(parsed);
-                    }
+                if (parseNativeComments) {
+                    while ((arrayMatch = constantsAndUtils.regExpNativeComment.exec(lineContent)) !== null) {
+                        const commentBody = arrayMatch[1];
+                        const commentId = constantsAndUtils.generateNativeCommentId(lineNumber, commentBody);
+                        if (commentId != null) {
+                            let parsed: HtmlComment = new HtmlComment(commentId, null, commentBody, lineNumber);
+                            parsedCommentsWithTags.push(parsed);
+                        }
 
+                    }
                 }
             }
         );

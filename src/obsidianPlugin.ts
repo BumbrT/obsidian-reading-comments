@@ -317,7 +317,7 @@ export class HtmlCommentsPlugin extends Plugin {
 			return;
 		}
 		const text = await this.app.vault.cachedRead(file);
-		const parsedText = new TextToTreeDataParser(text);
+		const parsedText = new TextToTreeDataParser(text, this.settings.parseNativeComments);
 		viewState.viewTreeOptions.value.length = 0;
 		viewState.viewTreeOptions.value.push(...parsedText.parsedComments.treeOptions);
 	}
@@ -348,7 +348,7 @@ export class HtmlCommentsPlugin extends Plugin {
 		let extractedCommentsNotePath = `${parentPath}${extractedNoteCommentsName}`;
 
 		const noteText = await this.app.vault.cachedRead(file);
-		const parsedText = new TextToTreeDataParser(noteText);
+		const parsedText = new TextToTreeDataParser(noteText, this.settings.parseNativeComments);
 		const commentsFileContent = constantsAndUtils.convertParsedCommentsToCommentsNote(parsedText.parsedComments);
 		const originalFileContent = constantsAndUtils.convertNoteWithCommentsToOriginalNote(noteText, extractedNoteCommentsName);
 

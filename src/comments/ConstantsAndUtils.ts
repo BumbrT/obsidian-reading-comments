@@ -50,12 +50,12 @@ class ConstantsAndUtils {
     generateNativeCommentId(lineNumber: number, commentBody: string): string | null {
         if (commentBody && commentBody.length > 0) {
             const hash = crypto.createHash('md5').update(commentBody).digest('hex');
-            return `comment-native-${lineNumber}-${hash}`
+            return `${lineNumber}-${hash}`
         }
         return null;
     }
 
-    generateCommentId(): string {
+    generateCommentIdWithPrefix(): string {
         return `comment-${uuidv4()}`;
     }
 
@@ -64,7 +64,7 @@ class ConstantsAndUtils {
             return null;
         }
         const escapedSelection = escapeHTML(selection);
-        return `<${containerTag} class="ob-html-comment" id="${this.generateCommentId()}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
+        return `<${containerTag} class="ob-html-comment" id="${this.generateCommentIdWithPrefix()}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
     }
 
     toggleCommentContainerInSelection(selection: string): string | null {

@@ -11,7 +11,7 @@ describe("parsing hierarchical comment", () => {
     <span class="ob-html-comment" id="comment-92d3475d-b262-4a8b-8990-b67f182fb4c1" data-tags="[#test]"><span class="ob-html-comment-body">#test CommentPlaceholder</span>Tip - **практический** совет</span>
     <span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[Rule/One]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
         `;
-        const parser = new TextToTreeDataParser(textToAnalyse);
+        const parser = new TextToTreeDataParser(textToAnalyse, false);
         const commentsOptions = parser.parsedComments.treeOptions;
         const commentsWithoutTag = commentsOptions.filter(it => it.type === "comment");
         expect(commentsOptions.length).toBe(2);
@@ -24,7 +24,7 @@ describe("parsing hierarchical comment", () => {
     Struct - структура книги (кратко методы и способы чтения)
     <span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[Rule/One]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
         `;
-        const parser = new TextToTreeDataParser(textToAnalyse);
+        const parser = new TextToTreeDataParser(textToAnalyse, false);
         const commentsOptions = parser.parsedComments.treeOptions;
         for (let option of commentsOptions) {
             if (option.key == "Rule") {
@@ -56,7 +56,7 @@ describe("parsing comment", () => {
     <span class="ob-html-comment" id="comment-92d3475d-b262-4a8b-8990-b67f182fb4c1" data-tags="[comment,#test]"><span class="ob-html-comment-body">#test CommentPlaceholder</span>Tip - **практический** совет</span>
     <span class="ob-html-comment" id="comment-e5e2a999-de9b-4582-ab4d-f7b666a89bd0" data-tags="[]"><span class="ob-html-comment-body">CommentPlaceholder</span>Class - классификация книг, наук</span>
         `;
-        const parser = new TextToTreeDataParser(textToAnalyse);
+        const parser = new TextToTreeDataParser(textToAnalyse, false);
         const comments = parser.parsedComments.treeOptions;
         const commentsWithoutTag = comments.filter(it => it.isComment);
         expect(comments.length).toBe(3);
@@ -99,7 +99,7 @@ describe("parsing comment", () => {
 
 — Значит, вы не читали или, э-э-э… невнимательно читали\! Авто-мма-тически\! Так нельзя\!
         `;
-        const parser = new TextToTreeDataParser(textToAnalyse);
+        const parser = new TextToTreeDataParser(textToAnalyse, false);
         const commentsAndTags = parser.parsedComments.treeOptions;
         const comments = commentsAndTags.filter(it => it.isComment);
         expect(commentsAndTags.length).toBe(1);
