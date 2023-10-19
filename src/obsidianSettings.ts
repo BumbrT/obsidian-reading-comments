@@ -7,12 +7,14 @@ export interface HtmlCommentsSettings extends PluginStylesSettings {
     autoExpand: boolean;
     liveReloadOnEdit: boolean;
     container: string;
+    parseNativeComments: boolean;
 }
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     autoExpand: false,
     liveReloadOnEdit: true,
     container: "span",
+    parseNativeComments: true,
     commentedTextColorLight: "#f16e6e",
     commentedTextColorDark: "#585809",
     commentColorLight: "#f3f367",

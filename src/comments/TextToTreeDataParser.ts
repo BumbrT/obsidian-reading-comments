@@ -23,6 +23,11 @@ export class TextToTreeDataParser {
                     }
                     parsedCommentsWithTags.push(parsed);
                 }
+                while ((arrayMatch = constantsAndUtils.regExpNativeComment.exec(lineContent)) !== null) {
+                    const commentBody = arrayMatch[1];
+                    let parsed: HtmlComment = new HtmlComment(null, null, commentBody, lineNumber);                    
+                    parsedCommentsWithTags.push(parsed);
+                }
             }
         );
         this.parsedComments = new OrganaizedTagsAndComments(parsedCommentsWithTags);
