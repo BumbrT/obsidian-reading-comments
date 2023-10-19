@@ -2,12 +2,12 @@ import { HtmlCommentTag } from './HtmlCommentTag';
 
 
 export class HtmlComment {
-    readonly id: string?;
+    readonly id: string | null;
     readonly tags: HtmlCommentTag[];
     readonly commentBody: string;
     readonly line: number;
     private tagsNames: Set<string>;
-    constructor(id: string?, tagsString: string | null, commentBody: string, line: number) {
+    constructor(id: string | null, tagsString: string | null, commentBody: string, line: number) {
         this.id = id;
         this.commentBody = commentBody;
         this.line = line;
