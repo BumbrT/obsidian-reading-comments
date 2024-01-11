@@ -8,6 +8,7 @@ export interface HtmlCommentsSettings extends PluginStylesSettings {
     liveReloadOnEdit: boolean;
     container: string;
     parseNativeComments: boolean;
+	showDefaultTagEditor: boolean;
 }
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
@@ -19,7 +20,8 @@ export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     commentedTextColorDark: "#585809",
     commentColorLight: "#f3f367",
     commentColorDark: "#330202",
-    showCommentWhenCtrlKeyPressed: true
+    showCommentWhenCtrlKeyPressed: true,
+    showDefaultTagEditor: true
 }
 
 export class HtmlCommentsSettingTab extends PluginSettingTab {
@@ -36,6 +38,19 @@ export class HtmlCommentsSettingTab extends PluginSettingTab {
         containerEl.empty();
 
         containerEl.createEl('h2', { text: 'Settings for Reading comments plugin.' });
+
+		new Setting(containerEl)
+			.setName('Show default tag editor')
+			.setDesc('Adds default tag editor to the comments panel .')
+			.addToggle(toggle => toggle
+				.setValue(this.plugin.settings.showDefaultTagEditor)
+				.onChange(
+					async (value) => {
+						this.plugin.settings.showDefaultTagEditor = value;
+						await this.plugin.saveSettings();
+					}
+				)
+			);
 
         new Setting(containerEl)
             .setName('Show comment in Hover Popower Window on Ctrl (Command) + Hover')

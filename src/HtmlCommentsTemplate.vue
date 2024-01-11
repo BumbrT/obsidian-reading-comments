@@ -1,5 +1,10 @@
 <template>
     <NConfigProvider :theme="theme">
+		<NSpace v-if="plugin.settings.showDefaultTagEditor">
+			<NSpace>Use Tag:</NSpace>
+			<NInput default-value="comment," v-model:value="defaultTag"  type="text" />
+			<NDivider/>
+		</NSpace>
         <NSpace>
             <NButton size="small" circle @click="clearFiltersAndParseCurrentNote">
                 <template #icon>
@@ -21,7 +26,7 @@
 import { SettingsBackupRestoreSharp } from '@vicons/material';
 import { Icon } from '@vicons/utils';
 import { marked } from 'marked';
-import { darkTheme, NButton, NConfigProvider, NInput, NSpace, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
+import { darkTheme, NButton, NCard, NGradientText, NDivider, NConfigProvider, NInput, NSpace, NTree, TreeOption, TreeSelectOption } from 'naive-ui';
 import { sanitizeHTMLToDom } from 'obsidian';
 import { computed, getCurrentInstance, h, HTMLAttributes, onMounted, ref } from 'vue';
 
@@ -78,6 +83,7 @@ let renderMethod = computed(() => {
 // search
 let searchPattern = ref('');
 let searchInputValue = ref('');
+let defaultTag = viewState.defaultTag;
 const searchEventsAggregator = new EventsAggregator(100, () => {
     searchPattern.value = searchInputValue.value;
 })

@@ -8,6 +8,7 @@ const viewState = {
         dark: true,
         renderMarkdown: false,
     }),
+	defaultTag: ref('comment,'),
     filterPreset: reactive({
         regexSearch: false,
         caseSensitive: false,

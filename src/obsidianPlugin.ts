@@ -53,10 +53,11 @@ export class HtmlCommentsPlugin extends Plugin {
 		// This adds an editor command that can perform some operation on the current editor instance
 		const addReadingComment = (editor: Editor, container: string) => {
 			const selection = editor.getSelection();
-			const replacement = constantsAndUtils.selectionToComment(container, selection);
+			const replacement = constantsAndUtils.selectionToComment(viewState.defaultTag.value, container, selection);
 			if (replacement) {
 				const currentCursor = editor.getCursor("from");
-				const placeholderPositionStartCh = currentCursor.ch + container.length + 134;
+				const tagLength = viewState.defaultTag.value.length;
+				const placeholderPositionStartCh = currentCursor.ch + container.length + 126 + tagLength ;
 				const placeholderPositionEndCh = placeholderPositionStartCh + 18;
 				const placeholderPositionStart: EditorPosition = { line: currentCursor.line, ch: placeholderPositionStartCh }
 				const placeholderPositionEnd: EditorPosition = { line: currentCursor.line, ch: placeholderPositionEndCh }
