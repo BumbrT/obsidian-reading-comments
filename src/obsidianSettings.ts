@@ -9,6 +9,7 @@ export interface HtmlCommentsSettings extends PluginStylesSettings {
     container: string;
     parseNativeComments: boolean;
 	showDefaultTagEditor: boolean;
+	defaultTagEditorValue: string;
 }
 
 export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
@@ -21,7 +22,8 @@ export const DEFAULT_SETTINGS: HtmlCommentsSettings = {
     commentColorLight: "#f3f367",
     commentColorDark: "#330202",
     showCommentWhenCtrlKeyPressed: true,
-    showDefaultTagEditor: true
+    showDefaultTagEditor: true,
+	defaultTagEditorValue: "comment,"
 }
 
 export class HtmlCommentsSettingTab extends PluginSettingTab {

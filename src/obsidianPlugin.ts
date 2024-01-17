@@ -44,6 +44,7 @@ export class HtmlCommentsPlugin extends Plugin {
 
 	initState() {
 		viewState.settings.dark = document.body.hasClass("theme-dark");
+		viewState.defaultTag.value = this.settings.defaultTagEditorValue
 		this.registerDomEvent(document, 'keydown', this.onKeyDown);
 		this.registerDomEvent(document, 'keyup', this.onKeyUp);
 		this.registerDomEvent(document, 'mousemove', this.saveMousePosition);
