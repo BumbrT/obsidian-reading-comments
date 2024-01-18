@@ -9,7 +9,7 @@
 						</Icon>
 					</template>
 				</NButton>
-				<NInput v-model:value="defaultTag" type="text"
+				<NInput v-model:value="defaultTag" type="text" placeholder="Default tag"
 						size="small"/>
 			</NSpace>
 			<NSpace>
