@@ -59,12 +59,12 @@ class ConstantsAndUtils {
         return `comment-${uuidv4()}`;
     }
 
-    selectionToComment(containerTag: string, selection: string): string | null {
+    selectionToComment(defaultTag: string, containerTag: string, selection: string): string | null {
         if (selection.contains('\n')) {
             return null;
         }
         const escapedSelection = escapeHTML(selection);
-        return `<${containerTag} class="ob-html-comment" id="${this.generateCommentIdWithPrefix()}" data-tags="[comment,]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
+        return `<${containerTag} class="ob-html-comment" id="${this.generateCommentIdWithPrefix()}" data-tags="[${defaultTag}]"><span class="ob-html-comment-body">CommentPlaceholder</span>${escapedSelection}</${containerTag}>`;
     }
 
     toggleCommentContainerInSelection(selection: string): string | null {
