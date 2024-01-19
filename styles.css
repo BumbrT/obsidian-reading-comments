@@ -11,3 +11,7 @@
 .reading-comments .n-tree .n-tree-node-switcher {
     height: revert;
 }
+
+div:has(.flex-input) {
+	flex-grow: 1;
+}

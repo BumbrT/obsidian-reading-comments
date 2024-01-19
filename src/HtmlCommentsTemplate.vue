@@ -10,6 +10,7 @@
 					</template>
 				</NButton>
 				<NInput v-model:value="defaultTag" type="text" placeholder="Default tag"
+						:class="`flex-input`"
 						size="small"/>
 			</NSpace>
 			<NSpace>
@@ -20,7 +21,9 @@
 						</Icon>
 					</template>
 				</NButton>
-				<NInput :on-input="onSearchInput" v-model:value="searchInputValue" placeholder="Input to search"
+				<NInput :on-input="onSearchInput"
+						v-model:value="searchInputValue" placeholder="Input to search"
+						:class="`flex-input`"
 						size="small"/>
 			</NSpace>
 		</NSpace>
@@ -44,6 +47,7 @@ import {
 	NDivider,
 	NConfigProvider,
 	NInput,
+	NLayout,
 	NSpace,
 	NTree,
 	TreeOption,
