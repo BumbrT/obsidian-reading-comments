@@ -40,7 +40,7 @@ import {SettingsBackupRestoreSharp, SaveSharp} from '@vicons/material';
 import {Icon} from '@vicons/utils';
 import {marked} from 'marked';
 import {
-	darkTheme,
+	darkTheme, lightTheme,
 	NButton,
 	NCard,
 	NGradientText,
@@ -67,7 +67,7 @@ let theme: any = computed(() => {
 	if (viewState.settings.dark) {
 		return darkTheme;
 	}
-	return undefined;
+	return lightTheme;
 });
 let iconColor = computed(() => {
 	if (viewState.settings.dark) {
